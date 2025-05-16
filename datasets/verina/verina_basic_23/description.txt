@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that calculates the difference between the maximum and minimum values in an array of integers. In other words, the method should determine the highest and lowest numbers in the array and return the result of subtracting the minimum from the maximum.
+
+-----Input-----
+The input consists of:
+a: An array of integers.
+
+-----Output-----
+The output is an integer:
+Returns the difference between the largest and the smallest values in the input array.
+
+-----Note-----
+The input array is assumed to be non-empty.

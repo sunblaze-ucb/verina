@@ -1,0 +1,15 @@
+-----Description-----  
+This task requires swapping two 8-bit unsigned integers. Given two unsigned integer inputs, the goal is to produce an output pair where the first element is the original second input and the second element is the original first input. The problem focuses solely on exchanging the values without specifying any particular method to achieve the swap.
+
+-----Input-----  
+The input consists of:  
+• X: A UInt8 value.  
+• Y: A UInt8 value.
+
+-----Output-----  
+The output is a pair of UInt8 values (newX, newY) where:  
+• newX is equal to the original Y.  
+• newY is equal to the original X.
+
+-----Note-----  
+There are no additional preconditions; the function is meant to work correctly for any pair of UInt8 values by leveraging bitwise xor operations.

@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether an array of integers contains at least one pair of consecutive numbers. The method should return true if there is any index where an element, when increased by one, equals the next element in the array. If no such consecutive pair exists, the method should return false.
+
+-----Input-----
+The input consists of:
+a: An array of integers (the array may be empty or non-empty).
+
+-----Output-----
+The output is a Boolean value:
+Returns true if there is at least one index where an element plus one equals the following element.
+Returns false if the array does not contain any consecutive numbers.
+
+-----Note-----
+There are no additional preconditions; the method will function correctly regardless of the array's size.

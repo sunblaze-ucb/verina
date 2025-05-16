@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_49",
+    "signature": {
+        "name": "mergeSortedLists",
+        "parameters": [
+            {
+                "param_name": "arr1",
+                "param_type": "List Int"
+            },
+            {
+                "param_name": "arr2",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "List Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "N/A",
+            "task_id": "lab_mergeSortedLists_325057855",
+            "student_id": [
+                17
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

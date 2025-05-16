@@ -1,0 +1,13 @@
+-----Description-----
+This task requires writing a Lean 4 function that takes a list of stock prices and returns the maximum profit achievable by buying on one day and selling on a later day.
+
+If no profit is possible, the function should return 0.
+
+-----Input-----
+The input consists of:
+prices: A list of natural numbers representing stock prices on each day.
+
+-----Output-----
+The output is a natural number:
+Returns the maximum profit achievable with one transaction (buy once, sell once), or 0 if no profitable transaction is possible.
+

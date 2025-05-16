@@ -1,0 +1,12 @@
+-----Description-----
+Given a sorted list of distinct integers and a target value, return the index if the target is found. If it is not found, return the index where it would be inserted to maintain the sorted order.
+
+This function must preserve the sorted property of the list. The list is assumed to be strictly increasing and contain no duplicates.
+
+-----Input-----
+xs : List Int — a sorted list of distinct integers in increasing order
+target : Int — the integer to search for
+
+-----Output-----
+A natural number (Nat) representing the index at which the target is found, or the index at which it should be inserted to maintain sorted order.
+

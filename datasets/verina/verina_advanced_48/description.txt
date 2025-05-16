@@ -1,0 +1,19 @@
+-----Description----- 
+This task requires implementing the merge sort algorithm in Lean 4 to sort a list of integers in ascending order. Merge sort is a divide-and-conquer algorithm that recursively splits the input list into two halves, sorts them separately, and then merges the sorted halves to produce the final sorted result.
+
+The merge sort algorithm works as follows:
+1. If the list has one element or is empty, it is already sorted.
+2. Otherwise, divide the list into two roughly equal parts.
+3. Recursively sort both halves.
+4. Merge the two sorted halves to produce a single sorted list.
+
+The key operation in merge sort is the merging step, which takes two sorted lists and combines them into a single sorted list by repeatedly taking the smaller of the two elements at the front of the lists.
+
+-----Input-----
+The input consists of one parameter:
+list: A list of integers that needs to be sorted.
+
+-----Output-----
+The output is a list of integers:
+Returns a new list containing all elements from the input list, sorted in ascending order. 
+

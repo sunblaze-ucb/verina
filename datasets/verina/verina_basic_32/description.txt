@@ -1,0 +1,13 @@
+-----Description-----  
+This task requires writing a Lean 4 method that swaps the first and last elements of an array of integers. The method should produce a new array where the first element of the output is the last element of the input, the last element of the output is the first element of the input, and all other elements remain in their original positions.
+
+-----Input-----  
+The input consists of:  
+a: An array of integers (assumed to be non-empty).
+
+-----Output-----  
+The output is an array of integers:  
+Returns a new array where:  
+- The former last element becomes the first element.  
+- The former first element becomes the last element.  
+- All other elements remain unchanged.

@@ -1,0 +1,15 @@
+-----Description-----  
+This task involves updating an array of integers such that the element at a specified index is set to 60 while all other elements remain unchanged.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers.  
+• j: A natural number representing the index (0-indexed) to update. It is assumed that j is a valid index (j < a.size).
+
+-----Output-----  
+The output is an array of integers where:  
+• The element at index j is set to 60.  
+• All other elements remain the same as in the input array.
+
+-----Note-----  
+It is assumed that j is a valid index (0 ≤ j < a.size).

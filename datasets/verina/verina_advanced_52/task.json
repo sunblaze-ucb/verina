@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_52",
+    "signature": {
+        "name": "minOperations",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Nat"
+            },
+            {
+                "param_name": "k",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "",
+            "task_id": "lab_minOperations_325696322",
+            "student_id": [
+                40
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

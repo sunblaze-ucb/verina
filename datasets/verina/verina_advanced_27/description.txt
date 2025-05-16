@@ -1,0 +1,16 @@
+-----Description-----
+This task requires writing a Lean 4 function that computes the longest common subsequence (LCS) of two input strings.
+A subsequence of a string is a sequence that can be derived from the original string by deleting zero or more characters (not necessarily contiguous) without changing the order of the remaining characters.
+The function should return a string that is:
+1) A subsequence of both input strings.
+2) As long as possible among all such common subsequences.
+
+If multiple LCS answers exist (with the same maximum length), returning any one of them is acceptable.
+
+-----Input-----
+s1: The first input string.
+s2: The second input string.
+
+-----Output-----
+A string representing a longest common subsequence of s1 and s2.
+

@@ -1,0 +1,44 @@
+{
+    "id": "verina_basic_64",
+    "signature": {
+        "name": "insert",
+        "parameters": [
+            {
+                "param_name": "oline",
+                "param_type": "Array Char"
+            },
+            {
+                "param_name": "l",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "nl",
+                "param_type": "Array Char"
+            },
+            {
+                "param_name": "p",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "atPos",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Array Char"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- l must be less than or equal to oline.size\n- p must be less than or equal to nl.size\n- atPos must be less than or equal to l",
+        "postconditions": "- result should have lenght of l + p - For every index i, if i < atPos then result[i] = oline[i]\n- For every index i such that 0 \u2264 i < p, result[atPos + i] = nl[i]\n- For every index i, if atPos + p \u2264 i < l + p then result[i] = oline[i - p]"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_insert"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

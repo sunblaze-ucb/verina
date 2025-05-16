@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_35",
+    "signature": {
+        "name": "majorityElement",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/majority-element/description/",
+            "task_id": "lab_majorityElement_324976035",
+            "student_id": [
+                22
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

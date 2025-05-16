@@ -1,0 +1,15 @@
+-----Description-----  
+This task requires writing a Lean 4 method that determines whether one list is a sublist of another. In other words, the method should check if the first list appears as a contiguous sequence within the second list and return true if it does, and false otherwise.
+
+-----Input-----  
+The input consists of two lists of integers:  
+sub: A list of integers representing the potential sublist.  
+main: A list of integers in which to search for the sublist.
+
+-----Output-----  
+The output is a Boolean value:  
+Returns true if the first list appears as a contiguous sequence within the second list.  
+Returns false if the first list does not appear as a contiguous sequence in the second list.
+
+-----Note-----  
+There are no preconditions for this method; the sequences are always non-null.

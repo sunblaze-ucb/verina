@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_72",
+    "signature": {
+        "name": "append",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array a can be empty or non-empty; no additional preconditions.",
+        "postconditions": "- The resulting array\u2019s list representation is equal to a.toList ++ [b]"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_array_append"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

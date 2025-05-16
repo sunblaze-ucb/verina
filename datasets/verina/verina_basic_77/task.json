@@ -1,0 +1,40 @@
+{
+    "id": "verina_basic_77",
+    "signature": {
+        "name": "modify_array_element",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array (Array Nat)"
+            },
+            {
+                "param_name": "index1",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "index2",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "val",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Array (Array Nat)"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- index1 must be less than the size of the outer array\n- index2 must be less than the size of the inner array at index1",
+        "postconditions": "- All inner arrays besides the one at index1 remain unchanged\n- In the inner array at index1, every element remains the same except for the element at index2, which is updated to val"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_modify_2d_array"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

@@ -1,0 +1,13 @@
+-----Description-----  
+The problem asks you to construct a new list by adding an extra number to the end of an existing list of numbers. The focus is on understanding what the final list should look like when a given number is included as the last element.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers.  
+• b: An integer to be appended to the array.
+
+-----Output-----  
+The output is an array of integers which represents the original array with the element b added at the end. That is, the output array’s list representation equals a.toList concatenated with [b].
+
+-----Note-----  
+There are no special preconditions; the method is expected to work correctly for any array of integers and any integer b.

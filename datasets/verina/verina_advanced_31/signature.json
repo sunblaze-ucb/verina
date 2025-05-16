@@ -1,0 +1,7 @@
+{
+  "name": "longestIncreasingSubseqLength",
+  "parameters": [
+    { "name": "xs", "type": "List Int" }
+  ],
+  "return_type": "Nat"
+}

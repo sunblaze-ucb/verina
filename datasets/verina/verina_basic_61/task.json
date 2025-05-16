@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_61",
+    "signature": {
+        "name": "allDigits",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "String"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- Returns true if every character in the string is a digit (i.e., between '0' and '9').\n- Returns false if any character is not a digit.\n- For an empty string, returns true."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_all_digits"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

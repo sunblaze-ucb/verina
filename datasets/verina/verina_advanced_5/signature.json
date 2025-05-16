@@ -1,0 +1,14 @@
+{
+    "name": "addTwoNumbers",
+    "parameters": [
+      {
+        "param_name": "l1",
+        "param_type": "List Nat"
+      },
+      {
+        "param_name": "l2",
+        "param_type": "List Nat"
+      }
+    ],
+    "return_type": "List Nat"
+}

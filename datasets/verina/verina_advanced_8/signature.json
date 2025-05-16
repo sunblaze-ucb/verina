@@ -1,0 +1,14 @@
+{
+  "name": "canCompleteCircuit",
+  "parameters": [
+    {
+      "param_name": "gas",
+      "param_type": "List Int"
+    },
+    {
+      "param_name": "cost",
+      "param_type": "List Int"
+    }
+  ],
+  "return_type": "Int"
+}

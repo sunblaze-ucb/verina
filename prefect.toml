@@ -1,0 +1,7 @@
+[server]
+
+database.connection_url = "postgresql+asyncpg://postgres:test@localhost:15432/prefect"
+services.flow_run_notifications.enabled = false
+
+[tasks]
+# refresh_cache = true

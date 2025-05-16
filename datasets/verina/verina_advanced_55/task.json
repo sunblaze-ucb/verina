@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_55",
+    "signature": {
+        "name": "mostFrequent",
+        "parameters": [
+            {
+                "param_name": "xs",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/majority-element/",
+            "task_id": "lab_mostFrequent_325752578",
+            "student_id": [
+                15
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

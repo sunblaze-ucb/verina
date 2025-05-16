@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_5",
+    "signature": {
+        "name": "addTwoNumbers",
+        "parameters": [
+            {
+                "param_name": "l1",
+                "param_type": "List Nat"
+            },
+            {
+                "param_name": "l2",
+                "param_type": "List Nat"
+            }
+        ],
+        "return_type": "List Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/add-two-numbers/description/",
+            "task_id": "lab_addTwoNumbers_324428059",
+            "student_id": [
+                3
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

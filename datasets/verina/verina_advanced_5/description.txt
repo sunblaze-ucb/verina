@@ -1,0 +1,15 @@
+-----Description----- 
+This task requires writing a Lean 4 method that adds two non-empty linked lists representing non-negative integers.
+The digits are stored in reverse order (i.e., the first element is the least significant digit).
+Each node (list element) holds a single digit (ranging from 0 to 9). The function should add the two numbers and return the sum 
+as a linked list, also in reverse order.
+
+-----Input-----
+The input consists of:
+- l1: A list of natural numbers representing the digits of the first number in reverse order.
+- l2: A list of natural numbers representing the digits of the second number in reverse order.
+
+-----Output-----
+The output is a list of natural numbers:
+Returns a list of digits (in reverse order) representing the sum of the two input numbers.
+

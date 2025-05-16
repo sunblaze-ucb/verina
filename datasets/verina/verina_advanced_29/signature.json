@@ -1,0 +1,14 @@
+{
+    "name": "longestGoodSubarray",
+    "parameters": [
+      {
+        "param_name": "nums",
+        "param_type": "List Nat"
+      },
+      {
+        "param_name": "k",
+        "param_type": "Nat"
+      }
+    ],
+    "return_type": "Nat"
+}

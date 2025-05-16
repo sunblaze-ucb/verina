@@ -1,0 +1,11 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether a natural number is a power of four. The method should return a boolean value that indicates whether the given natural number is a power of four. An integer n is a power of four, if there exists an natural number x such that n = 4^x. 
+
+-----Input-----
+The input consists of one natural number:
+n: A natural number.
+
+-----Output-----
+The output is a boolean value:
+Return a boolean value that indicates whether the given natural number is a power of four. Return "true" if it is a power of four. Otherwise, return "false". 
+

@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_65",
+    "signature": {
+        "name": "SquareRoot",
+        "parameters": [
+            {
+                "param_name": "N",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- The result r satisfies r * r \u2264 N and N < (r + 1) * (r + 1)."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_integer_square_root"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

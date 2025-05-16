@@ -1,0 +1,11 @@
+{
+    "name": "partitionEvensOdds",
+    "parameters": [
+      {
+        "param_name": "nums",
+        "param_type": "List Nat"
+      }
+    ],
+    "return_type": "(List Nat × List Nat)"
+  }
+  

@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_38",
+    "signature": {
+        "name": "maxCoverageAfterRemovingOne",
+        "parameters": [
+            {
+                "param_name": "intervals",
+                "param_type": "List (Prod Nat Nat)"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "[{\"text_file_id\"=>804563720}]",
+            "task_id": "lab_maxCoverageAfterRemovingOne_325587004",
+            "student_id": [
+                31
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

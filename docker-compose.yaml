@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  prefect-postgres:
+    image: postgres:latest
+    container_name: prefect-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=prefect
+    ports:
+      - "15432:5432"
+    volumes:
+      - prefectdb:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  prefectdb:

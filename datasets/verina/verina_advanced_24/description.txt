@@ -1,0 +1,16 @@
+-----Description-----
+This task requires writing a Lean 4 method that determines the length of the longest strictly increasing subsequence in a given array of integers.
+
+A subsequence is a sequence that can be derived from the array by deleting some or no elements without changing the order of the remaining elements. The subsequence must be strictly increasing, meaning each element must be greater than the one before it.
+
+The goal is to find the length of the longest such subsequence that can be formed from the input array.
+
+-----Input-----
+The input consists of one array:
+
+nums: An array of integers where nums[i] represents the ith element of the input sequence.
+
+-----Output-----
+The output is an integer:
+Returns the length of the longest strictly increasing subsequence in the input array.
+

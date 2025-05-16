@@ -1,0 +1,14 @@
+-----Description-----  
+This task involves determining the triple of a given integer. The goal is to create a function that, for any integer provided as input, returns a value equal to three times that integer, including handling the case when the input is zero.
+
+-----Input-----  
+The input consists of:  
+• x: An integer.
+
+-----Output-----  
+The output is an integer that represents three times the input integer.  
+• If x = 0, the output will be 0.  
+• Otherwise, the output will be computed as x + 2 * x, which is equivalent to 3 * x.
+
+-----Note-----  
+There are no additional preconditions. It is assumed that x is a valid integer.

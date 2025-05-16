@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_46",
+    "signature": {
+        "name": "lastPosition",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "elem",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array should be sorted in non-decreasing order",
+        "postconditions": "- If the element is found, the returned position should be the last occurrence of the element in the array\n- If the element is not found, the returned position should be -1"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_793"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

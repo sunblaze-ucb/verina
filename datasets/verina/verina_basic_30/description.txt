@@ -1,0 +1,21 @@
+-----Description----- 
+This task requires writing a Lean 4 method that computes the element-wise modulo between two arrays of integers. The method should produce a new array where each element is the remainder after dividing the corresponding element from the first array by the element from the second array.
+
+-----Input----- 
+The input consists of:
+a: An array of integers.
+b: An array of integers.
+
+-----Output----- 
+The output is an array of integers:
+Returns a new array in which each element is the result of taking the modulo of the corresponding elements from the two input arrays.
+
+-----Note----- 
+Preconditions:
+- Both arrays must be non-null.
+- Both arrays must have the same length.
+- All elements in the second array should be non-zero.
+
+Postconditions:
+- The length of the resulting array is the same as the length of the input arrays.
+- Each element in the resulting array is the modulo of the corresponding elements in the input arrays.

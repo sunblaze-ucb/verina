@@ -1,0 +1,12 @@
+-----Description-----
+This task requires writing a Lean 4 method that takes two sorted (non-decreasing) integer lists and merges them into a single sorted list. The output must preserve order and include all elements from both input lists.
+
+-----Input-----
+The input consists of:
+a: A list of integers sorted in non-decreasing order.
+b: Another list of integers sorted in non-decreasing order.
+
+-----Output-----
+The output is a list of integers:
+Returns a merged list that contains all elements from both input lists, sorted in non-decreasing order.
+

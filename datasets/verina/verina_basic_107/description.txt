@@ -1,0 +1,13 @@
+-----Description-----  
+This task involves computing the average of two integers. The objective is to determine a value that closely approximates the true arithmetic mean when using integer division, ensuring that the result reflects the necessary rounding behavior.
+
+-----Input-----  
+The input consists of:  
+• a: An integer.  
+• b: An integer.
+
+-----Output-----  
+The output is an integer representing the computed average of a and b using integer division.
+
+-----Note-----  
+The specification requires that the computed average satisfies the condition that 2 * avg is between (a + b - 1) and (a + b + 1), ensuring that the result meets the expected rounding boundaries.

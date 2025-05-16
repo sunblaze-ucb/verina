@@ -1,0 +1,14 @@
+-----Description-----  
+This task involves determining whether every character in a provided string is a digit. The objective is to check if all characters fall within the standard digit range, returning true if they do and false otherwise.
+
+-----Input-----  
+The input consists of:  
+• s: A string whose characters will be analyzed to determine if they are all digits.
+
+-----Output-----  
+The output is a boolean value:  
+• true if every character in the string is a digit;  
+• false if at least one character is not a digit (note that the empty string returns true).
+
+-----Note-----  
+It is assumed that the input is a well-formed string. The function uses an iterator to examine every character.

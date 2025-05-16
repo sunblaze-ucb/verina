@@ -1,0 +1,17 @@
+-----Description----- 
+This task requires writing a Lean 4 method that rearranges an array of integers by moving all zero values to the end of the array. The method should ensure that the relative order of the non-zero elements remains the same, the overall size of the array is unchanged, and the number of zeroes in the array stays constant.
+
+-----Input-----
+The input consists of:
+arr: An array of integers.
+
+-----Output-----
+The output is an array of integers:
+Returns an array where:
+- The length is the same as that of the input array.
+- All zero values are positioned at the end.
+- The relative order of non-zero elements is preserved.
+- The count of zero values remains the same as in the input array.
+
+-----Note-----
+There are no preconditions; the method will always work for any array of integers.

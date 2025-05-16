@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that finds the difference between the first even number and the first odd number in an array of integers. The method should process the array sequentially until it identifies the first even number and the first odd number, and then return the difference calculated as (first even number) minus (first odd number).
+
+-----Input-----
+The input consists of:
+a: An array of integers.
+
+-----Output-----
+The output is an integer:
+Returns the difference computed as the first even number minus the first odd number found in the array.
+
+-----Note-----
+The input array is assumed to be non-empty and to contain at least one even number and one odd number.

@@ -1,0 +1,12 @@
+-----Description-----  
+This task requires computing three times the given integer. The goal is to determine the product of the input integer and 3.
+
+-----Input-----  
+The input consists of:  
+• x: An integer.
+
+-----Output-----  
+The output is an integer that represents three times the input value.
+
+-----Note-----  
+The implementation uses two different branches based on the value of x (i.e., x < 18 or x ≥ 18), but both branches guarantee that the result equals 3*x.

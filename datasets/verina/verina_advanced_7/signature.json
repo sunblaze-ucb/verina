@@ -1,0 +1,10 @@
+{
+  "name": "binaryToDecimal",
+  "parameters": [
+    {
+      "param_name": "digits",
+      "param_type": "List Nat"
+    }
+  ],
+  "return_type": "Nat"
+}

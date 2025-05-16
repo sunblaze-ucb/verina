@@ -1,0 +1,18 @@
+{
+  "name": "maxOfThree",
+  "parameters": [
+    {
+      "param_name": "a",
+      "param_type": "Int"
+    },
+    {
+      "param_name": "b",
+      "param_type": "Int"
+    },
+    {
+      "param_name": "c",
+      "param_type": "Int"
+    }
+  ],
+  "return_type": "Int"
+}

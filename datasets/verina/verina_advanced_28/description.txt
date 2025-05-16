@@ -1,0 +1,11 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the length of the longest sequence of consecutive integers present in a given list. The numbers do not need to appear in order. The elements are unique.
+
+A consecutive sequence consists of integers that can be arranged in increasing order with no gaps. Your function should find the longest such streak.
+
+-----Input-----
+- nums: A list of integers (no duplicates).
+
+-----Output-----
+- A natural number: the length of the longest consecutive sequence.
+

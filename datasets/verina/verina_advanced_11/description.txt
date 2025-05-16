@@ -1,0 +1,14 @@
+-----Description-----  
+This task requires writing a Lean 4 method that finds the **majority element** in a list of integers. A majority element is defined as an element that appears **strictly more than half** the number of times in the list.
+
+If such an element exists, the method should return that element. Otherwise, it should return `-1`. The implementation must ensure that the result is either the majority element (if one exists) or `-1` (when no such element appears more than ⌊n/2⌋ times).
+
+-----Input-----  
+The input consists of a list of integers:
+- lst: A list of integers, which may include duplicates and negative numbers. The list may also be empty.
+
+-----Output-----  
+The output is a single integer:
+- If a majority element exists in the input list, return that element.
+- If no majority element exists, return `-1`.
+

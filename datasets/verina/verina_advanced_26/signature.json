@@ -1,0 +1,10 @@
+{
+    "name": "letterCombinations",
+    "parameters": [
+      {
+        "param_name": "digits",
+        "param_type": "String"
+      }
+    ],
+    "return_type": "List String"
+}

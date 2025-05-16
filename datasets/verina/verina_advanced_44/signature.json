@@ -1,0 +1,14 @@
+{
+    "name": "maxSubarraySumDivisibleByK",
+    "parameters": [
+      {
+        "param_name": "arr",
+        "param_type": "Array Int"
+      },
+      {
+        "param_name": "k",
+        "param_type": "Int"
+      } 
+    ],
+    "return_type": "Int"
+}

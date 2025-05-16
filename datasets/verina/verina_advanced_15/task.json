@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_15",
+    "signature": {
+        "name": "increasingTriplet",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/increasing-triplet-subsequence?envType=study-plan-v2&envId=leetcode-75",
+            "task_id": "lab_increasingTriplet_324678911",
+            "student_id": [
+                6
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

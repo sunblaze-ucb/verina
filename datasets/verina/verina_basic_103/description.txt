@@ -1,0 +1,15 @@
+-----Description-----  
+This problem involves updating an array of integers by modifying two specific positions. Specifically, the element at index 4 should be increased by 3, and the element at index 7 should be changed to 516. The goal is to correctly update these positions while leaving the rest of the array unchanged. The description assumes that the array contains at least 8 elements.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers. The array must contain at least 8 elements.
+
+-----Output-----  
+The output is an array of integers that meets the following criteria:  
+• The element at index 4 is updated to its original value plus 3.  
+• The element at index 7 is set to 516.  
+• All other elements in the array remain the same as in the input array.
+
+-----Note-----  
+It is assumed that the input array has a size of at least 8 elements. Indices are 0-indexed.

@@ -1,0 +1,18 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the minimum number of operations to collect the integers from 1 to k by performing the following removal operation on a list of integers.
+
+A removal operation consists of removing the last element from the list nums and adding it to your collection.
+
+The goal is to determine how many elements must be removed from the end of the list until the set of collected elements (that are less than or equal to k) contains all integers from 1 to k, inclusive.
+
+-----Input-----
+The input consists of a list and a positive integer:
+nums: A list of positive integers.
+k: A positive integer representing the target upper bound for the collection (i.e., we want to collect 1, 2, ..., k).
+
+-----Output-----
+The output is an integer:
+Return the minimum number of operations (elements removed from the end of nums) required to have collected all integers from 1 to k.
+
+-----Note-----
+It is assumed that the input list contains all integers from 1 to k.

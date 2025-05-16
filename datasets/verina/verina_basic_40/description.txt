@@ -1,0 +1,15 @@
+-----Description----- 
+This task requires writing a Lean 4 method that finds the second-smallest number in an array of integers. The method should determine and return the number that is larger than the smallest element in the array. It is crucial that the input array remains unchanged after the computation.
+
+-----Input-----
+The input consists of:
+s: An array of integers containing at least two elements.
+
+-----Output-----
+The output is an integer:
+Returns the second-smallest number in the input array.
+
+-----Note-----
+- The input array is guaranteed to contain at least two elements and is non-null.
+- It is assumed that there exist at least two distinct values in the array to ensure a unique second-smallest element.
+- The original array must remain unmodified.

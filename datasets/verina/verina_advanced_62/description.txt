@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that calculates how much rainwater would be trapped by a terrain represented as an array of heights. Imagine rainwater falls onto a terrain with varying elevation levels. The water can only be trapped between higher elevation points.
+
+Given an array of non-negative integers representing the elevation map where the width of each bar is 1 unit, calculate how much water can be trapped after it rains.
+
+-----Input-----
+The input consists of one array:
+heights: An array of non-negative integers representing elevation levels.
+
+-----Output-----
+The output is an integer:
+Returns the total amount of rainwater that can be trapped.
+

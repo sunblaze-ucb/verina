@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_22",
+    "signature": {
+        "name": "dissimilarElements",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- Both input arrays should be non-null",
+        "postconditions": "- The result array should contain all elements from both input arrays that are not present in the other array\n- The result array should not contain any duplicate elements\n- The order of elements in the result array does not matter"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_579"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

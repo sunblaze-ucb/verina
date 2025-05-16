@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_85",
+    "signature": {
+        "name": "reverse",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions; the method should work for any array of integers.",
+        "postconditions": "- The output array must have the same length as the input array.\n- For every index i, the output at index i is equal to the element at index (a.size - 1 - i) of the input array."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_reverse"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

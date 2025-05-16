@@ -1,0 +1,86 @@
+[
+    {
+        "input": {
+            "s": "#[3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]"
+        },
+        "expected": "some (1)",
+        "unexpected": [
+            "some (2)",
+            "some (0)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[0, 1, 2, 3, 4, 5]"
+        },
+        "expected": "some (0)",
+        "unexpected": [
+            "some (1)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[1]"
+        },
+        "expected": "some (1)",
+        "unexpected": [
+            "some (0)",
+            "some (2)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[10, 10, 10]"
+        },
+        "expected": "some (10)",
+        "unexpected": [
+            "some (9)",
+            "some (0)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[3, 2, 2, 2, 2, 2, 2, 1]"
+        },
+        "expected": "some (1)",
+        "unexpected": [
+            "some (2)",
+            "some (0)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[0]"
+        },
+        "expected": "some (0)",
+        "unexpected": [
+            "some (1)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[100, 99, 98]"
+        },
+        "expected": "some (98)",
+        "unexpected": [
+            "some (99)",
+            "some (97)",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "#[]"
+        },
+        "expected": "none",
+        "unexpected": [
+            "some (0)"
+        ]
+    }
+]

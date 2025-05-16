@@ -1,0 +1,14 @@
+-----Description-----  
+This task involves finding the minimum element in a non-empty array of integers. The goal is to identify and return the smallest number present in the array.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers (the array is assumed to be non-empty).
+
+-----Output-----  
+The output is an integer that:  
+• Is the smallest element from the input array.  
+• Satisfies the property that it is less than or equal to every element in the array and is exactly equal to at least one element of the array.
+
+-----Note-----  
+It is assumed that the input array contains at least one element. The implementation uses a helper function (loop) to recursively compare elements and determine the minimum value.

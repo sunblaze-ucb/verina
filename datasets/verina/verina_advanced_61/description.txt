@@ -1,0 +1,9 @@
+-----Description-----
+This task requires writing a Lean 4 function that takes a list of integers and returns a new list. For each index i in the input list, the output at i is equal to the product of all numbers in the list except the number at index i. The solution must run in O(n) time without using the division operation.
+
+-----Input-----
+The input is a list of integers. For example, [1,2,3,4].
+
+-----Output-----
+The output is a list of integers where each element at index i is the product of every input element except the one at that index. For example, for the input [1,2,3,4], the output should be [24,12,8,6]. Each intermediate product is guaranteed to fit in a 32-bit integer.
+

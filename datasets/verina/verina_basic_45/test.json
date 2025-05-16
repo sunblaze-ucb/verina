@@ -1,0 +1,35 @@
+[
+    {
+        "input": {
+            "lst": "[2, 3, 4, 5]"
+        },
+        "expected": 6,
+        "unexpected": [
+            8,
+            0,
+            10
+        ]
+    },
+    {
+        "input": {
+            "lst": "[2, 4, 3, 6]"
+        },
+        "expected": 6,
+        "unexpected": [
+            8,
+            0,
+            24
+        ]
+    },
+    {
+        "input": {
+            "lst": "[1, 2, 5, 4]"
+        },
+        "expected": 2,
+        "unexpected": [
+            5,
+            0,
+            10
+        ]
+    }
+]

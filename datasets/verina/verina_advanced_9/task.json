@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_9",
+    "signature": {
+        "name": "countSumDivisibleBy",
+        "parameters": [
+            {
+                "param_name": "n",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "d",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "this is a leetcode style problem but not a specifc one. similar to this: https://leetcode.com/problems/count-the-digits-that-divide-a-number/description/",
+            "task_id": "lab_countSumDivisibleBy_325011347",
+            "student_id": [
+                7
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

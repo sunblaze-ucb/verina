@@ -1,0 +1,14 @@
+-----Description-----
+This task requires writing a Lean 4 method that implementing the "Two Sum" problem. Given a list of integers 
+and a target integer, the function should return the indices of the two numbers that add up to 
+the target. If no valid pair exists, the function should return none. And the indices returned must 
+be within the bounds of the list. If multiple pair exists, return the first pair.
+
+-----Input-----
+- nums: A list of integers.
+- target: An integer representing the target sum.
+
+-----Output-----
+- An option type containing a pair of natural numbers (indices) such that 
+  nums[i] + nums[j] = target, if such a pair exists. Otherwise, it returns none.
+

@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_23",
+    "signature": {
+        "name": "differenceMinMax",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array should not be empty",
+        "postconditions": "- The difference between the largest and smallest value in the input array is returned"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_588"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

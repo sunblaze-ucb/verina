@@ -1,0 +1,14 @@
+{
+    "name": "hasChordIntersection",
+    "parameters": [
+      {
+        "param_name": "N",
+        "param_type": "Nat"
+      },
+      {
+        "param_name": "chords",
+        "param_type": "List (List Nat)"
+      }
+    ],
+    "return_type": "Bool"
+}

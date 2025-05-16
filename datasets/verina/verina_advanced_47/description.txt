@@ -1,0 +1,16 @@
+-----Description-----
+This task requires writing a Lean 4 method that merges all overlapping intervals from a given list of intervals.
+
+Each interval is represented as a pair [start, end], indicating the start and end of the interval. If two intervals overlap, they should be merged into a single interval that spans from the minimum start to the maximum end of the overlapping intervals.
+
+The goal is to return a list of non-overlapping intervals that cover all the input intervals after merging.
+
+-----Input-----
+The input consists of one array:
+
+intervals: An array of pairs of integers where intervals[i] = [startᵢ, endᵢ] represents the start and end of the ith interval.
+
+-----Output-----
+The output is an array of pairs of integers:
+Returns the list of merged, non-overlapping intervals sorted by their start times.
+

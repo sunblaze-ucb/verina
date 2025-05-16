@@ -1,0 +1,86 @@
+[
+    {
+        "input": {
+            "numbers": "[1, 2, 3, -2, 5]"
+        },
+        "expected": 9,
+        "unexpected": [
+            6,
+            10,
+            1
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[-2, -3, 4, -1, -2, 1, 5, -3]"
+        },
+        "expected": 7,
+        "unexpected": [
+            5,
+            4,
+            9
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[-1, -2, -3, -4]"
+        },
+        "expected": 0,
+        "unexpected": [
+            1,
+            -1,
+            -10
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[5, -3, 2, 1, -2]"
+        },
+        "expected": 5,
+        "unexpected": [
+            3,
+            6,
+            4
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[0, 0, 0, 0]"
+        },
+        "expected": 0,
+        "unexpected": [
+            1,
+            -1
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[]"
+        },
+        "expected": 0,
+        "unexpected": [
+            1
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[10]"
+        },
+        "expected": 10,
+        "unexpected": [
+            0,
+            5
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[-5, 8, -3, 4, -1]"
+        },
+        "expected": 9,
+        "unexpected": [
+            8,
+            3,
+            0
+        ]
+    }
+]

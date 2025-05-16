@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_97",
+    "signature": {
+        "name": "TestArrayElements",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "j",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- j is a valid index (j < a.size)",
+        "postconditions": "- The element at index j in the output array is 60\n- For every index k such that k < a.size and k \u2260 j, the output array element is equal to the input array's element at index k"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_test_array"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

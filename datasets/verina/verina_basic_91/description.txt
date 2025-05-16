@@ -1,0 +1,15 @@
+-----Description-----  
+This task involves creating a function that swaps two integer values. Given two integers, the function should return a pair where the first element is the second input value and the second element is the first input value.
+
+-----Input-----  
+The input consists of two integers:  
+• X: An integer representing the first value.  
+• Y: An integer representing the second value.
+
+-----Output-----  
+The output is a pair (Int × Int) that:  
+• Contains the original Y as the first element.  
+• Contains the original X as the second element.
+
+-----Note-----  
+There are no additional preconditions. The function simply swaps the two input values.

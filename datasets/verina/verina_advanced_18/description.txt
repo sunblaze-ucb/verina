@@ -1,0 +1,11 @@
+-----Description-----
+This task requires writing a Lean 4 method that determines whether a given number `n` is an Armstrong number (also known as a Narcissistic number). An Armstrong number is a number that is equal to the sum of its own digits raised to the power of the number of digits.
+
+-----Input-----
+The input consists of one natural number:
+- `n: Nat`: The number to check if it satisfies the Armstrong property.
+
+-----Output-----
+The output is a boolean value:
+- `Bool`: Return `true` if `n` is an Armstrong number, otherwise return `false`.
+

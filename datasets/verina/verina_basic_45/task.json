@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_45",
+    "signature": {
+        "name": "findProduct",
+        "parameters": [
+            {
+                "param_name": "lst",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The list must have at least one even and one odd number",
+        "postconditions": "- The product is the multiplication of the first even and first odd number found in the list"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_784"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

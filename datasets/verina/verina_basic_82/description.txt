@@ -1,0 +1,15 @@
+-----Description-----  
+This task is about processing an array of integers by producing a new array that excludes the first element. The objective is to define a clear behavior: if the array contains at least one element, return a modified array starting from the second element.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers.
+
+-----Output-----  
+The output is an array of integers that:  
+• Has a length equal to the original array's length minus one.  
+• Contains the same elements as the input array except for the first element.  
+• Satisfies the condition that for every index i in the output array, the element at position i is equal to the element at position i+1 in the input array.
+
+-----Note-----  
+It is assumed that the input array is non-empty.

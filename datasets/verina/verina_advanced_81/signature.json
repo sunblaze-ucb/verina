@@ -1,0 +1,10 @@
+{
+  "name": "uniqueSorted",
+  "parameters": [
+    {
+      "param_name": "arr",
+      "param_type": "List Int"
+    }
+  ],
+  "return_type": "List Int"
+}

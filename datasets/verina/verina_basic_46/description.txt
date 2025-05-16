@@ -1,0 +1,15 @@
+-----Description----- 
+This task requires writing a Lean 4 method that finds the last occurrence of a specified element in a sorted array of integers. The method should return the index corresponding to the last occurrence of the element if it is present; if the element is absent, it should return -1. Additionally, the array must remain unchanged after the method is executed.
+
+-----Input-----
+The input consists of:
+arr: A sorted array of integers in non-decreasing order.
+elem: An integer whose last occurrence position is to be determined.
+
+-----Output-----
+The output is an integer:
+Returns the index of the last occurrence of the specified integer in the array if it exists.
+Returns -1 if the integer is not found in the array.
+
+-----Note-----
+The input array is assumed to be sorted in non-decreasing order and remains unchanged by the method.

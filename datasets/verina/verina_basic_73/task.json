@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_73",
+    "signature": {
+        "name": "Match",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "String"
+            },
+            {
+                "param_name": "p",
+                "param_type": "String"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The length of s (converted to a list) must be equal to the length of p (converted to a list).",
+        "postconditions": "- The result is true if and only if for every index n in the string, either s[n] equals p[n] or p[n] is '?'"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_match"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

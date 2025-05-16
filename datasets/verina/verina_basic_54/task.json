@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_54",
+    "signature": {
+        "name": "CanyonSearch",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- Both arrays a and b must be non-empty and sorted in non-decreasing order.",
+        "postconditions": "- The result is the minimum absolute difference among all pairs (a[i], b[j]).\n- There exists at least one pair of indices (i, j) such that the absolute difference |a[i] - b[j]| equals the result."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_canyon_search"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

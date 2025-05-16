@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_55",
+    "signature": {
+        "name": "Compare",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "None",
+        "postconditions": "- If a equals b then the function must return true.\n- If a does not equal b then the function must return false."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_compare"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

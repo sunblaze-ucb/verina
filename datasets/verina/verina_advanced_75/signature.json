@@ -1,0 +1,10 @@
+{
+  "name": "task_code",
+  "parameters": [
+    {
+      "param_name": "sequence",
+      "param_type": "List Int"
+    }
+  ],
+  "return_type": "Int"
+}

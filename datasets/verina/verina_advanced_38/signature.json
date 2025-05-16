@@ -1,0 +1,10 @@
+{
+    "name": "maxCoverageAfterRemovingOne",
+    "parameters": [
+      {
+        "param_name": "intervals",
+        "param_type": "List (Prod Nat Nat)"
+      }
+    ],
+    "return_type": "Nat"
+  }

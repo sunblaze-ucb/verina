@@ -1,0 +1,12 @@
+-----Description-----
+This task involves determining whether two integer values are equal. The goal is simply to compare the two provided numbers and indicate with a Boolean result whether they are the same.
+
+-----Input-----
+The input consists of two elements:
+• a: An element of type Int.
+• b: An element of type Int.
+
+-----Output-----
+The output is a Boolean:
+• Returns true if a equals b.
+• Returns false if a does not equal b.

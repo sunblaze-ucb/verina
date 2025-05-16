@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_80",
+    "signature": {
+        "name": "only_once",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "key",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- The function returns true if and only if the key appears exactly once in the array 'a'."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_only_once"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

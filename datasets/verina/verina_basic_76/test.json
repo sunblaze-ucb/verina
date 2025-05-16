@@ -1,0 +1,57 @@
+[
+    {
+        "input": {
+            "x": 3,
+            "y": 5
+        },
+        "expected": 3,
+        "unexpected": [
+            5,
+            8
+        ]
+    },
+    {
+        "input": {
+            "x": 10,
+            "y": 7
+        },
+        "expected": 7,
+        "unexpected": [
+            10,
+            17
+        ]
+    },
+    {
+        "input": {
+            "x": 4,
+            "y": 4
+        },
+        "expected": 4,
+        "unexpected": [
+            0,
+            8
+        ]
+    },
+    {
+        "input": {
+            "x": -5,
+            "y": 0
+        },
+        "expected": -5,
+        "unexpected": [
+            0,
+            -4
+        ]
+    },
+    {
+        "input": {
+            "x": 0,
+            "y": -10
+        },
+        "expected": -10,
+        "unexpected": [
+            0,
+            -8
+        ]
+    }
+]

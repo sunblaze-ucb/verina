@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_72",
+    "signature": {
+        "name": "singleDigitPrimeFactor",
+        "parameters": [
+            {
+                "param_name": "n",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "",
+            "task_id": "lab_singleDigitPrimeFactor_324367187",
+            "student_id": [
+                16
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

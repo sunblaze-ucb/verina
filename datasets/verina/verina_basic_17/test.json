@@ -1,0 +1,67 @@
+[
+    {
+        "input": {
+            "s": "Hello, World!"
+        },
+        "expected": "hello, world!",
+        "unexpected": [
+            "Hello, world!",
+            "HELLO, WORLD!",
+            "hello, World!"
+        ]
+    },
+    {
+        "input": {
+            "s": "ABC"
+        },
+        "expected": "abc",
+        "unexpected": [
+            "ABC",
+            "Abc",
+            "aBC"
+        ]
+    },
+    {
+        "input": {
+            "s": "abc"
+        },
+        "expected": "abc",
+        "unexpected": [
+            "ABC",
+            "aBc",
+            "abC"
+        ]
+    },
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": "",
+        "unexpected": [
+            " ",
+            "empty",
+            "null"
+        ]
+    },
+    {
+        "input": {
+            "s": "1234!@"
+        },
+        "expected": "1234!@",
+        "unexpected": [
+            "1234!#",
+            "12345!@"
+        ]
+    },
+    {
+        "input": {
+            "s": "MixedCASE123"
+        },
+        "expected": "mixedcase123",
+        "unexpected": [
+            "Mixedcase123",
+            "mixedCASE123",
+            "MIXEDCASE123"
+        ]
+    }
+]

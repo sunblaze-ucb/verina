@@ -1,0 +1,10 @@
+{
+  "name": "runLengthEncoder",
+  "parameters": [
+      {
+          "param_name": "input",
+          "param_type": "String"
+      }
+  ],
+  "return_type": "String"
+}

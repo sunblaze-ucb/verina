@@ -1,0 +1,15 @@
+-----Description-----  
+This task requires swapping two integer values. Given two integers as input, the objective is to produce an output where their order is reversed: the first element of the output corresponds to the second input and the second element corresponds to the first input.
+
+-----Input-----  
+The input consists of two integers:  
+• X: An integer value.  
+• Y: Another integer value.
+
+-----Output-----  
+The output is a tuple (Int × Int) where:  
+• The first element is equal to Y.  
+• The second element is equal to X.
+
+-----Note-----  
+There are no additional preconditions for this task. The function simply returns a swapped tuple of its two input integers.

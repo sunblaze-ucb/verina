@@ -1,0 +1,16 @@
+-----Description-----
+This task involves identifying the first occurrence of a pair of indices in an array of integers such that the sum of the corresponding elements equals the given target value. The focus is on determining the earliest valid pair (i, j), with 0 ≤ i < j < nums.size, where the sum of the two numbers equals the target, without considering any language-specific or implementation details.
+
+-----Input-----
+The input consists of:
+• nums: An array of integers.
+• target: An integer representing the desired sum.
+
+-----Output-----
+The output is a pair of natural numbers (i, j) that satisfy:
+• 0 ≤ i < j < nums.size.
+• nums[i] + nums[j] = target.
+• Any valid pair with indices preceding (i, j) does not yield the target sum, and no index between i and j forms a valid sum with nums[i].
+
+-----Note-----
+It is assumed that the array has at least two elements and that there exists at least one valid pair whose sum is equal to the target.

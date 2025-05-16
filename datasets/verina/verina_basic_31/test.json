@@ -1,0 +1,53 @@
+[
+    {
+        "input": {
+            "s": "Hello, World!"
+        },
+        "expected": "HELLO, WORLD!",
+        "unexpected": [
+            "hello, world!",
+            "HeLLo, WORld!"
+        ]
+    },
+    {
+        "input": {
+            "s": "abc"
+        },
+        "expected": "ABC",
+        "unexpected": [
+            "AbC",
+            "abc"
+        ]
+    },
+    {
+        "input": {
+            "s": "ABC"
+        },
+        "expected": "ABC",
+        "unexpected": [
+            "abc",
+            "aBC",
+            "Abc"
+        ]
+    },
+    {
+        "input": {
+            "s": "123!?@"
+        },
+        "expected": "123!?@",
+        "unexpected": [
+            "123!@?",
+            "321!?@"
+        ]
+    },
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": "",
+        "unexpected": [
+            " ",
+            "a"
+        ]
+    }
+]

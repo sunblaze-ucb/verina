@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that computes the sum of the fourth power of the first n odd natural numbers. In other words, given a non-negative integer n, the method should calculate the sum: 1⁴ + 3⁴ + 5⁴ + ... for the first n odd numbers.
+
+-----Input-----
+The input consists of:
+n: A non-negative natural number representing the number of odd natural numbers to consider.
+
+-----Output----- 
+The output is a natural number:
+Returns the sum of the fourth power of the first n odd natural numbers.
+
+-----Note----- 
+The input n is assumed to be a non-negative integer.
+The correctness of the result is established by a theorem that relates the computed sum to a specific formula.

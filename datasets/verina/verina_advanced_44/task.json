@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_44",
+    "signature": {
+        "name": "maxSubarraySumDivisibleByK",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "k",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/maximum-subarray-sum-with-length-divisible-by-k/description/",
+            "task_id": "lab_maxSubarraySumDivisibleByK_325772368",
+            "student_id": [
+                36
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

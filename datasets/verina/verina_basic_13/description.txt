@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that transforms an array of integers by replacing every element with its cube. In other words, for each element in the input array, the output array should contain the result of multiplying that element by itself three times.
+
+-----Input-----
+The input consists of:
+a: An array of integers (which may be empty or non-empty).
+
+-----Output-----
+The output is an array of integers:
+Returns an array with the same length as the input, where each element is the cube of the corresponding element in the input array.
+
+-----Note-----
+There are no additional preconditions; the method should work correctly for any array of integers.

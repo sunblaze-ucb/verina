@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_29",
+    "signature": {
+        "name": "removeElement",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "k",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- k should be between 0 and the length of the array",
+        "postconditions": "- The length of the returning array must be one less than the length of the input array\n- All elements before the k'th element in the input array should be the same in the output array\n- All elements after the k'th element in the input array should be shifted by one position in the output array"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_610"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

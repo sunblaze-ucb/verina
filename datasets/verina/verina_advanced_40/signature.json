@@ -1,0 +1,10 @@
+{
+  "name": "maxOfList",
+  "parameters": [
+    {
+      "param_name": "lst",
+      "param_type": "List Nat"
+    }
+  ],
+  "return_type": "Nat"
+}

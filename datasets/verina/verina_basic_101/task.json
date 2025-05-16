@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_101",
+    "signature": {
+        "name": "Triple",
+        "parameters": [
+            {
+                "param_name": "x",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- No specific preconditions; the function accepts any integer.",
+        "postconditions": "- The result must be exactly three times the input value (result = 3 * x)."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_triple4"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

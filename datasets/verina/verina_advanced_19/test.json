@@ -1,0 +1,47 @@
+[
+    {
+        "input": {
+            "s": "A man, a plan, a canal, Panama"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "No lemon, no melon"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "OpenAI"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    },
+    {
+        "input": {
+            "s": "Was it a car or a cat I saw?"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "Hello, World!"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    }
+]

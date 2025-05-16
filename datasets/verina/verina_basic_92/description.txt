@@ -1,0 +1,15 @@
+-----Description-----  
+This problem involves swapping the values of two integers. Given two integers as inputs, the objective is to return the two numbers in reversed order.
+
+-----Input-----  
+The input consists of two integers:  
+• X: The first integer.  
+• Y: The second integer.
+
+-----Output-----  
+The output is a tuple of two integers (Int × Int) where:  
+• The first element is equal to Y.  
+• The second element is equal to X.
+
+-----Note-----  
+There are no restrictions on the input values. The function must correctly swap the inputs regardless of whether they are positive, negative, or zero.

@@ -1,0 +1,53 @@
+[
+    {
+        "input": {
+            "s": "hello"
+        },
+        "expected": "olleh",
+        "unexpected": [
+            "hello",
+            "helo",
+            "hell"
+        ]
+    },
+    {
+        "input": {
+            "s": "a"
+        },
+        "expected": "a",
+        "unexpected": [
+            "",
+            "aa"
+        ]
+    },
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": "",
+        "unexpected": [
+            " ",
+            "a"
+        ]
+    },
+    {
+        "input": {
+            "s": "racecar"
+        },
+        "expected": "racecar",
+        "unexpected": [
+            "rceacar",
+            "raeccar"
+        ]
+    },
+    {
+        "input": {
+            "s": "Lean"
+        },
+        "expected": "naeL",
+        "unexpected": [
+            "Lean",
+            "aenL"
+        ]
+    }
+]

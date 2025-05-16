@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_106",
+    "signature": {
+        "name": "arraySum",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The two input arrays must have equal lengths; otherwise, the function will panic with 'Array lengths mismatch'.",
+        "postconditions": "- The output array has the same size as the input arrays.\n- For every index i, the element at index i in the output array is equal to a[i]! + b[i]!"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_array_sum"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

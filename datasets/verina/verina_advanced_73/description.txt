@@ -1,0 +1,11 @@
+-----Description----- 
+This task requires writing a Lean 4 method that finds the first missing natural number in an increasingly sorted list. The method should return the smallest natural number that is not in the list, ensuring that all natural numbers that are smaller is inside the list.
+
+-----Input-----
+The input consists of a list of natural numbers sorted in increasing order:
+l: The sorted list
+
+-----Output-----
+The output is a natural number:
+Returns the smallest natural number that is not in the list, which means all natural numbers that are smaller than the returned value should be inside the input list.
+

@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_29",
+    "signature": {
+        "name": "longestGoodSubarray",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Nat"
+            },
+            {
+                "param_name": "k",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/description/",
+            "task_id": "lab_longestGoodSubarray_325744111",
+            "student_id": [
+                23
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

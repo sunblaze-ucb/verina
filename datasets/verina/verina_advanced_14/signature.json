@@ -1,0 +1,10 @@
+{
+    "name": "ifPowerOfFour",
+    "parameters": [
+      {
+        "param_name": "n",
+        "param_type": "Nat"
+      }
+    ],
+    "return_type": "Bool"
+}

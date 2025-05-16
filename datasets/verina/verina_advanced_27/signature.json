@@ -1,0 +1,14 @@
+{
+    "name": "longestCommonSubsequence",
+    "parameters": [
+      {
+        "param_name": "s1",
+        "param_type": "String"
+      },
+      {
+        "param_name": "s2",
+        "param_type": "String"
+      }
+    ],
+    "return_type": "String"
+}

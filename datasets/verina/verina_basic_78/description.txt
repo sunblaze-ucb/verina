@@ -1,0 +1,15 @@
+-----Description-----  
+Given two integers, the task is to compute two output values: one being the sum of the integers and the other being their difference.
+
+-----Input-----  
+The input consists of two integers:  
+• x: An integer.  
+• y: An integer.
+
+-----Output-----  
+The output is a tuple of two integers:  
+• The first element is x + y.  
+• The second element is x - y.
+
+-----Note-----  
+It is assumed that x and y are valid integers. There are no additional constraints on the inputs.

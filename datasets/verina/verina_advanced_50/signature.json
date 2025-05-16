@@ -1,0 +1,14 @@
+{
+    "name": "mergeSorted",
+    "parameters": [
+      {
+        "param_name": "a1",
+        "param_type": "Array Nat"
+      },
+      {
+        "param_name": "a2",
+        "param_type": "Array Nat"
+      }
+    ],
+    "return_type": "Array Nat"
+  }

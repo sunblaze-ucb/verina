@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_27",
+    "signature": {
+        "name": "longestCommonSubsequence",
+        "parameters": [
+            {
+                "param_name": "s1",
+                "param_type": "String"
+            },
+            {
+                "param_name": "s2",
+                "param_type": "String"
+            }
+        ],
+        "return_type": "String"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/longest-common-subsequence/description/",
+            "task_id": "lab_longestCommonSubsequence_325767793",
+            "student_id": [
+                21
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

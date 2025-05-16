@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_52",
+    "signature": {
+        "name": "BubbleSort",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array can be empty or non-empty.",
+        "postconditions": "- The output array is sorted in non-decreasing order (for any indices i and j with i < j, result[i]! \u2264 result[j]!).\n- The output array has the same size as the input array and is a permutation of it (i.e., each element of the input is present in the output, possibly in a different order)."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_bubble_sort"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

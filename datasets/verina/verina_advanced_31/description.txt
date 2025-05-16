@@ -1,0 +1,11 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the length of the longest strictly increasing subsequence in a list of integers. A subsequence is any sequence that can be derived from the list by deleting zero or more elements without changing the order of the remaining elements. The function must return the length of the longest possible such sequence.
+
+-----Input-----
+The input consists of a single value:
+xs: A list of integers of type `List Int`.
+
+-----Output-----
+The output is a natural number:
+Returns the length of the longest strictly increasing subsequence found in the list.
+

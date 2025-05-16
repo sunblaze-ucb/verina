@@ -1,0 +1,13 @@
+-----Description-----
+This task requires implementing the "Longest Increasing Subsequence" problem in Lean 4.
+Given a list of integers, the function should compute the length of the longest strictly increasing
+subsequence. A subsequence is formed by deleting zero or more elements without changing the order.
+If the list is empty, the function should return 0.
+
+-----Input-----
+- nums: A list of integers.
+
+-----Output-----
+- A natural number representing the length of the longest strictly increasing subsequence.
+- If there is no increasing subsequence, return 0.
+

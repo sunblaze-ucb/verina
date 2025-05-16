@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_50",
+    "signature": {
+        "name": "Abs",
+        "parameters": [
+            {
+                "param_name": "x",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input can be any integer.",
+        "postconditions": "- If x is non-negative (x \u2265 0), the result is equal to x.\n- If x is negative (x < 0), then the result is such that x + result = 0."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_abs"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

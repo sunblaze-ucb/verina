@@ -1,0 +1,57 @@
+[
+    {
+        "input": {
+            "nums": "#[2, 7, 11, 15]",
+            "target": 9
+        },
+        "expected": "(0, 1)",
+        "unexpected": [
+            "(0, 2)",
+            "(1, 3)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "#[3, 2, 4]",
+            "target": 6
+        },
+        "expected": "(1, 2)",
+        "unexpected": [
+            "(0, 2)",
+            "(0, 1)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "#[-1, 0, 1, 2]",
+            "target": 1
+        },
+        "expected": "(0, 3)",
+        "unexpected": [
+            "(1, 2)",
+            "(2, 3)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "#[5, 75, 25]",
+            "target": 100
+        },
+        "expected": "(1, 2)",
+        "unexpected": [
+            "(0, 2)",
+            "(0, 1)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "#[1, 2, 3, 4, 5]",
+            "target": 9
+        },
+        "expected": "(3, 4)",
+        "unexpected": [
+            "(2, 4)",
+            "(1, 3)"
+        ]
+    }
+]

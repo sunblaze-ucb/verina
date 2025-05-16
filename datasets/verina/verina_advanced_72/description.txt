@@ -1,0 +1,11 @@
+-----Description----- 
+This task requires writing a Lean 4 method that given an natural number n, returns the smallest prime factor that is less than 10. If none exist, return 0
+
+-----Input-----
+The input consists of one natural number:
+n: The main natural number.
+
+-----Output-----
+The output is an natural number:
+Returns the smallest prime factor that is less than 10 or, if none exist, 0
+

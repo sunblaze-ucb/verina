@@ -1,0 +1,43 @@
+[
+    {
+        "input": {
+            "s": "Hello, world. How are you?"
+        },
+        "expected": "Hello::world::How:are:you?",
+        "unexpected": [
+            "Hello,world,How,are,you?",
+            "Hello: world: How: are: you?"
+        ]
+    },
+    {
+        "input": {
+            "s": "No-changes!"
+        },
+        "expected": "No-changes!",
+        "unexpected": [
+            "No changes!",
+            "No\u2013changes!"
+        ]
+    },
+    {
+        "input": {
+            "s": ",. "
+        },
+        "expected": ":::",
+        "unexpected": [
+            "::",
+            ";:;",
+            "::: "
+        ]
+    },
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": "",
+        "unexpected": [
+            " ",
+            "a"
+        ]
+    }
+]

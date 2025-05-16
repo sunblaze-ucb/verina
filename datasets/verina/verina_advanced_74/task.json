@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_74",
+    "signature": {
+        "name": "solution",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/subarrays-distinct-element-sum-of-squares-i/",
+            "task_id": "lab_solution_324856546",
+            "student_id": [
+                52
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

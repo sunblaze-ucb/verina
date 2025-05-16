@@ -1,0 +1,14 @@
+{
+    "name": "findExponents",
+    "parameters": [
+      {
+        "param_name": "n",
+        "param_type": "Nat"
+      },
+      {
+        "param_name": "primes",
+        "param_type": "List Nat"
+      }
+    ],
+    "return_type": "List (Nat × Nat)"
+}

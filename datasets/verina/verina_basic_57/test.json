@@ -1,0 +1,62 @@
+[
+    {
+        "input": {
+            "numbers": "#[1, 2, 3, 4, 5]",
+            "threshold": 3
+        },
+        "expected": "2",
+        "unexpected": [
+            "3",
+            "1",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "#[]",
+            "threshold": 10
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "#[-1, 0, 1]",
+            "threshold": 0
+        },
+        "expected": "1",
+        "unexpected": [
+            "0",
+            "2",
+            "3"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "#[5, 6, 7, 2, 1]",
+            "threshold": 5
+        },
+        "expected": "2",
+        "unexpected": [
+            "3",
+            "4",
+            "1"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "#[3, 3, 3, 3]",
+            "threshold": 3
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2",
+            "3"
+        ]
+    }
+]

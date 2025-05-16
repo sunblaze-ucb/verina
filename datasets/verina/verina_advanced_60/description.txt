@@ -1,0 +1,15 @@
+-----Description-----
+
+This task requires writing a Lean 4 method that takes a list of natural numbers and partitions it into two separate lists: one containing all the even numbers and the other containing all the odd numbers. The order of elements in each sublist should match their appearance in the original list. Assume there are no duplicates in the input.
+
+-----Input-----
+
+The input consists of a single list with no duplicate natural numbers:
+- nums: A list of natural numbers (Nat)
+
+-----Output-----
+
+The output is a tuple of two lists:
+- The first list contains all even numbers from the input list, in order.
+- The second list contains all odd numbers from the input list, in order.
+

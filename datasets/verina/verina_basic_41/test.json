@@ -1,0 +1,56 @@
+[
+    {
+        "input": {
+            "a": "#[1, 1, 1]"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "a": "#[1, 2, 1]"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    },
+    {
+        "input": {
+            "a": "#[3, 4, 5, 6]"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    },
+    {
+        "input": {
+            "a": "#[7]"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "a": "#[0, 0, 0, 0]"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "a": "#[0, 0, 1, 0]"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    }
+]

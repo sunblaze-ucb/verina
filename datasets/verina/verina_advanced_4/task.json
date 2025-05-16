@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_4",
+    "signature": {
+        "name": "LongestIncreasingSubsequence",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "",
+            "task_id": "lab_LongestIncreasingSubsequence_324999618",
+            "student_id": [
+                2
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

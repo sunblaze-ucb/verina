@@ -1,0 +1,15 @@
+# Default configuration for benchmark experiments
+output_dir: "output/benchmark"
+model_name: "gpt-4o-mini"
+provider: "openai"
+rounds: 3
+api_base: null
+processes: 1
+rm: true
+# Task configuration
+task_config:
+  code_gen: true
+  spec_gen: true
+  proof_gen: true
+  code_spec_gen: true
+  code_spec_proof_gen: true

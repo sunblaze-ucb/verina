@@ -1,0 +1,65 @@
+[
+    {
+        "input": {
+            "s": "abca"
+        },
+        "expected": "some ('a')",
+        "unexpected": [
+            "some ('b')",
+            "some ('c')",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "abcdef"
+        },
+        "expected": "none",
+        "unexpected": [
+            "some ('a')",
+            "some ('z')"
+        ]
+    },
+    {
+        "input": {
+            "s": "aabbcc"
+        },
+        "expected": "some ('a')",
+        "unexpected": [
+            "some ('b')",
+            "some ('c')",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": "none",
+        "unexpected": [
+            "some ('x')",
+            "some ('y')"
+        ]
+    },
+    {
+        "input": {
+            "s": "abbc"
+        },
+        "expected": "some ('b')",
+        "unexpected": [
+            "some ('a')",
+            "some ('c')",
+            "none"
+        ]
+    },
+    {
+        "input": {
+            "s": "Aa"
+        },
+        "expected": "none",
+        "unexpected": [
+            "some ('A')",
+            "some ('a')"
+        ]
+    }
+]

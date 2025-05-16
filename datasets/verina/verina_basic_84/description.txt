@@ -1,0 +1,15 @@
+-----Description-----  
+You are given an array of integers and a threshold value k. The problem is to create a new array where every element greater than k is replaced with -1 while every other element remains unchanged.
+
+-----Input-----  
+The input consists of:  
+• arr: An array of integers.  
+• k: An integer used as the threshold for replacement.
+
+-----Output-----  
+The output is an array of integers that satisfies the following conditions:  
+• For every index i, if arr[i] is greater than k, then the returned array at index i is -1.  
+• For every index i, if arr[i] is less than or equal to k, then the returned array at index i remains unchanged.
+
+-----Note-----  
+It is assumed that the input array may be empty or non-empty, and that k can be any integer. There are no additional preconditions.

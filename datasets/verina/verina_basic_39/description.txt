@@ -1,0 +1,15 @@
+-----Description-----  
+This task requires writing a Lean 4 method that rotates a list of integers to the right by a specified number of positions. The method should produce a new list where each element is shifted to the right while preserving the original list's length.
+
+-----Input-----  
+The input consists of:  
+• l: A list of integers.  
+• n: A non-negative natural number that indicates the number of positions by which to rotate the list.
+
+-----Output-----  
+The output is a list of integers:  
+• Returns a list with the same length as the input list, where the elements have been rotated to the right by n positions.
+
+-----Note-----  
+• The precondition requires that n is non-negative.  
+• If the input list is empty, it should be returned unchanged.

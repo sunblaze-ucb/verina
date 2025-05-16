@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_58",
+    "signature": {
+        "name": "double_array_elements",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- For every valid index i, the element at index i of the output array is equal to 2 * s[i]!"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_double_array_elements"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

@@ -1,0 +1,14 @@
+-----Description-----
+This task requires writing a Lean 4 function called `solution` that takes a list of natural numbers `nums`. The function should calculate and return the sum of values obtained for each subarray, where the value for a subarray is the square of the count of distinct elements within that subarray.
+
+-----Input-----
+The input is a list of natural numbers:
+`nums`: A list where each element is a natural number.
+Constraints:
+- The length of the list `nums` (n) is between 1 and 100 (inclusive).
+- Each element in `nums` is between 1 and 100 (inclusive).
+
+-----Output-----
+The output is a natural number:
+Returns the total sum of squared distinct counts for all subarrays.
+

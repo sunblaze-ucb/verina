@@ -1,0 +1,16 @@
+-----Description-----  
+This task requires writing a Lean 4 method that locates the first occurrence of a specified integer within a sorted array of integers. The method returns the index corresponding to the first time the target value appears in the array; if the target is absent, it returns -1. It is also essential that the original array remains unchanged.
+
+-----Input-----  
+The input consists of:  
+• arr: An array of integers sorted in non-decreasing order.  
+• target: An integer representing the value to search for.
+
+-----Output-----  
+The output is an integer:  
+• If the target is found, the method returns the index of its first occurrence.  
+• If the target is not found, the method returns -1.
+
+-----Note-----  
+• The input array must be sorted in non-decreasing order.  
+• The array is guaranteed to remain unmodified after the method executes.

@@ -1,0 +1,14 @@
+-----Description-----  
+This problem requires sorting an array of integers into non-decreasing order, ensuring that the output contains exactly the same elements as the input (i.e., it is a permutation of the original array).
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers (Array Int).  
+
+-----Output-----  
+The output is an array of integers that is:  
+• Sorted in non-decreasing order.  
+• A permutation of the input, meaning it contains exactly the same elements (with the same multiplicities) as the original array.  
+
+-----Note-----  
+It is assumed that the input array is valid and that the swap operations, along with the helper functions, correctly implement the selection sort algorithm.

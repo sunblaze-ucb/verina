@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether a given string contains the character 'z' or 'Z'. The method should return true if the string includes either the lowercase or uppercase letter 'z', and false otherwise.
+
+-----Input-----
+The input consists of:
+s: A string.
+
+-----Output-----
+The output is a Boolean value:
+Returns true if the input string contains the character 'z' or 'Z'.
+Returns false if the input string does not contain the character 'z' or 'Z'.
+
+-----Note-----
+There are no preconditions; the method will always work as strings and sequences are considered non-null.

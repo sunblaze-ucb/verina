@@ -1,0 +1,15 @@
+-----Description-----  
+This task involves determining whether a specified key appears exactly once in an array. The goal is to verify the uniqueness of the key's occurrence without prescribing any specific approach or implementation method.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers.  
+• key: An integer representing the element whose occurrence is to be checked.
+
+-----Output-----  
+The output is a Boolean value that:  
+• Is true if the key appears exactly once in the array.  
+• Is false otherwise.
+
+-----Note-----  
+The function should correctly handle arrays with no occurrences of the key, multiple occurrences, and exactly one occurrence.

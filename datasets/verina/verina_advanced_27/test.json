@@ -1,0 +1,61 @@
+[
+    {
+        "input": {
+            "s1": "abcde",
+            "s2": "ace"
+        },
+        "expected": "ace",
+        "unexpected": [
+            "ab",
+            "abc",
+            "bce"
+        ]
+    },
+    {
+        "input": {
+            "s1": "aaaa",
+            "s2": "bbaaa"
+        },
+        "expected": "aaa",
+        "unexpected": [
+            "aaaaa",
+            "b",
+            "aaab"
+        ]
+    },
+    {
+        "input": {
+            "s1": "xyz",
+            "s2": "abc"
+        },
+        "expected": "",
+        "unexpected": [
+            "x",
+            "y",
+            "a",
+            "abc"
+        ]
+    },
+    {
+        "input": {
+            "s1": "axbxc",
+            "s2": "abxc"
+        },
+        "expected": "abxc",
+        "unexpected": [
+            "axc",
+            "abcx"
+        ]
+    },
+    {
+        "input": {
+            "s1": "AGGTAB",
+            "s2": "GXTXAYB"
+        },
+        "expected": "GTAB",
+        "unexpected": [
+            "GGTAB",
+            "AGGTA"
+        ]
+    }
+]

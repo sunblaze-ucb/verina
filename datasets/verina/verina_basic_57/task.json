@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_57",
+    "signature": {
+        "name": "CountLessThan",
+        "parameters": [
+            {
+                "param_name": "numbers",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "threshold",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no specific preconditions; the method works for any array of integers and any integer threshold.",
+        "postconditions": "- The returned value is equal to the number of elements in the input array 'numbers' that are less than the given 'threshold'.\n- Formally, the result = numbers.foldl (fun count n => if n < threshold then count + 1 else count) 0."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_count_lessthan"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

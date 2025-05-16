@@ -1,0 +1,11 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines the minimum of two integers. The method should return the smaller of the two numbers. When both numbers are equal, either one may be returned.
+
+-----Input-----
+The input consists of two integers:
+a: The first integer.
+b: The second integer.
+
+-----Output-----
+The output is an integer:
+Returns the smaller value between the input integers, ensuring that the result is less than or equal to both inputs.

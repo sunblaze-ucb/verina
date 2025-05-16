@@ -1,0 +1,8 @@
+{
+  "name": "twoSum",
+  "parameters": [
+    { "param_name": "nums", "param_type": "List Int" },
+    { "param_name": "target", "param_type": "Int" }
+  ],
+  "return_type": "Option (Nat × Nat)"
+}

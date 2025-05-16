@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether a given string contains all 5 English vowels: a, e, i, o, u.
+
+The check is case-insensitive, meaning that both uppercase and lowercase vowels count.
+
+-----Input-----
+The input consists of a string:
+s: A string of alphabetic characters (may include uppercase and lowercase)
+
+-----Output-----
+The output is true or false:
+Returns true if the input string contains all 5 vowels (a, e, i, o, u), false otherwise.
+

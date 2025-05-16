@@ -1,0 +1,11 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the one missing number in a list of distinct natural numbers from 0 to n. The list contains exactly n numbers and all numbers are in the range [0, n], but one number in that range is missing.
+
+Your function must return the missing number. You may assume the input list contains no duplicates and only one number is missing.
+
+-----Input-----
+- nums: A list of natural numbers of length n, each in the range [0, n] with exactly one number missing.
+
+-----Output-----
+- A natural number: the missing number in the range [0, n] not present in the list.
+

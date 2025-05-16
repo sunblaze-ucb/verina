@@ -1,0 +1,14 @@
+{
+    "name": "searchInsert",
+    "parameters": [
+      {
+        "param_name": "xs",
+        "param_type": "List Int"
+      },
+      {
+        "param_name": "target",
+        "param_type": "Int"
+      }
+    ],
+    "return_type": "Nat"
+}

@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_70",
+    "signature": {
+        "name": "LinearSearch3",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "P",
+                "param_type": "Int -> Bool"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The array must contain at least one element for which the predicate P holds.",
+        "postconditions": "- The returned index is less than the size of the array.\n- The element at the returned index satisfies P.\n- For all indices k less than the returned index, the predicate P does not hold for a[k]."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_linear_search3"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

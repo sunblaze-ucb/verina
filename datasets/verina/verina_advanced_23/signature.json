@@ -1,0 +1,10 @@
+{
+    "name": "isPowerOfTwo",
+    "parameters": [
+      {
+        "param_name": "n",
+        "param_type": "Int"
+      }
+    ],
+    "return_type": "Bool"
+}

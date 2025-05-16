@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_61",
+    "signature": {
+        "name": "productExceptSelf",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "List Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/product-of-array-except-self/description/",
+            "task_id": "lab_productExceptSelf_325619864",
+            "student_id": [
+                45
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

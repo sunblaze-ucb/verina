@@ -1,0 +1,100 @@
+[
+    {
+        "input": {
+            "input": "aaabbbcc"
+        },
+        "expected": "a3b3c2",
+        "unexpected": [
+            "a3b3",
+            "a3b3c2x",
+            "abc"
+        ]
+    },
+    {
+        "input": {
+            "input": "!!!$$$%%%"
+        },
+        "expected": "!3$3%3",
+        "unexpected": [
+            "!3$3%",
+            "!!!$$$%%",
+            "!3$3%4"
+        ]
+    },
+    {
+        "input": {
+            "input": "aaaaa"
+        },
+        "expected": "a5",
+        "unexpected": [
+            "a4",
+            "a6",
+            "a"
+        ]
+    },
+    {
+        "input": {
+            "input": "abcd"
+        },
+        "expected": "a1b1c1d1",
+        "unexpected": [
+            "abcd",
+            "a1b1c1",
+            "a1b1c1d2"
+        ]
+    },
+    {
+        "input": {
+            "input": ""
+        },
+        "expected": "",
+        "unexpected": [
+            "a1",
+            " "
+        ]
+    },
+    {
+        "input": {
+            "input": "AaABb"
+        },
+        "expected": "A1a1A1B1b1",
+        "unexpected": [
+            "AaABb",
+            "A1a1A1B1",
+            "A1a1A1B1b2"
+        ]
+    },
+    {
+        "input": {
+            "input": "wwwwwwwwwwwwwwwww"
+        },
+        "expected": "w17",
+        "unexpected": [
+            "w16",
+            "w18",
+            "w"
+        ]
+    },
+    {
+        "input": {
+            "input": "a"
+        },
+        "expected": "a1",
+        "unexpected": [
+            "a",
+            "a2",
+            ""
+        ]
+    },
+    {
+        "input": {
+            "input": "  "
+        },
+        "expected": " 2",
+        "unexpected": [
+            " ",
+            " 1",
+            " 3"
+        ]
+    }
+]

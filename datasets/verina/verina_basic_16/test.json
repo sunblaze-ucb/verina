@@ -1,0 +1,92 @@
+[
+    {
+        "input": {
+            "s": "hello, world!",
+            "oldChar": ",",
+            "newChar": ";"
+        },
+        "expected": "hello; world!",
+        "unexpected": [
+            "hello, world!",
+            "hello world!",
+            "hello;world!"
+        ]
+    },
+    {
+        "input": {
+            "s": "a,b.c",
+            "oldChar": ",",
+            "newChar": ":"
+        },
+        "expected": "a:b.c",
+        "unexpected": [
+            "a,b.c",
+            "a;b.c",
+            "ab:c"
+        ]
+    },
+    {
+        "input": {
+            "s": "hello, world!",
+            "oldChar": "o",
+            "newChar": "O"
+        },
+        "expected": "hellO, wOrld!",
+        "unexpected": [
+            "hello, world!",
+            "hellO, world!",
+            "hello, wOrld!"
+        ]
+    },
+    {
+        "input": {
+            "s": "",
+            "oldChar": "x",
+            "newChar": "y"
+        },
+        "expected": "",
+        "unexpected": [
+            " ",
+            "abc"
+        ]
+    },
+    {
+        "input": {
+            "s": "test",
+            "oldChar": "x",
+            "newChar": "y"
+        },
+        "expected": "test",
+        "unexpected": [
+            "testy",
+            "tset",
+            "yxest"
+        ]
+    },
+    {
+        "input": {
+            "s": "unchanged",
+            "oldChar": "u",
+            "newChar": "u"
+        },
+        "expected": "unchanged",
+        "unexpected": [
+            "nchanged",
+            "unchanged!",
+            "unchangEd"
+        ]
+    },
+    {
+        "input": {
+            "s": "aaa",
+            "oldChar": "a",
+            "newChar": "b"
+        },
+        "expected": "bbb",
+        "unexpected": [
+            "aaa",
+            "abb",
+            "bba"
+        ]
+    }
+]

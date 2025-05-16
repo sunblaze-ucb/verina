@@ -1,0 +1,58 @@
+[
+    {
+        "input": {
+            "str1": "['a', 'b', 'c']",
+            "str2": "['a', 'b', 'd']"
+        },
+        "expected": "['a', 'b']",
+        "unexpected": [
+            "['a']",
+            "['a', 'b', 'c']"
+        ]
+    },
+    {
+        "input": {
+            "str1": "['x', 'y', 'z']",
+            "str2": "['x', 'y', 'z']"
+        },
+        "expected": "['x', 'y', 'z']",
+        "unexpected": [
+            "['x', 'y']",
+            "['x', 'z']"
+        ]
+    },
+    {
+        "input": {
+            "str1": "['w', 'o']",
+            "str2": "['w', 'o', 'w']"
+        },
+        "expected": "['w', 'o']",
+        "unexpected": [
+            "['w']",
+            "['o']",
+            "['w', 'o', 'w']"
+        ]
+    },
+    {
+        "input": {
+            "str1": "['a', 'x']",
+            "str2": "['b', 'y']"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "['a']",
+            "['b']"
+        ]
+    },
+    {
+        "input": {
+            "str1": "[]",
+            "str2": "['h', 'e', 'l', 'l', 'o']"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "['h']",
+            "['e']"
+        ]
+    }
+]

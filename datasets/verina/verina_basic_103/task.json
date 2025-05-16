@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_103",
+    "signature": {
+        "name": "UpdateElements",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array must have at least 8 elements.",
+        "postconditions": "- The element at index 4 in the output array is equal to the element at index 4 in the input array plus 3.\n- The element at index 7 in the output array is 516.\n- For all indices i not equal to 4 or 7 (and i less than the size of the array), the output array element equals the corresponding input array element."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_update_array"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

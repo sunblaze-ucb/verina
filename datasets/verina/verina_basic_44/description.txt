@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that verifies if every odd index in an array of integers holds an odd number. In other words, for each index in the array that is odd, the number located at that index must also be odd. The method should return true if this condition is satisfied for every odd index; otherwise, it should return false.
+
+-----Input-----
+The input consists of:
+a: An array of integers.
+
+-----Output-----
+The output is a Boolean value:
+Returns true if, for every odd index in the array, the corresponding element is odd.
+Returns false if there is at least one odd index where the corresponding element is not odd.
+
+-----Note-----
+There are no preconditions; the method will work for any array of integers.

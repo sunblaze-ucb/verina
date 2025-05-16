@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether a given integer is a power of two.
+An integer n is a power of two if there exists an integer x such that n = 2^x.
+The method should return true if n is a power of two, and false otherwise.
+Note that negative numbers and zero are not powers of two.
+
+-----Input-----
+The input consists of one integer:
+n: The integer to be tested.
+
+-----Output-----
+The output is a boolean:
+Returns true if there exists an integer x such that n = 2^x (with n > 0), otherwise false.
+

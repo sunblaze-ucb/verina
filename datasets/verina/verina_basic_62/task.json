@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_62",
+    "signature": {
+        "name": "Find",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "key",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no explicit preconditions; the method accepts any array of integers.",
+        "postconditions": "- The function returns -1 if the key is not found in the array, or an index in the range [0, a.size) if the key is found.\n- If the result is not -1 then a[(Int.toNat result)]! equals key and for any index i such that i < (Int.toNat result), a[i]! \u2260 key.\n- If the result is -1 then for all indices i with i < a.size, a[i]! \u2260 key."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_find"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

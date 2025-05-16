@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_83",
+    "signature": {
+        "name": "concat",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The arrays can be of any length, including empty.",
+        "postconditions": "- The output array's length must equal a.size + b.size\n- The first a.size elements of the output array must equal the elements of a\n- The subsequent b.size elements of the output array must equal the elements of b"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_array_concat"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

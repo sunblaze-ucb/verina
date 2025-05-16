@@ -1,0 +1,15 @@
+-----Description-----  
+Determine whether two strings match based on a specific pattern: for each position in the strings, either the characters are the same, or the character in p is a wildcard represented by a question mark '?' that may match any character.
+
+-----Input-----  
+The input consists of:  
+• s: A string that is to be matched.  
+• p: A pattern string of equal length, where each character is either a specific character or the wildcard '?'.
+
+-----Output-----  
+The output is a Boolean value:  
+• Returns true if the length of s is equal to the length of p and each corresponding character in s and p are either identical or the character in p is a '?'.  
+• Returns false if any character in s does not match the corresponding character in p and the character in p is not a '?'.
+
+-----Note-----  
+It is assumed that both strings provided have the same length.

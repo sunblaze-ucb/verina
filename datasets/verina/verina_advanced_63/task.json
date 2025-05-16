@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_63",
+    "signature": {
+        "name": "removeDuplicates",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/description/",
+            "task_id": "lab_removeDuplicates_325739229",
+            "student_id": [
+                30
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

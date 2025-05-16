@@ -1,0 +1,54 @@
+[
+    {
+        "input": {
+            "nums": "[-2]"
+        },
+        "expected": -2,
+        "unexpected": [
+            2,
+            0
+        ]
+    },
+    {
+        "input": {
+            "nums": "[3, -1, -5, 2, 5, -9]"
+        },
+        "expected": 1350,
+        "unexpected": [
+            270,
+            0,
+            -1
+        ]
+    },
+    {
+        "input": {
+            "nums": "[-4, -5, -4]"
+        },
+        "expected": 20,
+        "unexpected": [
+            80,
+            -80,
+            -5
+        ]
+    },
+    {
+        "input": {
+            "nums": "[0, -3, 4]"
+        },
+        "expected": 4,
+        "unexpected": [
+            0,
+            -12
+        ]
+    },
+    {
+        "input": {
+            "nums": "[1, -1, -1]"
+        },
+        "expected": 1,
+        "unexpected": [
+            -1,
+            -2
+        ]
+    }
+]

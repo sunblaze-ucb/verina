@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_71",
+    "signature": {
+        "name": "LongestCommonPrefix",
+        "parameters": [
+            {
+                "param_name": "str1",
+                "param_type": "List Char"
+            },
+            {
+                "param_name": "str2",
+                "param_type": "List Char"
+            }
+        ],
+        "return_type": "List Char"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- The output list is a prefix of both str1 and str2.\n- The output list is the longest common prefix such that either it equals one of the input lists or the next character in either list (if present) differs."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_longest_prefix"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

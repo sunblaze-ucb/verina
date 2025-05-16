@@ -1,0 +1,10 @@
+-----Description-----
+This task requires writing a Lean 4 method that counts the unique elements from a sorted array.
+
+-----Input-----
+The input is a single list of integers:
+nums: An array of integers sorted in non-decreasing order.
+
+-----Output-----
+The output is a single integer:
+Returns the number of unique elements (k).

@@ -1,0 +1,15 @@
+-----Description-----  
+This task requires writing a Lean 4 method that takes a given string and returns a new string where every occurrence of a space, comma, or dot is replaced with a colon. The transformation must preserve the original string’s length and leave all other characters unmodified.
+
+-----Input-----  
+The input consists of:  
+s: A string.
+
+-----Output-----  
+The output is a string:  
+- The returned string must have the same length as the input string.  
+- Every space, comma, or dot in the input string is replaced with a colon.  
+- All other characters remain unchanged.
+
+-----Note-----  
+There are no preconditions; the input string is assumed to be non-null.

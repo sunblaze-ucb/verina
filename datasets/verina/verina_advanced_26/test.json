@@ -1,0 +1,68 @@
+[
+    {
+        "input": {
+            "digits": ""
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "2"
+        },
+        "expected": "[\"a\", \"b\", \"c\"]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]",
+            "[\"c\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "9"
+        },
+        "expected": "[\"w\", \"x\", \"y\", \"z\"]",
+        "unexpected": [
+            "[\"w\"]",
+            "[\"x\"]",
+            "[\"y\"]",
+            "[\"z\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "23"
+        },
+        "expected": "[\"ad\", \"ae\", \"af\", \"bd\", \"be\", \"bf\", \"cd\", \"ce\", \"cf\"]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]",
+            "[\"c\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "27"
+        },
+        "expected": "[\"ap\", \"aq\", \"ar\", \"as\", \"bp\", \"bq\", \"br\", \"bs\", \"cp\", \"cq\", \"cr\", \"cs\"]",
+        "unexpected": [
+            "[\"p\"]",
+            "[\"q\"]",
+            "[\"r\"]",
+            "[\"s\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "0"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]"
+        ]
+    }
+]

@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_87",
+    "signature": {
+        "name": "SelectionSort",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- The resulting array is sorted in non-decreasing order.\n- The output array is a permutation of the input array; that is, it must have the same length and the same frequency of each integer as the input."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_selectionsort"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

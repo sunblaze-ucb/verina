@@ -1,0 +1,14 @@
+{
+  "name": "removeElement",
+  "parameters": [
+    {
+      "param_name": "lst",
+      "param_type": "List Nat"
+    },
+    {
+      "param_name": "target",
+      "param_type": "Nat"
+    }
+  ],
+  "return_type": "List Nat"
+}

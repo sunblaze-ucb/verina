@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_78",
+    "signature": {
+        "name": "twoSum",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "List Int"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Prod Nat Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/two-sum/description/",
+            "task_id": "lab_twoSum_324854887",
+            "student_id": [
+                18
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

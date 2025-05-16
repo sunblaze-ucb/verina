@@ -1,0 +1,19 @@
+-----Description-----  
+This problem involves combining two maps by creating a new map that includes every key from both inputs. When a key is found in both maps, the value from the second map is used in the result.
+
+-----Input-----  
+The input consists of:  
+• m1: A Map (represented as a list of key-value pairs) where each key is of type Int and each value is of type Int.  
+• m2: A Map (similarly represented) where keys may overlap with m1.
+
+-----Output-----  
+The output is a Map that meets the following conditions:  
+• Every key present in m2 is present in the result.  
+• Every key present in m1 is also present in the result.  
+• For keys that appear in both maps, the resulting value is the one from m2.  
+• For keys that appear only in m1, the resulting value remains unchanged.  
+• No keys outside those present in m1 or m2 are included in the result.
+• The entries in the map should be sorted
+
+-----Note-----  
+It is assumed that the Map structure ensures key uniqueness in the final result using BEq for key comparison.

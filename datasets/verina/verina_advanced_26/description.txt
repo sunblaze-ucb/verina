@@ -1,0 +1,21 @@
+-----Description----- 
+This task requires writing a Lean 4 method that generates all possible letter combinations from a string of digits based on the traditional telephone keypad letter mappings.
+
+-----Input-----
+The input consists of a string (String). The string may be empty.
+
+-----Output-----
+The output is a list of strings (List String) where each string represents a unique combination of letters corresponding to the input digits. If the input string is empty, the output is an empty list.
+
+-----Note-----
+
+Here is the mapping from the number to possible letters:
+2: a or b or c
+3: d or e or f
+4: g or h or i
+5: j or k or l
+6: m or n or o
+7: p or q or r or s
+8: t or u or v
+9: w or x or y or z
+other number or not a number: no letters

@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_13",
+    "signature": {
+        "name": "hasChordIntersection",
+        "parameters": [
+            {
+                "param_name": "N",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "chords",
+                "param_type": "List (List Nat)"
+            }
+        ],
+        "return_type": "Bool"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://huggingface.co/spaces/livecodebench/code_generation_samples",
+            "task_id": "lab_hasChordIntersection_325324847",
+            "student_id": [
+                11
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

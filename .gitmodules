@@ -1,0 +1,15 @@
+[submodule "datasets/external/human-eval-verus"]
+	path = datasets/external/human-eval-verus
+	url = https://github.com/secure-foundations/human-eval-verus
+[submodule "datasets/external/miniCodeProps"]
+	path = datasets/external/miniCodeProps
+	url = https://huggingface.co/datasets/elohn/miniCodeProps
+[submodule "datasets/external/dafny-synthesis"]
+	path = datasets/external/dafny-synthesis
+	url = https://github.com/Mondego/dafny-synthesis
+[submodule "datasets/external/DafnyBench"]
+	path = datasets/external/DafnyBench
+	url = https://github.com/sun-wendy/DafnyBench
+[submodule "datasets/external/code_generation_samples"]
+	path = datasets/external/code_generation_samples
+	url = https://huggingface.co/spaces/livecodebench/code_generation_samples

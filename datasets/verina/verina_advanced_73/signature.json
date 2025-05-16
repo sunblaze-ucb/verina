@@ -1,0 +1,10 @@
+{
+    "name": "smallestMissing",
+    "parameters": [
+      {
+        "param_name": "l",
+        "param_type": "List Nat"
+      }
+    ],
+    "return_type": "Nat"
+}

@@ -1,0 +1,16 @@
+-----Description-----
+This task requires writing a Lean 4 function that calculates the minimum number of right shifts required to sort a given list of distinct positive integers.
+
+A right shift operation on a list nums of length n moves the element at index i to index (i + 1) % n for all indices i. Effectively, the last element moves to the first position, and all other elements shift one position to the right.
+
+The function should return the minimum number of right shifts needed to make the list sorted in ascending order. If the list is already sorted, the function should return 0. If it's impossible to sort the list using only right shifts, the function should return -1.
+
+-----Input-----
+The input consists of a single list of integers:
+nums: A list (List Int) containing distinct positive integers.
+
+-----Output-----
+The output is a single integer (Int):
+- If the list can be sorted using right shifts, return the minimum number of shifts required (an integer >= 0).
+- If the list cannot be sorted using right shifts, return -1.
+

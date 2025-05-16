@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_37",
+    "signature": {
+        "name": "findFirstOccurrence",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input array is sorted in non-decreasing order",
+        "postconditions": "- If the target is found, the returned index should be the first occurrence of the target in the array\n- If the target is not found, the returned index should be -1"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_733"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

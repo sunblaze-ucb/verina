@@ -1,0 +1,12 @@
+-----Description-----  
+This problem asks you to design a solution that transforms a list with possible duplicate entries into a new list where each element appears only once, maintaining the order of its first occurrence.
+
+-----Input-----  
+The input consists of:  
+• s: A list of integers (or any type supporting decidable equality) that may contain duplicate elements.
+
+-----Output-----  
+The output is a list of integers (or the original type) in which every duplicate element is removed. The order of elements is preserved based on their first appearance in the input list, ensuring that the set of elements in the output is identical to the set in the input.
+
+-----Note-----  
+No additional preconditions are required. The method should correctly handle any list, including an empty list.

@@ -1,0 +1,17 @@
+-----Description-----
+This task requires creating a function that determines the correct insertion index for a given integer in a sorted array. The goal is to identify an index where every number before it is less than the specified value, and every number from that index onward is greater than or equal to the value. If the given integer is larger than all elements in the array, the function should return the array’s size.
+
+-----Input-----
+The input consists of:
+• a: An array of integers that is assumed to be sorted in non-decreasing order.
+• key: An integer to search for in the array.
+
+-----Output-----
+The output is a natural number (Nat) representing the index determined by the binary search. The index satisfies the following postconditions:
+• It is between 0 and the size of the array.
+• Every element before the returned index is less than the key.
+• If the returned index equals the size of the array, then all elements are less than the key.
+• Every element from the index onwards is greater than or equal to the key.
+
+-----Note-----
+It is assumed that the input array is sorted in non-decreasing order. The function returns the first index where the key could be inserted while maintaining the sorted order.

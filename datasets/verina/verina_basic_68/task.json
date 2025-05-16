@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_68",
+    "signature": {
+        "name": "LinearSearch",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "e",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no explicit preconditions; the function works for any array of integers.",
+        "postconditions": "- The returned index n satisfies n \u2264 a.size.\n- Either n equals a.size (indicating that e is not in the array) or a[n]! equals e.\n- For all indices i such that i < n, a[i]! does not equal e."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_linear_search1"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

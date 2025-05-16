@@ -1,0 +1,18 @@
+-----Description-----  
+This task involves performing integer division with remainder on natural numbers. Given two natural numbers, x (the dividend) and y (the divisor), the objective is to determine the quotient and remainder. When y is non-zero, the quotient and remainder should satisfy the condition that the dividend equals the divisor multiplied by the quotient plus the remainder, with the remainder being nonnegative and strictly less than y. In the case where y is zero, the result should indicate that no division is performed by returning x as the quotient and 0 as the remainder.
+
+-----Input-----  
+The input consists of two natural numbers:  
+• x: A natural number representing the dividend.  
+• y: A natural number representing the divisor.
+
+-----Output-----  
+The output is a pair of integers (r, q) where:  
+• If y ≠ 0, then q is the quotient and r is the remainder such that:  
+   - q * Int.ofNat y + r = Int.ofNat x  
+   - 0 ≤ r < Int.ofNat y  
+   - 0 ≤ q  
+• If y = 0, then the output is (Int.ofNat x, 0).
+
+-----Note-----  
+The specification regarding the division properties applies only when y is non-zero. When y = 0, the function safely returns (x, 0) in its integer form.

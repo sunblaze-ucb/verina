@@ -1,0 +1,10 @@
+{
+  "name": "firstDuplicate",
+  "parameters": [
+    {
+      "param_name": "lst",
+      "param_type": "List Int"
+    }
+  ],
+  "return_type": "Int"
+}

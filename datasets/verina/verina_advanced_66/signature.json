@@ -1,0 +1,10 @@
+{
+    "name": "reverseWords",
+    "parameters": [
+        {
+            "param_name": "words_str",
+            "param_type": "String"
+        }
+    ],
+    "return_type": "String"
+}

@@ -1,0 +1,29 @@
+output_dir = "output/gemini-2.5-flash-5rnd"
+max_workers = 64
+rounds = 5
+fewshot_example_names = ["verina_basic_15", "verina_basic_44"]
+
+code_gen = false
+spec_gen = false
+proof_gen = true
+code_spec_gen = false
+code_proof_gen = true
+spec_proof_gen = true
+code_spec_proof_gen = true
+
+[gen_lm_config]
+provider = "vertex_ai"
+model_name = "gemini-2.5-flash-preview-04-17"
+
+[baseline_config]
+name = "baseline"
+resume_from_checkpoint = true
+
+[eval_spec_config]
+formal_proving = false
+unit_test = true
+unit_test_proving = false
+use_plausible_pass = true
+evidence_rel_dir = "./evidence"
+use_evidence = false
+save_evidence = true

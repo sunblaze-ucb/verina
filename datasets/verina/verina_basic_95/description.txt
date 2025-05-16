@@ -1,0 +1,17 @@
+-----Description-----  
+This problem involves swapping two elements in an array of integers at specified positions. Given an array and two indices, the task is to exchange these elements so that the element from the first index moves to the second index and vice versa, while all other elements remain unchanged.
+
+-----Input-----  
+The input consists of:  
+• arr: An array of integers.  
+• i: An integer representing the first index (0-indexed) whose element is to be swapped.  
+• j: An integer representing the second index (0-indexed) whose element is to be swapped.
+
+-----Output-----  
+The output is an array of integers which:  
+• Has the same size as the input array.  
+• Contains the element originally at index i in position j and the element originally at index j in position i.  
+• Leaves all other elements unchanged.
+
+-----Note-----  
+It is assumed that both indices i and j are non-negative and within the bounds of the array (i.e., Int.toNat i and Int.toNat j are less than arr.size).

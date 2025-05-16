@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_104",
+    "signature": {
+        "name": "update_map",
+        "parameters": [
+            {
+                "param_name": "m1",
+                "param_type": "Map Int Int"
+            },
+            {
+                "param_name": "m2",
+                "param_type": "Map Int Int"
+            }
+        ],
+        "return_type": "Map Int Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- Every key in m2 is present in the output map.\n- Every key in m1 is present in the output map.\n- For keys that occur in both m1 and m2, the result stores the value from m2.\n- For keys unique to m1, the original value is retained.\n- No additional keys are included in the output."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_update_map"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

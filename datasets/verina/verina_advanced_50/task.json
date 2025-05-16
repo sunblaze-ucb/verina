@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_50",
+    "signature": {
+        "name": "mergeSorted",
+        "parameters": [
+            {
+                "param_name": "a1",
+                "param_type": "Array Nat"
+            },
+            {
+                "param_name": "a2",
+                "param_type": "Array Nat"
+            }
+        ],
+        "return_type": "Array Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/merge-sorted-array/description/",
+            "task_id": "lab_mergeSorted_325695851",
+            "student_id": [
+                39
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

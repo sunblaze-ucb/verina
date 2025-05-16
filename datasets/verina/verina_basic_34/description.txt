@@ -1,0 +1,16 @@
+-----Description----- 
+This task requires writing a Lean 4 method that extracts even numbers from an array of integers. The method should return a new array containing only the even numbers found in the input array, while preserving the order in which they appear.
+
+-----Input-----
+The input consists of:
+arr: An array of integers.
+
+-----Output-----
+The output is an array of integers:
+Returns an array containing all the even numbers from the input array. Specifically:
+- Every element in the output array is an even integer.
+- All even integers present in the input array are included in the output array.
+- The relative order of the even integers is preserved as in the input array.
+
+-----Note-----
+There are no preconditions for this task; the method will work with any array, including empty arrays (which are not null).

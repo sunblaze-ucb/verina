@@ -1,0 +1,35 @@
+{
+    "id": "verina_advanced_64",
+    "signature": {
+        "name": "removeElement",
+        "parameters": [
+            {
+                "param_name": "lst",
+                "param_type": "List Nat"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "List Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/remove-element/",
+            "task_id": "lab_removeElement_323929890",
+            "student_id": [
+                47
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

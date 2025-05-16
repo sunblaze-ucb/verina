@@ -1,0 +1,14 @@
+-----Description-----
+This task requires writing a Lean 4 method that performs run-length encoding on a given string. The method should scan the string from left to right and group consecutive identical characters into pairs. Each pair consists of the character itself and the number of times it appears consecutively. For example, "aaabbc" becomes [(’a’, 3), (’b’, 2), (’c’, 1)].
+
+The resulting encoded list must satisfy the following properties:
+1. No pair has a zero or negative run-length.
+2. Consecutive pairs in the encoding list must not have the same character.
+3. Decoding the output should return the original string.
+
+-----Input-----
+The input is a single string, `s`.
+
+-----Output-----
+The output is a list of pairs `(Char, Nat)`, which represents the run-length-encoded form of the input string.
+

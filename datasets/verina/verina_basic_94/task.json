@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_94",
+    "signature": {
+        "name": "iter_copy",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no specific preconditions; the function should correctly handle any array (empty or non-empty).",
+        "postconditions": "- The size of the returned array must be equal to the size of the input array.\n- For every valid index i in the input array, the element at index i in the returned array equals the element at index i in the input array."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_array_copy"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

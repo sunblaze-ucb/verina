@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_26",
+    "signature": {
+        "name": "letterCombinations",
+        "parameters": [
+            {
+                "param_name": "digits",
+                "param_type": "String"
+            }
+        ],
+        "return_type": "List String"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/",
+            "task_id": "lab_letterCombinations_325016944",
+            "student_id": [
+                20
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

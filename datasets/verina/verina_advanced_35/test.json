@@ -1,0 +1,46 @@
+[
+    {
+        "input": {
+            "nums": "[3, 2, 3]"
+        },
+        "expected": 3,
+        "unexpected": [
+            2
+        ]
+    },
+    {
+        "input": {
+            "nums": "[2, 2, 1, 1, 1, 2, 2]"
+        },
+        "expected": 2,
+        "unexpected": [
+            1
+        ]
+    },
+    {
+        "input": {
+            "nums": "[1, 1, 1, 2, 3, 1]"
+        },
+        "expected": 1,
+        "unexpected": [
+            2,
+            3
+        ]
+    },
+    {
+        "input": {
+            "nums": "[0, 0, 0, 0]"
+        },
+        "expected": 0,
+        "unexpected": [
+            1
+        ]
+    },
+    {
+        "input": {
+            "nums": "[7]"
+        },
+        "expected": 7,
+        "unexpected": []
+    }
+]

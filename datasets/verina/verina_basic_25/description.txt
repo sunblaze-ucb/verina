@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that calculates both the sum and the average of the first n natural numbers. The method should compute the sum of numbers from 0 to n (which equals n * (n + 1) / 2) and then determine the average by dividing this sum by n. The specification assumes that the input n is a positive integer.
+
+-----Input-----
+The input consists of:
+n: A natural number representing the count of the first natural numbers. The value of n is assumed to be positive.
+
+-----Output-----
+The output is a pair consisting of:
+- An integer representing the sum of the first n natural numbers.
+- A floating-point number representing the average of the first n natural numbers.
+
+-----Note-----
+The input n must be a positive integer.

@@ -1,0 +1,13 @@
+-----Description-----
+This task requires writing a Lean 4 method that moves all zeroes in a given integer list to the end, while preserving the relative order of the non-zero elements.
+
+The method `moveZeroes` processes the input list by separating the non-zero and zero elements. It then returns a new list formed by appending all non-zero elements followed by all the zero elements.
+
+-----Input-----
+The input is a single list of integers:
+xs: A list of integers (type: List Int), possibly containing zero and non-zero values.
+
+-----Output-----
+The output is a list of integers:
+Returns a list (type: List Int) with the same elements as the input, where all zeroes appear at the end, and the non-zero elements maintain their original relative order.
+

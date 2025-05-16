@@ -1,0 +1,10 @@
+{
+  "name": "trapRainWater",
+  "parameters": [
+    {
+      "param_name": "height",
+      "param_type": "List Nat"
+    }
+  ],
+  "return_type": "Nat"
+}

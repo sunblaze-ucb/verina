@@ -1,0 +1,14 @@
+{
+    "name": "countSumDivisibleBy",
+    "parameters": [
+      {
+        "param_name": "n",
+        "param_type": "Nat"
+      },
+      {
+        "param_name": "d",
+        "param_type": "Nat"
+      }
+    ],
+    "return_type": "Nat"
+}

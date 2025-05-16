@@ -1,0 +1,31 @@
+output_dir = "output/qwen-3-235b-5rnd"
+max_workers = 32
+rounds = 5
+fewshot_example_names = ["verina_basic_15", "verina_basic_44"]
+
+code_gen = false
+spec_gen = false
+proof_gen = true
+code_spec_gen = false
+code_proof_gen = true
+spec_proof_gen = true
+code_spec_proof_gen = true
+
+[gen_lm_config]
+provider = "local"
+model_name = "Qwen/Qwen3-235B-A22B-FP8"
+api_base = "http://localhost:31342/v1/"
+api_key = "485b9a08-9e80-46f5-87a2-d9be6fb3f52f"
+
+[baseline_config]
+name = "baseline"
+resume_from_checkpoint = true
+
+[eval_spec_config]
+formal_proving = false
+unit_test = true
+unit_test_proving = false
+use_plausible_pass = true
+evidence_rel_dir = "./evidence"
+use_evidence = false
+save_evidence = true

@@ -1,0 +1,15 @@
+-----Description-----  
+This task involves converting a list of integers into an array such that the array contains all the elements of the list in the exact same order. The objective is to ensure that the array has the same number of elements as the list and that each element in the array corresponds exactly to the element at the same position in the list.
+
+-----Input-----  
+The input consists of:  
+• xs: A list of integer elements.  
+
+-----Output-----  
+The output is an array of elements of type integer that:  
+• Has a size equal to the length of the input list xs.  
+• Contains all the elements from xs in the same order, ensuring that for every valid index i, the array element at i is equal to the list element at i.
+
+-----Note-----  
+There are no additional preconditions; the method should work correctly for any list of elements.  
+A corresponding specification is provided stating that the array’s size equals the list’s length and that each element is preserved.

@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires implementing the insertion sort algorithm to sort a list of integers in ascending order. The function should take a list of integers as input and return a new list containing the same elements sorted in non-decreasing order.
+
+-----Input----- 
+The input is:
+
+l: A list of integers to be sorted.
+
+-----Output----- 
+The output is:
+
+A list of integers that is sorted in non-decreasing order and is a permutation of the input list.
+

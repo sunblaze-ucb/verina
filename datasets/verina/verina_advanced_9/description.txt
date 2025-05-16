@@ -1,0 +1,12 @@
+-----Description----- 
+This task requires writing a Lean 4 method of which given a number n and divisor d, it counts all the number that is smaller than
+n whose sum of digits is divisible by d. 
+-----Input-----
+The input consists of three Nat:
+n: Nat
+d:Nat where d > 0
+
+-----Output-----
+The output is an Natural number:
+Ensure this match the count that satisfy the property.
+

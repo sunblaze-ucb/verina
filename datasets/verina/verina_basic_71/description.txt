@@ -1,0 +1,16 @@
+-----Description-----  
+This problem involves determining the longest common prefix shared by two lists of characters. Given two sequences, the goal is to identify and return the maximal contiguous sequence of characters from the beginning of both lists that are identical. 
+
+-----Input-----  
+The input consists of:  
+• str1: A list of characters.  
+• str2: A list of characters.
+
+-----Output-----  
+The output is a list of characters representing the longest common prefix of the two input lists. The output list satisfies the following conditions:  
+• Its length is less than or equal to the length of each input list.  
+• It is exactly the prefix of both str1 and str2.  
+• It is empty if the first characters of the inputs differ or if one of the lists is empty.
+
+-----Note-----  
+It is assumed that both inputs are provided as valid lists of characters. The function always returns the correct longest common prefix based on the inputs.

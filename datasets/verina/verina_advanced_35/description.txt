@@ -1,0 +1,9 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the majority element in a list of integers. The majority element is the element that appears more than ⌊n/2⌋ times, where n is the list’s length. You may assume that a majority element always exists in the input.
+
+-----Input-----
+- nums: A list of integers of length ≥ 1, containing a majority element.
+
+-----Output-----
+- An integer: the element that appears more than ⌊n/2⌋ times.
+

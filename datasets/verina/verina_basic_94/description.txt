@@ -1,0 +1,14 @@
+-----Description-----
+This task involves taking an array as input and producing a new array that has the same size and identical elements in the same order as the input.
+
+-----Input-----
+The input consists of:
+• s: An array of elements (for testing purposes, assume an array of integers, i.e., Array Int).
+
+-----Output-----
+The output is an array of the same type as the input:
+• The output array has the same size as the input array.
+• Each element in the output array is identical to the corresponding element in the input array.
+
+-----Note-----
+There are no special preconditions for the input array (it can be empty or non-empty); the function simply performs a straightforward copy operation on the array.

@@ -1,0 +1,11 @@
+-----Description----- 
+This task requires writing a Lean 4 method that identifies the dissimilar elements between two arrays of integers. In other words, the method should return an array containing all elements that appear in one input array but not in the other. The output array must contain no duplicate elements and the order of elements does not matter.
+
+-----Input-----
+The input consists of:
+a: An array of integers.
+b: An array of integers.
+
+-----Output-----
+The output is an array of integers:
+Returns an array containing all distinct elements from both input arrays that are not present in the other array and should be sorted

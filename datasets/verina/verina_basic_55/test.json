@@ -1,0 +1,22 @@
+[
+    {
+        "input": {
+            "a": 1,
+            "b": 1
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "a": 1,
+            "b": 2
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    }
+]

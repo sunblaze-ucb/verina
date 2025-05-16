@@ -1,0 +1,10 @@
+{
+  "name": "lengthOfLIS",
+  "parameters": [
+    {
+      "param_name": "nums",
+      "param_type": "List Int"
+    }
+  ],
+  "return_type": "Nat"
+} 

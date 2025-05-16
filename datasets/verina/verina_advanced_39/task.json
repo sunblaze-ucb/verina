@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_39",
+    "signature": {
+        "name": "maxOfList",
+        "parameters": [
+            {
+                "param_name": "lst",
+                "param_type": "List Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "",
+            "task_id": "lab_maxOfList_325053133",
+            "student_id": [
+                32
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

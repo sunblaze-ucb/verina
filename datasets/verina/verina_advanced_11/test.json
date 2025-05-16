@@ -1,0 +1,73 @@
+[
+    {
+        "input": {
+            "lst": "[1, 2, 1, 1]"
+        },
+        "expected": 1,
+        "unexpected": [
+            2,
+            -1
+        ]
+    },
+    {
+        "input": {
+            "lst": "[1, 2, 3, 4]"
+        },
+        "expected": -1,
+        "unexpected": [
+            1,
+            2,
+            3,
+            4
+        ]
+    },
+    {
+        "input": {
+            "lst": "[2, 2, 2, 2, 3, 3]"
+        },
+        "expected": 2,
+        "unexpected": [
+            3,
+            -1
+        ]
+    },
+    {
+        "input": {
+            "lst": "[]"
+        },
+        "expected": -1,
+        "unexpected": [
+            0,
+            1
+        ]
+    },
+    {
+        "input": {
+            "lst": "[5, 5, 5, 5, 5, 5]"
+        },
+        "expected": 5,
+        "unexpected": [
+            0,
+            -1
+        ]
+    },
+    {
+        "input": {
+            "lst": "[-1, -1, -1, 2, 2]"
+        },
+        "expected": -1,
+        "unexpected": [
+            2
+        ]
+    },
+    {
+        "input": {
+            "lst": "[-3, -3, -3, -3, 1]"
+        },
+        "expected": -3,
+        "unexpected": [
+            1,
+            -1
+        ]
+    }
+]

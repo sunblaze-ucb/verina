@@ -1,0 +1,16 @@
+-----Description-----  
+This task involves determining the first index in an array where a given condition holds true. The goal is to identify the position of the first element that meets a specified criterion, ensuring that no preceding element does.
+
+-----Input-----  
+The input consists of:  
+• a: An array of elements (for testing purposes, you can assume it is an array of integers).  
+• P: A predicate function on the elements (represented as a string for test cases, e.g., "fun x => x > 5"). It is assumed that at least one element in the array satisfies P.
+
+-----Output-----  
+The output is a natural number (Nat) which represents the index of the first element in the array that satisfies the predicate P.  
+• The index returned is less than the size of the array.  
+• The element at the returned index satisfies P.  
+• All elements before the returned index do not satisfy P.
+
+-----Note-----  
+It is assumed that the array contains at least one element that satisfies P. In cases where this precondition does not hold, the behavior of the function is not guaranteed by the specification.

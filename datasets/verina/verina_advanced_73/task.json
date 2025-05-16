@@ -1,0 +1,31 @@
+{
+    "id": "verina_advanced_73",
+    "signature": {
+        "name": "smallestMissing",
+        "parameters": [
+            {
+                "param_name": "l",
+                "param_type": "List Nat"
+            }
+        ],
+        "return_type": "Nat"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "",
+        "postconditions": ""
+    },
+    "metadata": {
+        "upstream": {
+            "name": "lab_assignment",
+            "link": "NA, idea from ed stem comment",
+            "task_id": "lab_smallestMissing_325415996",
+            "student_id": [
+                51
+            ]
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

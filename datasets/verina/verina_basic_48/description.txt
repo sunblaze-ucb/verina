@@ -1,0 +1,11 @@
+-----Description-----  
+This task requires writing a Lean 4 method that determines whether a given non-negative natural number is a perfect square. In other words, the method should return true if there exists a natural number whose square is equal to the input number, and false if no such number exists.
+
+-----Input-----  
+The input consists of a single natural number:  
+n: A non-negative natural number (Nat).
+
+-----Output-----  
+The output is a Boolean value:  
+Returns true if there exists an integer such that its square equals the input n.  
+Returns false if no integer squared equals the input n.

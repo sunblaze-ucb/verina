@@ -1,0 +1,37 @@
+[
+    {
+        "input": {
+            "x": 4
+        },
+        "expected": true,
+        "unexpected": [false]
+    },
+    {
+        "input": {
+            "x": 7
+        },
+        "expected": false,
+        "unexpected": [true]
+    },
+    {
+        "input": {
+            "x": 0
+        },
+        "expected": true,
+        "unexpected": [false]
+    },
+    {
+        "input": {
+            "x": -2
+        },
+        "expected": true,
+        "unexpected": [false]
+    },
+    {
+        "input": {
+            "x": -3
+        },
+        "expected": false,
+        "unexpected": [true]
+    }
+]

@@ -1,0 +1,56 @@
+[
+    {
+        "input": {
+            "s": ""
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "A man, a plan, a canal: Panama"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "race a car"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    },
+    {
+        "input": {
+            "s": "No 'x' in Nixon"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "abc!!cba?"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
+    },
+    {
+        "input": {
+            "s": "Hello, world!"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
+    }
+]

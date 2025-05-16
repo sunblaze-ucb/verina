@@ -1,0 +1,28 @@
+{
+    "id": "verina_basic_60",
+    "signature": {
+        "name": "FindEvenNumbers",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array Int"
+            }
+        ],
+        "return_type": "Array Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The input is an array of integers; there are no additional restrictions on arr.",
+        "postconditions": "- Every even number in the input array appears in the result array.\n- The result array contains no elements that are not present in the input array.\n- Every element in the result array is even.\n- The ordering of even numbers in the result array matches their order of appearance in the input array."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_even_list"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

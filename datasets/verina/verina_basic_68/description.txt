@@ -1,0 +1,15 @@
+-----Description-----  
+The task is to determine the position of a target integer in a given array. The goal is to return the index corresponding to the first occurrence of the target value. If the target is not present in the array, the result should indicate that by returning the size of the array. This description focuses entirely on understanding the problem without specifying any particular implementation method.
+
+-----Input-----  
+The input consists of:  
+• a: An array of integers.  
+• e: An integer representing the target to search for in the array.
+
+-----Output-----  
+The output is a natural number (Nat) which is:  
+• The index of the first occurrence of the target integer if found.  
+• The size of the array if the target integer is not present.  
+
+-----Note-----  
+There are no strict preconditions on the input; the method should work correctly for any array of integers. The specification ensures that the returned index is always valid: it is either within the array bounds with a matching element or equals the array’s size if the element is absent.

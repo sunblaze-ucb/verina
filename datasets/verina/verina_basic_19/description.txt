@@ -1,0 +1,14 @@
+-----Description----- 
+This task requires writing a Lean 4 method that checks whether an array of integers is sorted in non-decreasing order. The method should return true if every element is less than or equal to the element that follows it, and false otherwise.
+
+-----Input-----
+The input consists of:
+a: An array of integers. The array can be empty or have any length.
+
+-----Output-----
+The output is a Boolean value:
+Returns true if the array is sorted in non-decreasing order.
+Returns false if the array is not sorted in non-decreasing order.
+
+-----Note-----
+A true result guarantees that for every valid pair of indices i and j (with i < j), the element at position i is less than or equal to the element at position j. A false result indicates that there exists at least one adjacent pair of elements where the first element is greater than the second.

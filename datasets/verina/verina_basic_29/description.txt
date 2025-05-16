@@ -1,0 +1,16 @@
+-----Description-----  
+This task requires writing a Lean 4 method that removes an element from a given array of integers at a specified index. The resulting array should contain all the original elements except for the one at the given index. Elements before the removed element remain unchanged, and elements after it are shifted one position to the left.
+
+-----Input-----  
+The input consists of:  
+• s: An array of integers.  
+• k: A natural number representing the index of the element to remove (0-indexed).
+
+-----Output-----  
+The output is an array of integers that:  
+• Has a length one less than the input array.  
+• Contains the same elements as the input array, except that the element at index k is omitted.  
+• Preserves the original order with elements after the removed element shifted left by one position.
+
+-----Note-----  
+It is assumed that k is a valid index (0 ≤ k < the length of the array).

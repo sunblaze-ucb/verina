@@ -1,0 +1,13 @@
+-----Description-----  
+This task requires writing a Lean 4 method that counts the number of digit characters within a given string. A digit is any character between '0' and '9'. The method should determine how many such digit characters appear in the input.
+
+-----Input-----  
+The input consists of:  
+s: A string.
+
+-----Output-----  
+The output is a natural number (Nat):  
+Returns a non-negative count representing the number of digit characters found in the input string.
+
+-----Note-----  
+There are no additional preconditions; the method works for any provided string.

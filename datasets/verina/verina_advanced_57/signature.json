@@ -1,0 +1,14 @@
+{
+    "name": "nextGreaterElement",
+    "parameters": [
+      {
+        "param_name": "nums1",
+        "param_type": "List Int"
+      },
+      {
+        "param_name": "nums2",
+        "param_type": "List Int"
+      }
+    ],
+    "return_type": "List Int"
+}

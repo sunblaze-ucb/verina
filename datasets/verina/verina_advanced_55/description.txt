@@ -1,0 +1,11 @@
+-----Description-----
+This task requires writing a Lean 4 method that returns the integer that appears most frequently in the input list. If multiple integers have the same maximum frequency, return the one that appears first in the original list. You should implement a frequency counter using a fold over the list, extract the maximum frequency, and return the first element in the list that matches it.
+
+-----Input-----
+The input consists of:
+xs: A list of integers (possibly with duplicates). The list is guaranteed to be non-empty.
+
+-----Output-----
+The output is an integer:
+Returns the number that appears the most frequently in the list. If there is a tie, the element that occurs first in the original list should be returned.
+

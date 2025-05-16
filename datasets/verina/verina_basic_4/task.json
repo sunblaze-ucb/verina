@@ -1,0 +1,32 @@
+{
+    "id": "verina_basic_4",
+    "signature": {
+        "name": "kthElement",
+        "parameters": [
+            {
+                "param_name": "arr",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "k",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- k should be between 1 and the length of the array (inclusive)",
+        "postconditions": "- The result should be the kth element of the input array using 1-based indexing"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "dafny-synthesis",
+            "link": "https://github.com/Mondego/dafny-synthesis",
+            "task_id": "task_id_101"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json"
+}

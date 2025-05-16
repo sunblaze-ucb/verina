@@ -1,0 +1,15 @@
+-----Description-----
+Given a nonempty array of integers and a valid index x (with 1 ≤ x < array size), the task is to identify two key pieces of information. First, determine the maximum value among the first x elements of the array. Second, select an index p within the range [x, array size) that satisfies the following conditions: if there exists an element in the segment starting from index x that is strictly greater than the previously determined maximum, then p should be the index of the first such occurrence; otherwise, p should be set to the last index of the array. The focus of the problem is solely on correctly identifying the maximum and choosing the appropriate index based on these order conditions.
+
+-----Input-----
+The input consists of:
+• a: An array of integers (assumed to be nonempty).
+• x: A natural number (Nat) such that 1 ≤ x < a.size.
+
+-----Output-----
+The output is a pair (m, p) where:
+• m is the maximum value among the first x elements of the array.
+• p is an index in the array, with x ≤ p < a.size, determined based on the ordering condition where a[p] is the first element (from index x onward) that is strictly greater than m. If no such element exists, then p is set to a.size − 1.
+
+-----Note-----
+It is assumed that the array a is nonempty and that the parameter x meets the precondition 1 ≤ x < a.size. The function relies on helper functions to compute the maximum among the first x elements and to select the appropriate index p based on the given conditions.

@@ -1,0 +1,10 @@
+{
+    "name": "solution",
+    "parameters": [
+        {
+            "name": "nums",
+            "type": "List Nat"
+        }
+    ],
+    "return_type": "Nat"
+}

@@ -1,0 +1,12 @@
+-----Description-----
+This task requires writing a Lean 4 function that finds the single number in a non-empty list of integers, where every element appears exactly twice except for one element that appears only once. The function 
+should return the integer that appears only once.
+
+-----Input-----
+The input is a non-empty list of integers:
+- nums: A list in which each integer appears exactly twice except for one element that appears only once.
+
+-----Output-----
+The output is a single integer:
+Returns the unique integer that appears exactly once in the list.
+

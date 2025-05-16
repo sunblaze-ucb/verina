@@ -1,0 +1,13 @@
+-----Description----- 
+This task requires writing a Lean 4 method that calculates the sum of all the elements in an array of integers. The method should process the entire array and return the total sum of its elements.
+
+-----Input-----
+The input consists of:
+a: An array of integers.
+
+-----Output-----
+The output is an integer:
+Returns the sum of all elements in the input array.
+
+-----Note-----
+- The input array is assumed not to be null.

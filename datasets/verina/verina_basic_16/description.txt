@@ -1,0 +1,17 @@
+-----Description----- 
+This task requires writing a Lean 4 method that replaces every occurrence of a specified character within a string with a new character. The output should be a new string that maintains the same length as the input string, with all instances of the designated character replaced by the given substitute, and all other characters preserved unchanged.
+
+-----Input-----
+The input consists of:
+s: A string in which the replacement will occur.
+oldChar: The character within the string that needs to be replaced.
+newChar: The character that will substitute for every occurrence of oldChar.
+
+-----Output-----
+The output is a string that meets the following:
+- It has the same length as the input string.
+- All occurrences of oldChar in the input string are replaced with newChar.
+- All characters other than oldChar remain unchanged.
+
+-----Note-----
+There are no preconditions; the method will always work. It is assumed that the input string is valid and non-null.

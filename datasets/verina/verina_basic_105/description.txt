@@ -1,0 +1,16 @@
+-----Description-----
+This task involves computing the element-wise product of two integer arrays. For each position in the arrays, the corresponding numbers are multiplied together. If an element is missing in one of the arrays at a given index, the missing value is treated as 0. When both arrays provide values for every index, the resulting array will contain the product of the two numbers at each corresponding index.
+
+-----Input-----
+The input consists of two arrays:
+• a: An array of integers.
+• b: An array of integers (should be of equal length to a for the specification to hold).
+
+-----Output-----
+The output is an array of integers that:
+• Has the same length as the input arrays.
+• For each index i, the output array contains the product a[i] * b[i].
+• In cases where one of the arrays might be shorter, missing elements default to 0 during multiplication.
+
+-----Note-----
+It is assumed that the arrays are of equal length for the theorem specification, although the implementation defaults missing indices to 0.

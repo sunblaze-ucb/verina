@@ -1,0 +1,21 @@
+-----Description----- 
+This task requires writing a Lean 4 method that determines whether a list of integers follows a peak-valley pattern.
+
+A list follows this pattern if:
+A. It strictly increases at first,
+B. Then strictly decreases,
+C. Both parts are non-empty.
+
+Examples:
+- [1, 3, 5, 4, 2] -> true
+- [1, 2, 3] -> false
+- [5, 4, 3] -> false
+- [1, 2, 2, 1] -> false
+
+-----Input-----
+The input consists of a list of integers:
+
+-----Output-----
+The output is an integer:
+Returns true if the list has a peak-valley structure, false otherwise.
+
