@@ -1,8 +1,8 @@
 cff-version: 1.2.0
-title: 'VERINA: Benchmarking Verifiable Code Generation'
+title: "VERINA: Benchmarking Verifiable Code Generation"
 message: >-
   If you use this benchmark, please cite it as below.
-type: article
+type: software
 authors:
   - given-names: Zhe
     family-names: Ye
@@ -16,6 +16,24 @@ authors:
     family-names: Yang
   - given-names: Dawn
     family-names: Song
-url: "https://arxiv.org/abs/2505.23135"
-journal: "arXiv preprint arXiv:2505.23135"
-year: 2025
+date-released: 2015-05-16
+url: "https://github.com/sunblaze-ucb/verina"
+preferred-citation:
+  type: article
+  title: "VERINA: Benchmarking Verifiable Code Generation"
+  authors:
+    - given-names: Zhe
+      family-names: Ye
+    - given-names: Zhengxu
+      family-names: Yan
+    - given-names: Jingxuan
+      family-names: He
+    - given-names: Timothe
+      family-names: Kasriel
+    - given-names: Kaiyu
+      family-names: Yang
+    - given-names: Dawn
+      family-names: Song
+  url: "https://arxiv.org/abs/2505.23135"
+  journal: "arXiv preprint arXiv:2505.23135"
+  year: 2025
