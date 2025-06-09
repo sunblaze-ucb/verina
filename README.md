@@ -173,7 +173,7 @@ ruff format
 
 ## Citation
 
-```
+```bibtex
 @article{ye2025verina,
   title={VERINA: Benchmarking Verifiable Code Generation},
   author={Ye, Zhe and Yan, Zhengxu and He, Jingxuan and Kasriel, Timothe and Yang, Kaiyu and Song, Dawn},
