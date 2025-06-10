@@ -189,6 +189,6 @@ lean-playground/*
 datasets/processed/*
 !datasets/processed/.gitkeep
 .prefect/
-*.pdf
-*.sh
+./*.pdf
+./*.sh
 !setup-dev.sh

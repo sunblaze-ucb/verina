@@ -133,5 +133,7 @@ body {
   font-size: smaller;
 }
 
-
+.hljs-sorry {
+  color: red;
+}
 

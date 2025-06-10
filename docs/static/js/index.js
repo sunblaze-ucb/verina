@@ -19,3 +19,5 @@ $(document).ready(function() {
     bulmaSlider.attach();
 
 })
+
+hljs.highlightAll();
