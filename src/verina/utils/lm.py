@@ -110,7 +110,9 @@ def get_openai_model(model_name: str, max_tokens: Optional[int]) -> dspy.LM:
     lm = dspy.LM(f"openai/{model_name}", cache=False, **kwargs)
     if use_default_max_tokens:
         if model_name == "o4-mini":
-            lm.kwargs["max_completion_tokens"] = 10000 # ensure o4-mini uses the default max tokens
+            lm.kwargs["max_completion_tokens"] = (
+                10000  # ensure o4-mini uses the default max tokens
+            )
     return lm
 
 

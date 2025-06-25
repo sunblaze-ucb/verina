@@ -188,6 +188,8 @@ lean-playground/*
 
 datasets/processed/*
 !datasets/processed/.gitkeep
+datasets/verina/verina_dataset.jsonl
+verina_dataset/
 .prefect/
 *.pdf
 *.sh
