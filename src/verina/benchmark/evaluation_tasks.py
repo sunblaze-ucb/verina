@@ -31,6 +31,7 @@ from verina.benchmark.solution import (
     GenCodeSpecProofInput,
     GenCodeSpecProofOutput,
     GenProofInput,
+    GenProofOutput,
     GenSpecInput,
     GenSpecOutput,
     GenSpecProofInput,
@@ -275,7 +276,17 @@ def benchmark_data_to_gen_proof_input(data: BenchmarkData) -> GenProofInput:
     )
 
 
-# TODO: currently we don't support fewshot examples for proof generation
+def benchmark_data_to_gen_proof_fewshot_example(
+    data: BenchmarkData,
+) -> FewshotExample[GenProofInput, GenProofOutput]:
+    return FewshotExample(
+        example_input=benchmark_data_to_gen_proof_input(data),
+        example_output=GenProofOutput(
+            imports=data.lean_data.solution_imports,
+            proof_aux=data.lean_data.proof_aux,
+            proof=data.lean_data.proof,
+        ),
+    )
 
 
 @task(
@@ -296,14 +307,18 @@ async def execute_proof_gen(
     logger = get_run_logger()
     logger.info("Execute proof generation task")
     task_name = "execute_proof_gen"
-    fewshot_example_names = []
+    fewshot_example_names = [example.data_id for example in fewshot_examples]
 
     gen_checkpoint = checkpoint.artifact if checkpoint else None
 
     # Generation
+    gen_proof_fewshot_examples = [
+        benchmark_data_to_gen_proof_fewshot_example(example)
+        for example in fewshot_examples
+    ]
     gen_proof_input = benchmark_data_to_gen_proof_input(data)
     gen_proof_output = await solution.gen_proof(
-        data.data_id, gen_proof_input, [], gen_checkpoint
+        data.data_id, gen_proof_input, gen_proof_fewshot_examples, gen_checkpoint
     )
 
     # Report
