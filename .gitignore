@@ -191,6 +191,6 @@ datasets/processed/*
 datasets/verina/verina_dataset.jsonl
 verina_dataset/
 .prefect/
-*.pdf
-*.sh
+./*.pdf
+./*.sh
 !setup-dev.sh

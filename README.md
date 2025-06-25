@@ -3,7 +3,7 @@
 ## Overview
 
 Verina (Verifiable Code Generation Arena) is a high-quality benchmark enabling a comprehensive and modular evaluation of code, specification, and proof generation as well as their compositions.
-Read more about the project in our [website](https://sunblaze-ucb.github.io/verina) and [paper](https://arxiv.org/pdf/2505.23135).
+Read more about the project in our [website](https://verina.io) and [paper](https://arxiv.org/pdf/2505.23135).
 
 ## Dataset
 
