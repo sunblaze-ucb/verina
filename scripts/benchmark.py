@@ -83,7 +83,7 @@ def main(
         dataset, config.fewshot_example_names
     )
 
-    baseline = get_baseline(config.baseline_config)
+    baseline = get_baseline(config)
     benchmark = Benchmark(config)
 
     latest_report = EvaluationRoundsReport.load_latest(Path(config.output_dir))
