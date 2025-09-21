@@ -48,9 +48,8 @@ class CustomPromptHandler:
         return [{"role": "user", "content": user_prompt}]
 
     def create_refinement_messages(
-        self, question: str, raw_response: str, compiler_feedback: str
+        self, messages: list[dict[str, str]], raw_response: str, compiler_feedback: str
     ) -> list[dict[str, str]]:
-        messages = self.create_messages(question)
         messages.append({"role": "assistant", "content": raw_response})
         # From Goedel Prover v2 `DeepSeekCoTHandler`
         user_feedback_content = (
@@ -126,12 +125,14 @@ def remove_same_indentation_lines(lines: list[str]) -> str:
 def remove_def(response: str, def_name: str) -> str:
     # Best effort to remove the provided def from the response
     lines = response.splitlines()
-    # find all lines that starts with "def {def_name}"
-    def_lines = [line for line in lines if line.startswith(f"def {def_name}")]
-    if not def_lines:
+    # Find the last line that starts with "def {def_name}" and get its index directly
+    def_index = -1
+    for i in reversed(range(len(lines))):
+        if lines[i].lstrip().startswith(f"def {def_name}"):
+            def_index = i
+            break
+    if def_index == -1:
         return response
-    def_line = def_lines[-1]
-    def_index = lines.index(def_line)
     # Remove lines with the same indentation level until a different indentation level is found, and then stop
     remaining_lines = (
         lines[:def_index]
@@ -301,8 +302,9 @@ class CustomPromptProofRefinementBaselineSolution(CustomPromptProofBaselineSolut
                 output.extra_info["refined_times"] = refined_times
                 return output
             try:
+                prompt = prepare_prompt(self.prompt_handler, input)
                 prompt = self.prompt_handler.create_refinement_messages(
-                    question=proof_task_template_from_input(input),
+                    messages=prompt,
                     raw_response=response,
                     compiler_feedback=error_message,
                 )
