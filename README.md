@@ -84,7 +84,7 @@ provider = "openai"     # The language model API provider to use
 model_name = "gpt-4o-mini"  # Specific model name for generation
 
 [baseline_config]
-name = "baseline" # Name of the baseline method ["baseline", "proof-refinement"]
+name = "baseline" # Name of the baseline method ["baseline", "proof_refinement", "custom_prompt_baseline", "custom_prompt_proof_refinement_baseline"]
 resume_from_checkpoint = true # whether to resume from the previous result file
 refinements = 64 # Number of refinements to run for the proof refinement baseline
 ```

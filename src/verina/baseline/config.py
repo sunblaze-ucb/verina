@@ -11,3 +11,4 @@ class BaselineConfig(BaseModel):
     resume_from_checkpoint: bool = False
     refinements: Optional[int] = None
     dspy_module: Optional[str] = None
+    custom_prompt_template: Optional[str] = None
