@@ -286,15 +286,19 @@ class CustomPromptProofRefinementBaselineSolution(CustomPromptProofBaselineSolut
 
             # Check if the proof is correct
             if output.proof != "":
-                cheat_codes = ["sorry", "admit", "axiom"]
-                if any(code in output.proof for code in cheat_codes) or any(
-                    code in output.proof_aux for code in cheat_codes
-                ):
+                if output.proof.strip() == "sorry":
                     can_compile = False
-                    error_message = "Proof contains cheat codes."
+                    error_message = "Target theorem not found in the model response."
                 else:
-                    lean_content = proof_lean_content_from_input_output(input, output)
-                    can_compile, error_message = await metric_lean_compile(lean_content)
+                    cheat_codes = ["sorry", "admit", "axiom"]
+                    if any(code in output.proof for code in cheat_codes) or any(
+                        code in output.proof_aux for code in cheat_codes
+                    ):
+                        can_compile = False
+                        error_message = "Proof contains cheat codes."
+                    else:
+                        lean_content = proof_lean_content_from_input_output(input, output)
+                        can_compile, error_message = await metric_lean_compile(lean_content)
             else:
                 can_compile = False
                 error_message = "Failed to generate proof. The model response does not follow the expected format."
