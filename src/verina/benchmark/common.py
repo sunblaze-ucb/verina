@@ -22,6 +22,7 @@ class BenchmarkSpecEvaluationConfig(BaseModel):
     unit_test: bool = True
     unit_test_proving: bool = False
 
+    use_grind: bool = False
     use_plausible_pass: bool = True
 
     # evidence

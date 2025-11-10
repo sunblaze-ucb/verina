@@ -25,6 +25,12 @@ To contribute to Verina, please submit a pull request to this repository.
 
 ## Setup
 
+The default Lean version used in this repository is v4.18.0.
+To use Lean v4.24.0 (enable `grind` support), run the following script:
+```
+./setup_lean_v424.sh
+```
+
 ```bash
 uv sync
 source .venv/bin/activate  # Activate the virtual environment created by uv
@@ -87,6 +93,9 @@ model_name = "gpt-4o-mini"  # Specific model name for generation
 name = "baseline" # Name of the baseline method ["baseline", "proof_refinement", "custom_prompt_baseline", "custom_prompt_proof_refinement_baseline"]
 resume_from_checkpoint = true # whether to resume from the previous result file
 refinements = 64 # Number of refinements to run for the proof refinement baseline
+
+[eval_spec_config]
+use_grind = false  # Whether to use grind for specification evaluation, need Lean v4.24.0 setup
 ```
 
 ### Custom Models

@@ -297,8 +297,12 @@ class CustomPromptProofRefinementBaselineSolution(CustomPromptProofBaselineSolut
                         can_compile = False
                         error_message = "Proof contains cheat codes."
                     else:
-                        lean_content = proof_lean_content_from_input_output(input, output)
-                        can_compile, error_message = await metric_lean_compile(lean_content)
+                        lean_content = proof_lean_content_from_input_output(
+                            input, output
+                        )
+                        can_compile, error_message = await metric_lean_compile(
+                            lean_content
+                        )
             else:
                 can_compile = False
                 error_message = "Failed to generate proof. The model response does not follow the expected format."

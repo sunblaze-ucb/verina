@@ -202,6 +202,7 @@ class LeanGenerationTaskTemplate:
         test_proof: str,
         inverse: bool,
         precond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         rendered = f'#print "<{self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>{test_idx}</{self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>"\n\n'
         rendered += "example : "
@@ -212,6 +213,8 @@ class LeanGenerationTaskTemplate:
             rendered += f" ({self.render_unit_test_value(param.param_type, test_case.input[param.param_name])})"
         rendered += ") := by\n"
         rendered += f"  unfold {self.render_full_precond_name(precond_name=precond_name)}\n  simp_all! (config := {{ failIfUnchanged := false }})\n"
+        if use_grind:
+            rendered += "  grind\n"
         rendered += self.render_lean_content(test_proof)
         return rendered
 
@@ -222,6 +225,7 @@ class LeanGenerationTaskTemplate:
         test_idx: int,
         inverse: bool,
         precond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         return self.render_precond_unit_test_sound_undecidable(
             test_case,
@@ -230,6 +234,7 @@ class LeanGenerationTaskTemplate:
             test_proof=self.PLAUSIBLE_TEST_COMMAND,
             precond_name=precond_name,
             inverse=inverse,
+            use_grind=use_grind,
         )
 
     def render_precond_unit_test_complete_decidable(
@@ -251,6 +256,7 @@ class LeanGenerationTaskTemplate:
         test_proof: str,
         inverse: bool,
         precond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         rendered = f'#print "<{self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>{test_idx}</{self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>"\n\n'
         rendered += "example : "
@@ -261,6 +267,8 @@ class LeanGenerationTaskTemplate:
             rendered += f" ({self.render_unit_test_value(param.param_type, reject_input.input[param.param_name])})"
         rendered += ") := by\n"
         rendered += f"  unfold {self.render_full_precond_name(precond_name=precond_name)}\n  simp_all! (config := {{ failIfUnchanged := false }})\n"
+        if use_grind:
+            rendered += "  grind\n"
         rendered += self.render_lean_content(test_proof)
         return rendered
 
@@ -271,6 +279,7 @@ class LeanGenerationTaskTemplate:
         test_idx: int,
         inverse: bool,
         precond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         return self.render_precond_unit_test_complete_undecidable(
             reject_input,
@@ -279,6 +288,7 @@ class LeanGenerationTaskTemplate:
             test_proof=self.PLAUSIBLE_TEST_COMMAND,
             precond_name=precond_name,
             inverse=inverse,
+            use_grind=use_grind,
         )
 
     def render_postcond_unit_test_complete_decidable(
@@ -300,6 +310,7 @@ class LeanGenerationTaskTemplate:
         test_proof: str,
         inverse: bool,
         postcond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         rendered = f'#print "<{self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>{test_idx}</{self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>"\n\n'
         rendered += "example : "
@@ -313,6 +324,8 @@ class LeanGenerationTaskTemplate:
             f"  unfold {self.render_full_postcond_name(postcond_name=postcond_name)}\n"
         )
         rendered += "  simp_all! (config := { failIfUnchanged := false })\n  simp (config := { failIfUnchanged := false }) [*]\n"
+        if use_grind:
+            rendered += "  grind\n"
         if test_proof != "":
             rendered += self.render_lean_content(test_proof)
         return rendered
@@ -324,6 +337,7 @@ class LeanGenerationTaskTemplate:
         test_idx: int,
         inverse: bool,
         postcond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         return self.render_postcond_unit_test_complete_undecidable(
             test_case,
@@ -332,6 +346,7 @@ class LeanGenerationTaskTemplate:
             test_type=self.UNDECIDABLE_PLAUSIBLE,
             test_proof=self.PLAUSIBLE_TEST_COMMAND,
             inverse=inverse,
+            use_grind=use_grind,
         )
 
     def render_postcond_unit_test_sound_decidable(
@@ -360,6 +375,7 @@ class LeanGenerationTaskTemplate:
         test_proof: str,
         inverse: bool,
         postcond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         rendered = f'#print "<{self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>{test_idx},{unexpected_idx}</{self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(test_type)}>"\n\n'
         rendered += "example : "
@@ -373,6 +389,8 @@ class LeanGenerationTaskTemplate:
             f"  unfold {self.render_full_postcond_name(postcond_name=postcond_name)}\n"
         )
         rendered += "  simp_all! (config := { failIfUnchanged := false })\n  simp (config := { failIfUnchanged := false }) [*]\n"
+        if use_grind:
+            rendered += "  grind\n"
         if test_proof != "":
             rendered += self.render_lean_content(test_proof)
         return rendered
@@ -385,6 +403,7 @@ class LeanGenerationTaskTemplate:
         unexpected_idx: int,
         inverse: bool,
         postcond_name: str = "",
+        use_grind: bool = False,
     ) -> str:
         return self.render_postcond_unit_test_sound_undecidable(
             test_case,
@@ -394,6 +413,7 @@ class LeanGenerationTaskTemplate:
             test_type=self.UNDECIDABLE_PLAUSIBLE,
             test_proof=self.PLAUSIBLE_TEST_COMMAND,
             inverse=inverse,
+            use_grind=use_grind,
         )
 
     def render_precond_formal_soundness(
