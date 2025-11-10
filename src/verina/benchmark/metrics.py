@@ -560,7 +560,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_sound_plausible(
-                        test_case, test_idx=idx, inverse=False
+                        test_case,
+                        test_idx=idx,
+                        inverse=False,
+                        use_grind=config.use_grind,
                     )
                 )
         else:
@@ -576,6 +579,7 @@ async def metric_generated_spec_unit_tests(
                             test_idx=idx,
                             unexpected_idx=unexpected_idx,
                             inverse=False,
+                            use_grind=config.use_grind,
                         )
                     )
 
@@ -587,7 +591,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_sound_plausible(
-                        test_case, test_idx=idx, inverse=True
+                        test_case,
+                        test_idx=idx,
+                        inverse=True,
+                        use_grind=config.use_grind,
                     )
                 )
         else:
@@ -603,6 +610,7 @@ async def metric_generated_spec_unit_tests(
                             test_idx=idx,
                             unexpected_idx=unexpected_idx,
                             inverse=True,
+                            use_grind=config.use_grind,
                         )
                     )
 
@@ -614,7 +622,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_complete_plausible(
-                        reject_input, test_idx=idx, inverse=False
+                        reject_input,
+                        test_idx=idx,
+                        inverse=False,
+                        use_grind=config.use_grind,
                     )
                 )
     else:
@@ -623,7 +634,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_postcond_unit_test_complete_plausible(
-                        test_case, test_idx=idx, inverse=False
+                        test_case,
+                        test_idx=idx,
+                        inverse=False,
+                        use_grind=config.use_grind,
                     )
                 )
 
@@ -635,7 +649,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_complete_plausible(
-                        reject_input, test_idx=idx, inverse=True
+                        reject_input,
+                        test_idx=idx,
+                        inverse=True,
+                        use_grind=config.use_grind,
                     )
                 )
     else:
@@ -644,7 +661,10 @@ async def metric_generated_spec_unit_tests(
                 plausible_lean_content += (
                     "\n\n"
                     + template_engine.render_postcond_unit_test_complete_plausible(
-                        test_case, test_idx=idx, inverse=True
+                        test_case,
+                        test_idx=idx,
+                        inverse=True,
+                        use_grind=config.use_grind,
                     )
                 )
 

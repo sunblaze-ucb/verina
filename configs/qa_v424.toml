@@ -1,0 +1,23 @@
+output_dir = "output/qa_v424"
+max_workers = 128
+rounds = 1
+fewshot_example_names = []
+run_type = "qa"
+
+[gen_lm_config]
+provider = "openai" # does not matter for qa
+model_name = "gpt-4o-mini" # does not matter for qa
+
+[baseline_config]
+name = "baseline"  # does not matter for qa
+
+[eval_spec_config]
+formal_proving = false
+unit_test = true
+unit_test_proving = false
+use_grind = true
+use_plausible_pass = true
+evidence_rel_dir = "./evidence"
+use_evidence = false
+generate_evidence_template = true
+save_evidence = true
