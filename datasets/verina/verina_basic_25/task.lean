@@ -13,7 +13,7 @@
 @[reducible, simp]
 def sumAndAverage_precond (n : Nat) : Prop :=
   -- !benchmark @start precond
-  True
+  n > 0 ∧ n < 9007199254740992  -- n must be positive and bounded for Float precision
   -- !benchmark @end precond
 
 

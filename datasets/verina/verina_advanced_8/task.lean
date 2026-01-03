@@ -12,7 +12,7 @@
 @[reducible]
 def canCompleteCircuit_precond (gas : List Int) (cost : List Int) : Prop :=
   -- !benchmark @start precond
-  True
+  gas.length > 0 ∧ gas.length = cost.length
   -- !benchmark @end precond
 
 

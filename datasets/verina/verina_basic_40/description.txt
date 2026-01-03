@@ -10,6 +10,6 @@ The output is an integer:
 Returns the second-smallest number in the input array.
 
 -----Note-----
-- The input array is guaranteed to contain at least two elements and is non-null.
-- It is assumed that there exist at least two distinct values in the array to ensure a unique second-smallest element.
-- The original array must remain unmodified.
+- The input array must contain at least two elements.
+- The array must contain at least two distinct values (enforced by precondition).
+- The original array remains unmodified.

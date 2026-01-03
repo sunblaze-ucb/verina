@@ -14,14 +14,12 @@ def get2d (a : Array (Array Int)) (i j : Int) : Int :=
 @[reducible, simp]
 def SlopeSearch_precond (a : Array (Array Int)) (key : Int) : Prop :=
   -- !benchmark @start precond
+  a.size > 0 ∧
+  (a[0]!).size > 0 ∧  -- non-empty inner arrays
   List.Pairwise (·.size = ·.size) a.toList ∧
   a.all (fun x => List.Pairwise (· ≤ ·) x.toList) ∧
-  (
-    a.size = 0 ∨ (
-      (List.range (a[0]!.size)).all (fun i =>
-        List.Pairwise (· ≤ ·) (a.map (fun x => x[i]!)).toList
-      )
-    )
+  (List.range (a[0]!.size)).all (fun i =>
+    List.Pairwise (· ≤ ·) (a.map (fun x => x[i]!)).toList
   )
   -- !benchmark @end precond
 

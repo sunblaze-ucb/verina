@@ -48,16 +48,16 @@ def maxProfit (prices : List Nat) (h_precond : maxProfit_precond (prices)) : Nat
 @[reducible, simp]
 def maxProfit_postcond (prices : List Nat) (result: Nat) (h_precond : maxProfit_precond (prices)) : Prop :=
   -- !benchmark @start postcond
-  (result = 0 ∧ prices = []) ∨
-  (
-    -- All valid transactions have profit ≤ result (using pairwise)
-    List.Pairwise (fun ⟨pi, i⟩ ⟨pj, j⟩ => i < j → pj - pi ≤ result) prices.zipIdx ∧
-
-    -- There exists a transaction with profit = result (using any)
-    prices.zipIdx.any (fun ⟨pi, i⟩ =>
-      prices.zipIdx.any (fun ⟨pj, j⟩ =>
-        i < j ∧ pj - pi = result))
-  )
+  -- All valid transactions have profit ≤ result
+  List.Pairwise (fun ⟨pi, i⟩ ⟨pj, j⟩ => i < j → pj - pi ≤ result) prices.zipIdx ∧
+  -- result = 0 when no profitable transaction exists (empty, single element, or decreasing prices)
+  (result = 0 ↔
+    (prices.length ≤ 1 ∨
+     prices.zipIdx.all (fun ⟨pi, i⟩ =>
+       prices.zipIdx.all (fun ⟨pj, j⟩ => i ≥ j ∨ pj ≤ pi)))) ∧
+  -- If result > 0, there exists a transaction achieving it
+  (result > 0 → prices.zipIdx.any (fun ⟨pi, i⟩ =>
+    prices.zipIdx.any (fun ⟨pj, j⟩ => i < j ∧ pj - pi = result)))
   -- !benchmark @end postcond
 
 

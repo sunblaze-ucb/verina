@@ -4,9 +4,9 @@ This task requires writing a Lean 4 method that returns the k most frequent elem
 -----Input-----
 The input consists of two values:
 nums: A list of integers, possibly with duplicates.
-k: A natural number indicating how many of the most frequent elements to return. Assimng k <= # of distinct elements in nums. 
+k: A natural number indicating how many of the most frequent elements to return. Assuming k <= # of distinct elements in nums.
 
 -----Output-----
 The output is a list of integers:
-Returns exactly k integers representing the elements that appear most frequently in the input list in the order form the higher frequency to lower frequency.
-If two numbers have the same frequency, use the order of the first occurance in nums.
+Returns exactly k integers representing the elements that appear most frequently in the input list in order from higher frequency to lower frequency.
+If two numbers have the same frequency, any consistent ordering is acceptable (no strict tie-breaking requirement).

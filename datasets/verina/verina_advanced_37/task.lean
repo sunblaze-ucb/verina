@@ -12,7 +12,7 @@
 @[reducible, simp]
 def majorityElement_precond (nums : List Int) : Prop :=
   -- !benchmark @start precond
-  True
+  nums.length > 0 ∧ nums.any (fun x => nums.count x > nums.length / 2)  -- majority element must exist
   -- !benchmark @end precond
 
 

@@ -11,4 +11,4 @@ The output is a pair consisting of:
 - A floating-point number representing the average of the first n natural numbers.
 
 -----Note-----
-The input n must be a positive integer.
+The input n must be a positive integer and should be reasonably bounded (n < 2^53) to ensure floating-point precision in the average calculation.

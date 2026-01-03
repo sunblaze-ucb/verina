@@ -3,10 +3,10 @@ his task requires writing a Lean 4 method decomposes a natural number `n` into i
 \[ n = \prod p^e \]
 In other words, it determines the exponent e for each prime p.
 
------Input-----  
-The input consists of a natural number n, and a list of prime numbers. The input n is obtained by multiplying together any powers of the prime numbers from the provided list.
-n: The natural number to be factorized.  
-primes: A list of primes to decompose n into.  
+-----Input-----
+The input consists of:
+- n: A positive natural number (n > 0) that can be expressed as a product of powers of the given primes.
+- primes: A non-empty list of distinct prime numbers whose product of powers equals n.  
 
 -----Output-----  
 The output is `List (Nat × Nat)`:

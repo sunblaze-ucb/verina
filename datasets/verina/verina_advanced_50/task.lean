@@ -21,7 +21,7 @@ def mergeSorted_precond (a1 : Array Nat) (a2 : Array Nat) : Prop :=
 -- !benchmark @end code_aux
 
 
-def mergeSorted (a1 : Array Nat) (a2 : Array Nat) : Array Nat :=
+def mergeSorted (a1 : Array Nat) (a2 : Array Nat) (h_precond : mergeSorted_precond (a1) (a2)) : Array Nat :=
   -- !benchmark @start code
   Id.run <| do
     let mut i := 0
@@ -50,7 +50,7 @@ def mergeSorted (a1 : Array Nat) (a2 : Array Nat) : Array Nat :=
 
 
 @[reducible]
-def mergeSorted_postcond (a1 : Array Nat) (a2 : Array Nat) (result: Array Nat) : Prop :=
+def mergeSorted_postcond (a1 : Array Nat) (a2 : Array Nat) (result: Array Nat) (h_precond : mergeSorted_precond (a1) (a2)) : Prop :=
   -- !benchmark @start postcond
   List.Pairwise (· ≤ ·) result.toList ∧
   result.toList.isPerm (a1.toList ++ a2.toList)
@@ -62,8 +62,8 @@ def mergeSorted_postcond (a1 : Array Nat) (a2 : Array Nat) (result: Array Nat) :
 -- !benchmark @end proof_aux
 
 
-theorem mergeSorted_spec_satisfied (a1: Array Nat) (a2: Array Nat) :
-    mergeSorted_postcond (a1) (a2) (mergeSorted (a1) (a2)) := by
+theorem mergeSorted_spec_satisfied (a1: Array Nat) (a2: Array Nat) (h_precond : mergeSorted_precond (a1) (a2)) :
+    mergeSorted_postcond (a1) (a2) (mergeSorted (a1) (a2) h_precond) h_precond := by
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof

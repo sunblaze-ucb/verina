@@ -12,7 +12,7 @@
 @[reducible]
 def runLengthEncoder_precond (input : String) : Prop :=
   -- !benchmark @start precond
-  True
+  input.all (fun c => ¬c.isDigit)  -- no digits allowed in input (ambiguous encoding)
   -- !benchmark @end precond
 
 

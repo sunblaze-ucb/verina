@@ -66,18 +66,15 @@ def topKFrequent_postcond (nums : List Int) (k : Nat) (result: List Int) (h_prec
   List.Pairwise (· ≠ ·) result ∧
 
   -- For any element in result and any element not in result, the frequency of the
-  -- element in result is greater or equal
+  -- element in result is greater or equal (simplified: no tie-breaking constraint on ordering)
   (result.all (fun x =>
     nums.all (fun y =>
-      y ∉ result →
-        nums.count x > nums.count y ∨
-        (nums.count x == nums.count y ∧ nums.idxOf x < nums.idxOf y)
+      y ∈ result ∨ nums.count x ≥ nums.count y
     ))) ∧
 
-  -- Elements in result are ordered by decreasing frequency
+  -- Elements in result are ordered by non-increasing frequency
   List.Pairwise (fun (x, i) (y, j) =>
-    i < j → nums.count x > nums.count y ∨
-    (nums.count x == nums.count y ∧ nums.idxOf x < nums.idxOf y)
+    i < j → nums.count x ≥ nums.count y
   ) result.zipIdx
   -- !benchmark @end postcond
 

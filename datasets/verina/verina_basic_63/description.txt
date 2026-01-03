@@ -11,5 +11,7 @@ The output is a boolean value:
 • true – if there exists at least one pair of distinct elements in the list such that the absolute difference between them is less than the threshold.  
 • false – if for every possible pair of elements, the absolute difference is greater than or equal to the threshold.
 
------Note-----  
-It is assumed that the list of numbers is provided and that the threshold is non-negative.
+-----Note-----
+It is assumed that:
+- The list of numbers contains only valid (non-NaN, non-infinite) floating-point values.
+- The threshold is a non-negative, valid floating-point number.

@@ -12,7 +12,7 @@
 @[reducible, simp]
 def onlineMax_precond (a : Array Int) (x : Nat) : Prop :=
   -- !benchmark @start precond
-  a.size > 0 ∧ x < a.size
+  a.size > 1 ∧ x > 0 ∧ x < a.size  -- x must be at least 1
   -- !benchmark @end precond
 
 

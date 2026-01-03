@@ -3,8 +3,8 @@ Given a nonempty array of integers and a valid index x (with 1 ≤ x < array siz
 
 -----Input-----
 The input consists of:
-• a: An array of integers (assumed to be nonempty).
-• x: A natural number (Nat) such that 1 ≤ x < a.size.
+• a: An array of integers with at least 2 elements.
+• x: A natural number (Nat) such that 0 < x < a.size.
 
 -----Output-----
 The output is a pair (m, p) where:
