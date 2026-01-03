@@ -27,5 +27,16 @@
         }
     },
     "test_file": "./test.json",
-    "reject_inputs_file": "./reject_inputs.json"
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "isPeakValley",
+        "parameters": [
+            {
+                "param_name": "lst",
+                "param_type": "(list Z)"
+            }
+        ],
+        "return_type": "bool"
+    }
 }

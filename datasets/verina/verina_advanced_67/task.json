@@ -10,6 +10,17 @@
         ],
         "return_type": "List (Char \u00d7 Nat)"
     },
+    "coq_signature": {
+        "name": "runLengthEncode",
+        "parameters": [
+            {
+                "param_name": "s",
+                "param_type": "string"
+            }
+        ],
+        "return_type": "list (ascii * nat)"
+    },
+    "coq_file": "./task.v",
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
     "specification": {

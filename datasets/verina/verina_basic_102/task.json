@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_102",
-  "signature": {
-    "name": "twoSum",
-    "parameters": [
-      {
-        "param_name": "nums",
-        "param_type": "Array Int"
-      },
-      {
-        "param_name": "target",
-        "param_type": "Int"
-      }
-    ],
-    "return_type": "(Nat × Nat)"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "\u2022 The array 'nums' must have a size greater than 1.\n\u2022 There must exist at least one pair of indices (i, j) with i < j such that nums[i] + nums[j] equals target.",
-    "postconditions": "\u2022 The returned pair (i, j) satisfies 0 \u2264 i < j < nums.size and nums[i] + nums[j] = target.\n\u2022 Any valid pair of indices that occurs before (i, j) does not sum to target.\n\u2022 There is no index between i and j such that nums[i] plus the element at that index equals target."
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_two_sum"
+    "id": "verina_basic_102",
+    "signature": {
+        "name": "twoSum",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "Array Int"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "(Nat \u00d7 Nat)"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "\u2022 The array 'nums' must have a size greater than 1.\n\u2022 There must exist at least one pair of indices (i, j) with i < j such that nums[i] + nums[j] equals target.",
+        "postconditions": "\u2022 The returned pair (i, j) satisfies 0 \u2264 i < j < nums.size and nums[i] + nums[j] = target.\n\u2022 Any valid pair of indices that occurs before (i, j) does not sum to target.\n\u2022 There is no index between i and j such that nums[i] plus the element at that index equals target."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_two_sum"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "twoSum",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "(list Z)"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(nat  * nat)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

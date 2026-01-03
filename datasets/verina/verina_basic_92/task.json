@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_92",
-  "signature": {
-    "name": "SwapArithmetic",
-    "parameters": [
-      {
-        "param_name": "X",
-        "param_type": "Int"
-      },
-      {
-        "param_name": "Y",
-        "param_type": "Int"
-      }
-    ],
-    "return_type": "(Int × Int)"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- No preconditions; the function accepts any integer values for X and Y.",
-    "postconditions": "- The first element of the result must equal Y\n- The second element of the result must equal X"
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_swap_arith"
+    "id": "verina_basic_92",
+    "signature": {
+        "name": "SwapArithmetic",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Int"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "(Int \u00d7 Int)"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- No preconditions; the function accepts any integer values for X and Y.",
+        "postconditions": "- The first element of the result must equal Y\n- The second element of the result must equal X"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_swap_arith"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "SwapArithmetic",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(Z  * Z)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

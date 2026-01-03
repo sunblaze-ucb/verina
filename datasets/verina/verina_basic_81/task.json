@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_81",
-  "signature": {
-    "name": "DivisionFunction",
-    "parameters": [
-      {
-        "param_name": "x",
-        "param_type": "Nat"
-      },
-      {
-        "param_name": "y",
-        "param_type": "Nat"
-      }
-    ],
-    "return_type": "Int × Int"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- There are no preconditions, the method will always work.",
-    "postconditions": "- If y \u2260 0, for the result (r, q):\n  \u2022 q * Int.ofNat y + r = Int.ofNat x\n  \u2022 0 \u2264 r < Int.ofNat y\n  \u2022 0 \u2264 q\n- If y = 0, the function returns (Int.ofNat x, 0)"
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_quotient"
+    "id": "verina_basic_81",
+    "signature": {
+        "name": "DivisionFunction",
+        "parameters": [
+            {
+                "param_name": "x",
+                "param_type": "Nat"
+            },
+            {
+                "param_name": "y",
+                "param_type": "Nat"
+            }
+        ],
+        "return_type": "Int \u00d7 Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- If y \u2260 0, for the result (r, q):\n  \u2022 q * Int.ofNat y + r = Int.ofNat x\n  \u2022 0 \u2264 r < Int.ofNat y\n  \u2022 0 \u2264 q\n- If y = 0, the function returns (Int.ofNat x, 0)"
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_quotient"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "DivisionFunction",
+        "parameters": [
+            {
+                "param_name": "x",
+                "param_type": "nat"
+            },
+            {
+                "param_name": "y",
+                "param_type": "nat"
+            }
+        ],
+        "return_type": "(Z  * Z)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

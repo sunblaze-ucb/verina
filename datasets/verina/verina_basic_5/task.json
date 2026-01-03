@@ -14,8 +14,23 @@
         ],
         "return_type": "Int"
     },
+    "coq_signature": {
+        "name": "multiply",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "Z"
+    },
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
+    "coq_file": "./task.v",
     "specification": {
         "preconditions": "- There are no preconditions, the method will always work.",
         "postconditions": "- The result should be the product of the two input integers"

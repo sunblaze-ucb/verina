@@ -10,6 +10,17 @@
         ],
         "return_type": "Bool"
     },
+    "coq_signature": {
+        "name": "isPrime",
+        "parameters": [
+            {
+                "param_name": "n",
+                "param_type": "nat"
+            }
+        ],
+        "return_type": "bool"
+    },
+    "coq_file": "./task.v",
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
     "specification": {

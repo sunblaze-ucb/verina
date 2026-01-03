@@ -28,5 +28,20 @@
         }
     },
     "test_file": "./test.json",
-    "reject_inputs_file": "./reject_inputs.json"
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "myMin",
+        "parameters": [
+            {
+                "param_name": "x",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "y",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "Z"
+    }
 }

@@ -10,8 +10,19 @@
         ],
         "return_type": "Int"
     },
+    "coq_signature": {
+        "name": "FindSingleNumber",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "list Z"
+            }
+        ],
+        "return_type": "Z"
+    },
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
+    "coq_file": "./task.v",
     "specification": {
         "preconditions": "",
         "postconditions": ""

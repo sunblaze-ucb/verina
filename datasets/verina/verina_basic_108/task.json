@@ -1,28 +1,39 @@
 {
-  "id": "verina_basic_108",
-  "signature": {
-    "name": "below_zero",
-    "parameters": [
-      {
-        "param_name": "operations",
-        "param_type": "List Int"
-      }
-    ],
-    "return_type": "(Array Int × Bool)"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- There are no preconditions, the method will always work.",
-    "postconditions": "- The resulting array s has a size equal to operations.length + 1.\n- The first element of s is 0.\n- For every index i with 0 \u2264 i < s.size - 1, s[i+1]? is some (s[i]! + operations[i]!).\n- The boolean result is true if and only if there exists an index i (1 \u2264 i \u2264 operations.length) such that s[i]! < 0; otherwise, it is false."
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_below_zero"
+    "id": "verina_basic_108",
+    "signature": {
+        "name": "below_zero",
+        "parameters": [
+            {
+                "param_name": "operations",
+                "param_type": "List Int"
+            }
+        ],
+        "return_type": "(Array Int \u00d7 Bool)"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions, the method will always work.",
+        "postconditions": "- The resulting array s has a size equal to operations.length + 1.\n- The first element of s is 0.\n- For every index i with 0 \u2264 i < s.size - 1, s[i+1]? is some (s[i]! + operations[i]!).\n- The boolean result is true if and only if there exists an index i (1 \u2264 i \u2264 operations.length) such that s[i]! < 0; otherwise, it is false."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_below_zero"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "below_zero",
+        "parameters": [
+            {
+                "param_name": "operations",
+                "param_type": "(list Z)"
+            }
+        ],
+        "return_type": "(list (Z  * bool))"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

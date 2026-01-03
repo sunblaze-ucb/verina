@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_90",
-  "signature": {
-    "name": "SlopeSearch",
-    "parameters": [
-      {
-        "param_name": "a",
-        "param_type": "Array (Array Int)"
-      },
-      {
-        "param_name": "key",
-        "param_type": "Int"
-      }
-    ],
-    "return_type": "(Int × Int)"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- The 2D array a must be sorted in non-decreasing order both row-wise and column-wise.\n- If the key exists, it is guaranteed to appear in the array.",
-    "postconditions": "- If key is found, the returned indices (m, n) satisfy 0 \u2264 m < a.size, 0 \u2264 n < (a[0]!).size, and get2d a m n = key.\n- If key is not found or out-of-bound conditions occur during search, the function returns (-1, -1)."
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_slope_search"
+    "id": "verina_basic_90",
+    "signature": {
+        "name": "SlopeSearch",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Array (Array Int)"
+            },
+            {
+                "param_name": "key",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "(Int \u00d7 Int)"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- The 2D array a must be sorted in non-decreasing order both row-wise and column-wise.\n- If the key exists, it is guaranteed to appear in the array.",
+        "postconditions": "- If key is found, the returned indices (m, n) satisfy 0 \u2264 m < a.size, 0 \u2264 n < (a[0]!).size, and get2d a m n = key.\n- If key is not found or out-of-bound conditions occur during search, the function returns (-1, -1)."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_slope_search"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "SlopeSearch",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "(list (list Z))"
+            },
+            {
+                "param_name": "key",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(Z  * Z)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

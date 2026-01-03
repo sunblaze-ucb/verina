@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_91",
-  "signature": {
-    "name": "Swap",
-    "parameters": [
-      {
-        "param_name": "X",
-        "param_type": "Int"
-      },
-      {
-        "param_name": "Y",
-        "param_type": "Int"
-      }
-    ],
-    "return_type": "Int × Int"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- There are no preconditions.",
-    "postconditions": "- The returned pair's first element is equal to the original Y; The second element is equal to the original X."
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_swap"
+    "id": "verina_basic_91",
+    "signature": {
+        "name": "Swap",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Int"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int \u00d7 Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions.",
+        "postconditions": "- The returned pair's first element is equal to the original Y; The second element is equal to the original X."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_swap"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "Swap",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(Z  * Z)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

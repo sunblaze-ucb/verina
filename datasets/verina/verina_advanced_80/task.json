@@ -31,5 +31,20 @@
         }
     },
     "test_file": "./test.json",
-    "reject_inputs_file": "./reject_inputs.json"
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "twoSum",
+        "parameters": [
+            {
+                "param_name": "nums",
+                "param_type": "(list Z)"
+            },
+            {
+                "param_name": "target",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(list nat)"
+    }
 }

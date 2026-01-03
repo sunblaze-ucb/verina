@@ -1,32 +1,47 @@
 {
-  "id": "verina_basic_96",
-  "signature": {
-    "name": "SwapSimultaneous",
-    "parameters": [
-      {
-        "param_name": "X",
-        "param_type": "Int"
-      },
-      {
-        "param_name": "Y",
-        "param_type": "Int"
-      }
-    ],
-    "return_type": "Int × Int"
-  },
-  "description_file": "./description.txt",
-  "lean_file": "./task.lean",
-  "specification": {
-    "preconditions": "- There are no preconditions for this function.",
-    "postconditions": "- The first element of the output tuple is equal to the second input (Y).\n- The second element of the output tuple is equal to the first input (X)."
-  },
-  "metadata": {
-    "upstream": {
-      "name": "clover",
-      "link": "https://github.com/ChuyueSun/Clover",
-      "task_id": "Clover_swap_sim"
+    "id": "verina_basic_96",
+    "signature": {
+        "name": "SwapSimultaneous",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Int"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Int"
+            }
+        ],
+        "return_type": "Int \u00d7 Int"
+    },
+    "description_file": "./description.txt",
+    "lean_file": "./task.lean",
+    "specification": {
+        "preconditions": "- There are no preconditions for this function.",
+        "postconditions": "- The first element of the output tuple is equal to the second input (Y).\n- The second element of the output tuple is equal to the first input (X)."
+    },
+    "metadata": {
+        "upstream": {
+            "name": "clover",
+            "link": "https://github.com/ChuyueSun/Clover",
+            "task_id": "Clover_swap_sim"
+        }
+    },
+    "test_file": "./test.json",
+    "reject_inputs_file": "./reject_inputs.json",
+    "coq_file": "./task.v",
+    "coq_signature": {
+        "name": "SwapSimultaneous",
+        "parameters": [
+            {
+                "param_name": "X",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "Y",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "(Z  * Z)"
     }
-  },
-  "test_file": "./test.json",
-  "reject_inputs_file": "./reject_inputs.json"
 }

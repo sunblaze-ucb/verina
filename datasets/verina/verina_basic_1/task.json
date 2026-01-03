@@ -14,8 +14,23 @@
         ],
         "return_type": "Bool"
     },
+    "coq_signature": {
+        "name": "hasOppositeSign",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "bool"
+    },
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
+    "coq_file": "./task.v",
     "specification": {
         "preconditions": "- There are no preconditions, the method will always work.",
         "postconditions": "- The result is true if a and b have opposite signs\n- The result is false if a and b have the same sign"

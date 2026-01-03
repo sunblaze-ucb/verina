@@ -14,6 +14,21 @@
         ],
         "return_type": "Int"
     },
+    "coq_signature": {
+        "name": "myMin",
+        "parameters": [
+            {
+                "param_name": "a",
+                "param_type": "Z"
+            },
+            {
+                "param_name": "b",
+                "param_type": "Z"
+            }
+        ],
+        "return_type": "Z"
+    },
+    "coq_file": "./task.v",
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
     "specification": {
