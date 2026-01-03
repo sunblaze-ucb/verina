@@ -41,6 +41,7 @@ from verina.benchmark.solution import (
 )
 from verina.dataset.schema import BenchmarkData
 from verina.dataset.template import LeanGenerationTaskTemplate
+from verina.itp import ITPType, get_template_class
 
 """
 This module defines benchmark tasks.
@@ -260,19 +261,29 @@ async def execute_spec_gen(
     )
 
 
-def benchmark_data_to_gen_proof_input(data: BenchmarkData) -> GenProofInput:
+def benchmark_data_to_gen_proof_input(
+    data: BenchmarkData, itp_type: ITPType = ITPType.LEAN
+) -> GenProofInput:
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = data.coq_data
+        signature = data.coq_signature
+    else:
+        itp_data = data.lean_data
+        signature = data.signature
+
     return GenProofInput(
         description=data.description,
-        signature=data.signature,
-        task_imports=data.lean_data.task_imports,
-        task_aux=data.lean_data.task_aux,
-        code_spec_imports=data.lean_data.solution_imports,
-        code_aux=data.lean_data.code_aux,
-        code=data.lean_data.code,
-        precond_aux=data.lean_data.solution_aux + "\n" + data.lean_data.precond_aux,
-        precond=data.lean_data.precond,
-        postcond_aux=data.lean_data.postcond_aux,
-        postcond=data.lean_data.postcond,
+        signature=signature,
+        task_imports=itp_data.task_imports,
+        task_aux=itp_data.task_aux,
+        code_spec_imports=itp_data.solution_imports,
+        code_aux=itp_data.code_aux,
+        code=itp_data.code,
+        precond_aux=itp_data.solution_aux + "\n" + itp_data.precond_aux,
+        precond=itp_data.precond,
+        postcond_aux=itp_data.postcond_aux,
+        postcond=itp_data.postcond,
     )
 
 
@@ -706,10 +717,21 @@ async def evaluate_task_from_report(
             f"Task report data name {task_report.data_id} does not match data id {data.data_id}"
         )
 
-    template_engine = LeanGenerationTaskTemplate(data.signature)
+    # Select appropriate template and data based on ITP type
+    itp_type = config.get_itp_type()
+    if itp_type == ITPType.COQ:
+        if data.coq_signature is None or data.coq_data is None:
+            raise ValueError(f"Coq data not available for {data.data_id}")
+        template_class = get_template_class(itp_type)
+        template_engine = template_class(data.coq_signature)
+        itp_data = data.coq_data
+    else:
+        template_engine = LeanGenerationTaskTemplate(data.signature)
+        itp_data = data.lean_data
+
     scores = task_report.scores
 
-    imports = data.lean_data.solution_imports
+    imports = itp_data.solution_imports
     if task_report.artifact.imports:
         imports = merge_imports(
             [
@@ -723,13 +745,14 @@ async def evaluate_task_from_report(
         code_artifact = task_report.artifact.model_copy()
         # We always use the ground truth precondition to evaluate the generated code
         code_artifact.precond_aux = (
-            data.lean_data.solution_aux + "\n" + data.lean_data.precond_aux
+            itp_data.solution_aux + "\n" + itp_data.precond_aux
         )
-        code_artifact.precond = data.lean_data.precond
+        code_artifact.precond = itp_data.precond
         scores["code"] = await metric_generated_code(
             template_engine,
             data,
             code_artifact,
+            itp_type=itp_type,
         )
     if task_report.task_flags.spec:
         # Evaluate spec
@@ -745,6 +768,7 @@ async def evaluate_task_from_report(
                     data,
                     task_report.artifact,
                     eval_type,
+                    itp_type=itp_type,
                 )
             elif isinstance(scores[eval_type], dict):
                 scores[eval_type] = SpecMetricScore.model_validate(scores[eval_type])
@@ -757,24 +781,25 @@ async def evaluate_task_from_report(
                         data,
                         task_report.artifact,
                         eval_type,
+                        itp_type=itp_type,
                     )
     if task_report.task_flags.proof and ("proof" not in scores or should_reevaluate):
         # Evaluate proof
         proof_artifact = task_report.artifact.model_copy()
         if not task_report.task_flags.code and not task_report.task_flags.spec:
             # If the task does not generate code or spec, we need to evaluate using the ground truth
-            gen_proof_input = benchmark_data_to_gen_proof_input(data)
+            gen_proof_input = benchmark_data_to_gen_proof_input(data, itp_type=itp_type)
             proof_artifact.code_aux = gen_proof_input.code_aux
             proof_artifact.code = gen_proof_input.code
             proof_artifact.precond_aux = (
-                data.lean_data.solution_aux + "\n" + gen_proof_input.precond_aux
+                itp_data.solution_aux + "\n" + gen_proof_input.precond_aux
             )
             proof_artifact.precond = gen_proof_input.precond
             proof_artifact.postcond_aux = gen_proof_input.postcond_aux
             proof_artifact.postcond = gen_proof_input.postcond
 
         scores["proof"] = await metric_generated_proof(
-            template_engine, data, proof_artifact
+            template_engine, data, proof_artifact, itp_type=itp_type
         )
 
     task_report.scores = scores

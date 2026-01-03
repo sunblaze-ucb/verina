@@ -232,8 +232,21 @@ class Benchmark:
         existing_report: Optional[EvaluationExperimentReport] = None,
         should_reevaluate: bool = True,
     ) -> EvaluationExperimentReport:
+        from verina.itp import ITPType
+        from verina.benchmark.metrics import set_compiler_config
+
         logger = get_run_logger()
         logger.info(f"Running evaluation for {solution.name()} on {experiment_id}")
+
+        # Set compiler config for Coq (e.g., docker_image for QuickChick)
+        itp_type = self.config.get_itp_type()
+        if itp_type == ITPType.COQ and self.config.coq_config:
+            if self.config.coq_config.docker_image:
+                set_compiler_config(
+                    ITPType.COQ,
+                    docker_image=self.config.coq_config.docker_image
+                )
+                logger.info(f"Using Docker image: {self.config.coq_config.docker_image}")
 
         with (
             BenchmarkContext(experiment_id=experiment_id),
@@ -315,8 +328,23 @@ class Benchmark:
         experiment_id: ExperimentId,
         dataset: List[BenchmarkData],
     ):
+        from verina.itp import ITPType
+        from verina.benchmark.metrics import set_compiler_config
+
         logger = get_run_logger()
         logger.info(f"Running quality assurance on {experiment_id}")
+
+        itp_type = self.config.get_itp_type()
+        logger.info(f"Using ITP type: {itp_type}")
+
+        # Set compiler config for Coq (e.g., docker_image for QuickChick)
+        if itp_type == ITPType.COQ and self.config.coq_config:
+            if self.config.coq_config.docker_image:
+                set_compiler_config(
+                    ITPType.COQ,
+                    docker_image=self.config.coq_config.docker_image
+                )
+                logger.info(f"Using Docker image: {self.config.coq_config.docker_image}")
 
         with (
             BenchmarkContext(experiment_id=experiment_id),
@@ -327,25 +355,39 @@ class Benchmark:
             # Phase 1: transform dataset into evaluation data reports
             raw_data_reports = []
             for data in dataset:
+                # Select appropriate data based on ITP type
+                if itp_type == ITPType.COQ:
+                    if data.coq_data is None:
+                        logger.warning(f"Skipping {data.data_id}: no Coq data available")
+                        continue
+                    itp_data = data.coq_data
+                    # Coq uses 'admit.' as cheat code
+                    cheat_codes = ["admit", "Admitted", "Abort"]
+                else:
+                    itp_data = data.lean_data
+                    # Lean uses 'sorry' as cheat code
+                    cheat_codes = ["sorry"]
+
                 artifact = EvaluationTaskArtifact(
-                    imports=data.lean_data.solution_imports,
-                    code_aux=data.lean_data.code_aux,
-                    code=data.lean_data.code,
-                    precond_aux=data.lean_data.solution_aux
+                    imports=itp_data.solution_imports,
+                    code_aux=itp_data.code_aux,
+                    code=itp_data.code,
+                    precond_aux=itp_data.solution_aux
                     + "\n"
-                    + data.lean_data.precond_aux,
-                    precond=data.lean_data.precond,
-                    postcond_aux=data.lean_data.postcond_aux,
-                    postcond=data.lean_data.postcond,
-                    proof_aux=data.lean_data.proof_aux,
-                    proof=data.lean_data.proof,
+                    + itp_data.precond_aux,
+                    precond=itp_data.precond,
+                    postcond_aux=itp_data.postcond_aux,
+                    postcond=itp_data.postcond,
+                    proof_aux=itp_data.proof_aux,
+                    proof=itp_data.proof,
                 )
                 task_flags = EvaluationTaskFlags(
                     code=True,
                     spec=True,
                     proof=True,
                 )
-                if "sorry" in data.lean_data.proof:
+                # Check for cheat codes in proof
+                if any(cheat in itp_data.proof for cheat in cheat_codes):
                     task_flags.proof = False
                 raw_data_reports.append(
                     EvaluationDataReport(

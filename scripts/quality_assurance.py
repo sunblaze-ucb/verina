@@ -46,6 +46,7 @@ def get_split_by_data_id(
 
 def main(
     config_path: Annotated[str, typer.Option("--config", "-c")],
+    data_filter: Annotated[str, typer.Option("--data", "-d", help="Filter to specific data ID(s), comma-separated")] = "",
 ):
     # Load configuration
     config = BenchmarkRunConfig.from_toml_file(Path(config_path))
@@ -54,14 +55,12 @@ def main(
     print(f"Running quality assurance with config: {config.model_dump_json(indent=2)}")
 
     dataset = load_dataset()
-    #     wanted = ['lab_LongestIncreasingSubsequence_324999618', 'lab_LongestCommonSubsequence_324999618',
-    # 'lab_isValidParentheses_325002190', 'lab_LongestCommonSubsequence_325033255', 'lab_longestConsecutive_325601349',
-    # 'lab_longestCommonSubstring_325744471', 'lab_longestCommonSubsequence_325767793',
-    # 'lab_longestIncreasingSubsequence_325773003', 'lab_task_code_325773191']
-    # wanted = [
-    #     'lab_generateSpiralMatrix_324720188',
-    # ]
-    # dataset = [data for data in dataset if data.data_id in wanted]
+
+    # Filter dataset by data ID if specified
+    if data_filter:
+        wanted = [d.strip() for d in data_filter.split(",")]
+        dataset = [data for data in dataset if data.data_id in wanted]
+        print(f"Filtered to {len(dataset)} data points: {[d.data_id for d in dataset]}")
 
     clean_playground()
     Path(config.output_dir).mkdir(parents=True, exist_ok=True)

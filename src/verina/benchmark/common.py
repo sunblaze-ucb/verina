@@ -5,6 +5,7 @@ from typing import List, Literal, NewType, Optional
 from pydantic import BaseModel, Field
 
 from verina.baseline.config import BaselineConfig
+from verina.itp import ITPType
 from verina.utils.lm import LMConfig
 
 ExperimentId = NewType("ExperimentId", str)
@@ -32,6 +33,23 @@ class BenchmarkSpecEvaluationConfig(BaseModel):
     save_evidence: bool = False
 
 
+class CoqEvaluationConfig(BaseModel):
+    """Coq-specific evaluation configuration."""
+    use_quickchick: bool = Field(
+        False,
+        description="Whether to use QuickChick for property-based testing",
+    )
+    quickchick_num_tests: int = Field(
+        1000,
+        description="Number of QuickChick tests to run",
+    )
+    docker_image: Optional[str] = Field(
+        None,
+        description="Docker image to use for Coq compilation (e.g., 'verina-coq'). "
+                    "If None, uses local coqc. Required for QuickChick.",
+    )
+
+
 class BenchmarkRunConfig(BaseModel):
     # common config
     output_dir: str
@@ -45,6 +63,22 @@ class BenchmarkRunConfig(BaseModel):
         default_factory=list,
         description="List of fewshot example names to use for the benchmark",
     )
+
+    # ITP (Interactive Theorem Prover) selection
+    itp_type: str = Field(
+        "lean",
+        description="The theorem prover to use: 'lean' or 'coq'",
+    )
+
+    # Coq-specific config (only used when itp_type='coq')
+    coq_config: Optional[CoqEvaluationConfig] = Field(
+        None,
+        description="Coq-specific evaluation configuration",
+    )
+
+    def get_itp_type(self) -> ITPType:
+        """Get the ITP type as an enum."""
+        return ITPType(self.itp_type)
 
     # generation
     gen_lm_config: LMConfig

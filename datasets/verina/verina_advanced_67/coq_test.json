@@ -1,0 +1,48 @@
+[
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[((\"x\"%char), 1%nat)]"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"aaa\"%string"
+        },
+        "expected": "[((\"a\"%char), 3%nat)]",
+        "unexpected": [
+            "[((\"a\"%char), 2%nat); ((\"b\"%char), 3%nat)]"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abbbcccaa\"%string"
+        },
+        "expected": "[((\"a\"%char), 1%nat); ((\"b\"%char), 3%nat); ((\"c\"%char), 3%nat); ((\"a\"%char), 2%nat)]",
+        "unexpected": [
+            "[((\"a\"%char), 2%nat); ((\"b\"%char), 3%nat); ((\"c\"%char), 3%nat); ((\"a\"%char), 2%nat)]"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"xyz\"%string"
+        },
+        "expected": "[((\"x\"%char), 1%nat); ((\"y\"%char), 1%nat); ((\"z\"%char), 1%nat)]",
+        "unexpected": [
+            "[((\"x\"%char), 3%nat)]",
+            "[((\"z\"%char), 1%nat)]"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"aabbaa\"%string"
+        },
+        "expected": "[((\"a\"%char), 2%nat); ((\"b\"%char), 2%nat); ((\"a\"%char), 2%nat)]",
+        "unexpected": [
+            "[((\"a\"%char), 2%nat); ((\"b\"%char), 2%nat); ((\"a\"%char), 3%nat)]"
+        ]
+    }
+]

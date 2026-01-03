@@ -1,19 +1,42 @@
 from enum import Enum
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Literal, Optional, Tuple, Type
 from uuid import uuid4
 
 from prefect import task
 from prefect.cache_policies import INPUTS, TASK_SOURCE
 from pydantic import BaseModel
 
-from verina.benchmark.common import BenchmarkSpecEvaluationConfig
+from verina.benchmark.common import BenchmarkSpecEvaluationConfig, CoqEvaluationConfig
 from verina.benchmark.report import EvaluationTaskArtifact
 from verina.dataset.schema import BenchmarkData, RejectInput, TestCase
 from verina.dataset.template import LeanGenerationTaskTemplate
+from verina.itp import ITPType, get_compiler, get_template_class
+from verina.itp.base import ITPCompiler, ITPTemplate
 from verina.lean import (
     check_lean_compile,
     create_lean_file,
 )
+
+# Global compiler configuration (set by set_compiler_config)
+_compiler_config: Dict[ITPType, Dict] = {}
+
+
+def set_compiler_config(itp_type: ITPType, **kwargs) -> None:
+    """Set global compiler configuration for an ITP type.
+
+    This is used to pass configuration like docker_image to the compiler
+    without threading it through all function calls.
+
+    Args:
+        itp_type: The ITP type.
+        **kwargs: Compiler constructor arguments (e.g., docker_image='verina-coq').
+    """
+    _compiler_config[itp_type] = kwargs
+
+
+def get_compiler_config(itp_type: ITPType) -> Dict:
+    """Get the global compiler configuration for an ITP type."""
+    return _compiler_config.get(itp_type, {})
 
 
 def split_message(
@@ -45,22 +68,76 @@ class MetricScore(BaseModel):
     cache_policy=(INPUTS - "file_name") + TASK_SOURCE,
     timeout_seconds=200,
 )
+async def metric_itp_compile(
+    itp_type: ITPType,
+    content: str,
+    file_name: Optional[str] = None,
+) -> Tuple[bool, str]:
+    """
+    Check if the generated ITP code compiles.
+
+    Args:
+        itp_type: The ITP type (lean or coq).
+        content: The source code content.
+        file_name: Optional file name. If not provided, a UUID will be used.
+
+    Returns:
+        A tuple of (success, message).
+
+    Note:
+        Uses global compiler config set by set_compiler_config().
+        For Coq with QuickChick, call set_compiler_config(ITPType.COQ, docker_image='verina-coq').
+    """
+    if file_name is None:
+        file_name = str(uuid4())
+    compiler_kwargs = get_compiler_config(itp_type)
+    compiler = get_compiler(itp_type, **compiler_kwargs)
+    source_file = compiler.create_source_file(file_name, content)
+    return compiler.check_compile(source_file)
+
+
+@task(
+    cache_policy=(INPUTS - "file_name") + TASK_SOURCE,
+    timeout_seconds=200,
+)
 async def metric_lean_compile(
     lean_content: str, file_name: Optional[str] = None
 ) -> Tuple[bool, str]:
     """
     Check if the generated Lean code compiles.
+
+    This is a convenience wrapper around metric_itp_compile for Lean.
     """
-    if file_name is None:
-        file_name = str(uuid4())
-    lean_file = create_lean_file(file_name, lean_content)
-    return check_lean_compile(lean_file)
+    return await metric_itp_compile(ITPType.LEAN, lean_content, file_name)
+
+
+@task(
+    cache_policy=(INPUTS - "file_name") + TASK_SOURCE,
+    timeout_seconds=200,
+)
+async def metric_coq_compile(
+    coq_content: str, file_name: Optional[str] = None
+) -> Tuple[bool, str]:
+    """
+    Check if the generated Coq code compiles.
+
+    This is a convenience wrapper around metric_itp_compile for Coq.
+    """
+    return await metric_itp_compile(ITPType.COQ, coq_content, file_name)
 
 
 class LeanTestScore(Enum):
+    """Test score enum for ITP evaluation.
+
+    Named LeanTestScore for backward compatibility, but used for all ITPs.
+    """
     PASS = "pass"
     FAIL = "fail"
     UNKNOWN = "unknown"
+
+
+# Alias for generic ITP usage (same as LeanTestScore for backward compatibility)
+ITPTestScore = LeanTestScore
 
 
 class CodeMetricScore(MetricScore):
@@ -82,20 +159,21 @@ class CodeMetricScore(MetricScore):
 
 
 async def metric_generated_code_unit_tests(
-    template_engine: LeanGenerationTaskTemplate,
-    generated_code_lean_content: str,
+    template_engine: ITPTemplate,
+    generated_code_content: str,
     test_cases: List[TestCase],
+    itp_type: ITPType = ITPType.LEAN,
 ) -> Dict[int, LeanTestScore]:
-    lean_content = (
-        template_engine.render_test_imports() + "\n" + generated_code_lean_content
+    content = (
+        template_engine.render_test_imports() + "\n" + generated_code_content
     )
 
     for idx, test_case in enumerate(test_cases):
-        lean_content += "\n\n" + template_engine.render_code_unit_test(
+        content += "\n\n" + template_engine.render_code_unit_test(
             test_case, test_idx=idx
         )
 
-    can_compile, compile_msg = await metric_lean_compile(lean_content)
+    can_compile, compile_msg = await metric_itp_compile(itp_type, content)
 
     scores: Dict[int, LeanTestScore] = {}
 
@@ -129,39 +207,50 @@ async def metric_generated_code_unit_tests(
 
 
 async def metric_generated_code(
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     benchmark_data: BenchmarkData,
     artifact: EvaluationTaskArtifact,
     precond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> CodeMetricScore:
-    lean_content = (
-        template_engine.render_imports(benchmark_data.lean_data.task_imports, "task")
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = benchmark_data.coq_data
+        no_precond_default = "True (* no precondition *)"
+    else:
+        itp_data = benchmark_data.lean_data
+        no_precond_default = "True -- no precondition"
+
+    content = (
+        template_engine.render_imports(itp_data.task_imports, "task")
         + "\n"
     )
-    lean_content += (
+    content += (
         template_engine.render_imports(artifact.imports, "llm_solution") + "\n"
     )
-    lean_content += (
-        template_engine.render_aux(benchmark_data.lean_data.task_aux, "task") + "\n"
+    content += (
+        template_engine.render_aux(itp_data.task_aux, "task") + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.precond_aux, "precond") + "\n"
+    content += template_engine.render_aux(artifact.precond_aux, "precond") + "\n"
     precond = artifact.precond
     if precond == "":
-        precond = "True -- no precondition"
-    lean_content += (
+        precond = no_precond_default
+    content += (
         template_engine.render_precond(precond, precond_name=precond_name) + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.code_aux, "code") + "\n"
-    lean_content += (
+    content += template_engine.render_aux(artifact.code_aux, "code") + "\n"
+    content += (
         template_engine.render_code(artifact.code, precond_name=precond_name) + "\n"
     )
 
-    can_compile, compile_err = await metric_lean_compile(lean_content)
+    can_compile, compile_err = await metric_itp_compile(itp_type, content)
     if can_compile:
+        # Select appropriate tests based on ITP type
+        tests = benchmark_data.coq_tests if (itp_type == ITPType.COQ and benchmark_data.coq_tests) else benchmark_data.tests
         unit_test_scores = await metric_generated_code_unit_tests(
-            template_engine, lean_content, benchmark_data.tests
+            template_engine, content, tests, itp_type=itp_type
         )
     else:
         unit_test_scores = {}
@@ -284,14 +373,20 @@ class SpecMetricScore(MetricScore):
 
 
 def update_spec_decidable_scores(
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     score: SpecMetricScore,
     evaluate_type: Literal["precond", "postcond"],
     decidable_msg: str,
+    itp_type: ITPType = ITPType.LEAN,
 ) -> SpecMetricScore:
+    # Use ITP-specific markers
+    if itp_type == ITPType.COQ:
+        markers = ["_marker_test_start", "_marker_sound_decidable_end"]
+    else:
+        markers = ["###test start###", "###sound decidable end###"]
     decidable_msg_split = split_message(
         decidable_msg,
-        ["###test start###", "###sound decidable end###"],
+        markers,
         remove_first=True,
     )
     if len(decidable_msg_split) != 2:
@@ -351,21 +446,208 @@ def update_spec_decidable_scores(
     return score
 
 
-def update_spec_plausible_scores(
-    template_engine: LeanGenerationTaskTemplate,
+def _parse_coq_quickchick_results(output: str) -> List[str]:
+    """Parse Coq QuickChick output into a list of 'pass' or 'fail' results."""
+    results = []
+    for line in output.split('\n'):
+        if '+++ Passed' in line:
+            results.append('pass')
+        elif '*** Failed' in line:
+            results.append('fail')
+    return results
+
+
+def _update_spec_plausible_scores_coq(
+    template_engine: ITPTemplate,
     score: SpecMetricScore,
     evaluate_type: Literal["precond", "postcond"],
     plausible_msg: str,
     use_plausible_pass: bool,
 ) -> SpecMetricScore:
+    """Parse Coq QuickChick output sequentially for plausible tests.
+
+    Since Coq comments don't appear in output, we parse by splitting on
+    section markers and counting QuickChick results in each section.
+    """
+    markers = [
+        "_marker_test_start",
+        "_marker_sound_plausible_end",
+        "_marker_sound_plausible_inverse_end",
+        "_marker_complete_plausible_end",
+    ]
     plausible_msg_split = split_message(
         plausible_msg,
-        [
+        markers,
+        remove_first=True,
+    )
+    if len(plausible_msg_split) != 4:
+        return score
+
+    sound_section = plausible_msg_split[0]
+    sound_inverse_section = plausible_msg_split[1]
+    complete_section = plausible_msg_split[2]
+    complete_inverse_section = plausible_msg_split[3]
+
+    # Parse QuickChick results from each section
+    sound_results = _parse_coq_quickchick_results(sound_section)
+    sound_inverse_results = _parse_coq_quickchick_results(sound_inverse_section)
+    complete_results = _parse_coq_quickchick_results(complete_section)
+    complete_inverse_results = _parse_coq_quickchick_results(complete_inverse_section)
+
+    # Get test indices from score
+    sound_test_keys = list(score.sound_tests.keys())
+    complete_test_keys = list(score.complete_tests.keys())
+
+    # Map results to tests by position
+    for i, key in enumerate(sound_test_keys):
+        if i < len(sound_results):
+            result = sound_results[i]
+            if result == 'pass':
+                score.sound_tests[key].score_detail["plausible"] = LeanTestScore.PASS
+            else:
+                score.sound_tests[key].score_detail["plausible"] = LeanTestScore.FAIL
+        if i < len(sound_inverse_results):
+            result = sound_inverse_results[i]
+            if result == 'pass':
+                # Inverse test passing means the original property doesn't hold
+                score.sound_tests[key].score_detail["plausible_inverse"] = LeanTestScore.PASS
+            else:
+                score.sound_tests[key].score_detail["plausible_inverse"] = LeanTestScore.FAIL
+
+    for i, key in enumerate(complete_test_keys):
+        if i < len(complete_results):
+            result = complete_results[i]
+            if result == 'pass':
+                score.complete_tests[key].score_detail["plausible"] = LeanTestScore.PASS
+            else:
+                score.complete_tests[key].score_detail["plausible"] = LeanTestScore.FAIL
+        if i < len(complete_inverse_results):
+            result = complete_inverse_results[i]
+            if result == 'pass':
+                score.complete_tests[key].score_detail["plausible_inverse"] = LeanTestScore.PASS
+            else:
+                score.complete_tests[key].score_detail["plausible_inverse"] = LeanTestScore.FAIL
+
+    # Finalize scores based on plausible results
+    for key in sound_test_keys:
+        detail = score.sound_tests[key].score_detail
+        if use_plausible_pass:
+            # Sound test passes if plausible=pass OR (plausible_inverse=fail when precond holds)
+            if detail.get("plausible") == LeanTestScore.PASS:
+                score.sound_tests[key].score = LeanTestScore.PASS
+            elif detail.get("plausible_inverse") == LeanTestScore.FAIL:
+                score.sound_tests[key].score = LeanTestScore.PASS
+            elif detail.get("plausible") == LeanTestScore.FAIL or detail.get("plausible_inverse") == LeanTestScore.PASS:
+                score.sound_tests[key].score = LeanTestScore.FAIL
+
+    for key in complete_test_keys:
+        detail = score.complete_tests[key].score_detail
+        if use_plausible_pass:
+            if detail.get("plausible") == LeanTestScore.PASS:
+                score.complete_tests[key].score = LeanTestScore.PASS
+            elif detail.get("plausible_inverse") == LeanTestScore.FAIL:
+                score.complete_tests[key].score = LeanTestScore.PASS
+            elif detail.get("plausible") == LeanTestScore.FAIL or detail.get("plausible_inverse") == LeanTestScore.PASS:
+                score.complete_tests[key].score = LeanTestScore.FAIL
+
+    score.update_test_scores()
+    return score
+
+
+def _parse_coq_print_markers(
+    section_msg: str,
+    marker_base: str,
+    evaluate_type: Literal["precond", "postcond"],
+    is_sound: bool,
+    is_inverse: bool = False,
+) -> Dict[int | Tuple[int, int], str]:
+    """Parse Coq Print-based test markers and extract test messages.
+
+    The Print output looks like:
+        _m_postcond_test_undecidable_plausible_0_0_s = tt
+             : unit
+        QuickChick (...)
+        +++ Passed 10000 tests
+
+    We need to find markers like `_m_{marker_base}_{idx}_{suffix}` where suffix is:
+    - _s for sound tests
+    - _s_inv for sound inverse tests
+    - _c for complete tests
+    - _c_inv for complete inverse tests
+
+    Args:
+        section_msg: The output section to parse
+        marker_base: The base marker name (e.g., "postcond_test_undecidable_plausible")
+        evaluate_type: "precond" or "postcond"
+        is_sound: True for sound tests, False for complete tests
+        is_inverse: True for inverse tests
+    """
+    import re
+
+    result: Dict[int | Tuple[int, int], str] = {}
+
+    # Determine suffix based on is_sound and is_inverse
+    if is_sound:
+        suffix = "_s_inv" if is_inverse else "_s"
+    else:
+        suffix = "_c_inv" if is_inverse else "_c"
+
+    # Pattern to match Print marker output: _m_{marker_base}_{idx}{suffix} = tt
+    # The idx can be single number (e.g., "0") or double (e.g., "0_0" for postcond sound tests)
+    safe_marker = marker_base.replace("-", "_")
+    pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?){suffix}\s*="
+
+    # Find all marker positions
+    matches = list(re.finditer(pattern, section_msg))
+
+    for i, match in enumerate(matches):
+        idx_str = match.group(1)
+        start_pos = match.end()
+        # End position is either the next marker or end of string
+        end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(section_msg)
+
+        msg_content = section_msg[start_pos:end_pos]
+
+        # Parse the index
+        if "_" in idx_str:
+            # Tuple index (e.g., "0_0" -> (0, 0))
+            parts = idx_str.split("_")
+            idx = (int(parts[0]), int(parts[1]))
+        else:
+            # Single index
+            idx = int(idx_str)
+
+        result[idx] = msg_content
+
+    return result
+
+
+def update_spec_plausible_scores(
+    template_engine: ITPTemplate,
+    score: SpecMetricScore,
+    evaluate_type: Literal["precond", "postcond"],
+    plausible_msg: str,
+    use_plausible_pass: bool,
+    itp_type: ITPType = ITPType.LEAN,
+) -> SpecMetricScore:
+    # Use ITP-specific markers
+    if itp_type == ITPType.COQ:
+        markers = [
+            "_marker_test_start",
+            "_marker_sound_plausible_end",
+            "_marker_sound_plausible_inverse_end",
+            "_marker_complete_plausible_end",
+        ]
+    else:
+        markers = [
             "###test start###",
             "###sound plausible end###",
             "###sound plausible inverse end###",
             "###complete plausible end###",
-        ],
+        ]
+    plausible_msg_split = split_message(
+        plausible_msg,
+        markers,
         remove_first=True,
     )
     if len(plausible_msg_split) != 4:
@@ -385,53 +667,72 @@ def update_spec_plausible_scores(
     else:
         marker_func = template_engine.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER
 
-    spec_undecidable_start_marker = (
-        f"<{marker_func(template_engine.UNDECIDABLE_PLAUSIBLE)}>"
-    )
-    spec_undecidable_end_marker = (
-        f"</{marker_func(template_engine.UNDECIDABLE_PLAUSIBLE)}>"
-    )
-    sound_plausible_msg = sound_plausible_msg.split(spec_undecidable_start_marker)[1:]
-    sound_plausible_inverse_msg = sound_plausible_inverse_msg.split(
-        spec_undecidable_start_marker
-    )[1:]
-    complete_plausible_msg = complete_plausible_msg.split(
-        spec_undecidable_start_marker
-    )[1:]
-    complete_plausible_inverse_msg = complete_plausible_inverse_msg.split(
-        spec_undecidable_start_marker
-    )[1:]
+    marker_base = marker_func(template_engine.UNDECIDABLE_PLAUSIBLE)
 
-    for msg in complete_plausible_msg:
-        msg = msg.split(spec_undecidable_end_marker)
-        assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
-        complete_plausible_msg_map[int(msg[0])] = msg[1]
-    for msg in complete_plausible_inverse_msg:
-        msg = msg.split(spec_undecidable_end_marker)
-        assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
-        complete_plausible_inverse_msg_map[int(msg[0])] = msg[1]
-    for msg in sound_plausible_msg:
-        msg = msg.split(spec_undecidable_end_marker)
-        assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
-        if evaluate_type == "precond":
-            sound_plausible_msg_map[int(msg[0])] = msg[1]
-        else:
-            idxs = msg[0].split(",")
-            assert len(idxs) == 2, (
-                f"Undecidable msg idx should be split into 2 parts: {msg}"
-            )
-            sound_plausible_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
-    for msg in sound_plausible_inverse_msg:
-        msg = msg.split(spec_undecidable_end_marker)
-        assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
-        if evaluate_type == "precond":
-            sound_plausible_inverse_msg_map[int(msg[0])] = msg[1]
-        else:
-            idxs = msg[0].split(",")
-            assert len(idxs) == 2, (
-                f"Undecidable msg idx should be split into 2 parts: {msg}"
-            )
-            sound_plausible_inverse_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
+    # Use different parsing logic for Coq (Print-based markers) vs Lean (XML-like markers)
+    if itp_type == ITPType.COQ:
+        # Parse Coq Print-based markers
+        # Sound tests: normal (no _inv suffix)
+        sound_plausible_msg_map = _parse_coq_print_markers(
+            sound_plausible_msg, marker_base, evaluate_type, is_sound=True, is_inverse=False
+        )
+        # Sound inverse tests: have _inv suffix
+        sound_plausible_inverse_msg_map = _parse_coq_print_markers(
+            sound_plausible_inverse_msg, marker_base, evaluate_type, is_sound=True, is_inverse=True
+        )
+        # Complete tests: normal (no _inv suffix)
+        complete_plausible_msg_map = _parse_coq_print_markers(
+            complete_plausible_msg, marker_base, evaluate_type, is_sound=False, is_inverse=False
+        )
+        # Complete inverse tests: have _inv suffix
+        complete_plausible_inverse_msg_map = _parse_coq_print_markers(
+            complete_plausible_inverse_msg, marker_base, evaluate_type, is_sound=False, is_inverse=True
+        )
+    else:
+        # Parse Lean XML-like markers
+        spec_undecidable_start_marker = f"<{marker_base}>"
+        spec_undecidable_end_marker = f"</{marker_base}>"
+        sound_plausible_msgs = sound_plausible_msg.split(spec_undecidable_start_marker)[1:]
+        sound_plausible_inverse_msgs = sound_plausible_inverse_msg.split(
+            spec_undecidable_start_marker
+        )[1:]
+        complete_plausible_msgs = complete_plausible_msg.split(
+            spec_undecidable_start_marker
+        )[1:]
+        complete_plausible_inverse_msgs = complete_plausible_inverse_msg.split(
+            spec_undecidable_start_marker
+        )[1:]
+
+        for msg in complete_plausible_msgs:
+            msg = msg.split(spec_undecidable_end_marker)
+            assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
+            complete_plausible_msg_map[int(msg[0])] = msg[1]
+        for msg in complete_plausible_inverse_msgs:
+            msg = msg.split(spec_undecidable_end_marker)
+            assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
+            complete_plausible_inverse_msg_map[int(msg[0])] = msg[1]
+        for msg in sound_plausible_msgs:
+            msg = msg.split(spec_undecidable_end_marker)
+            assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
+            if evaluate_type == "precond":
+                sound_plausible_msg_map[int(msg[0])] = msg[1]
+            else:
+                idxs = msg[0].split(",")
+                assert len(idxs) == 2, (
+                    f"Undecidable msg idx should be split into 2 parts: {msg}"
+                )
+                sound_plausible_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
+        for msg in sound_plausible_inverse_msgs:
+            msg = msg.split(spec_undecidable_end_marker)
+            assert len(msg) == 2, f"Undecidable msg should be split into 2 parts: {msg}"
+            if evaluate_type == "precond":
+                sound_plausible_inverse_msg_map[int(msg[0])] = msg[1]
+            else:
+                idxs = msg[0].split(",")
+                assert len(idxs) == 2, (
+                    f"Undecidable msg idx should be split into 2 parts: {msg}"
+                )
+                sound_plausible_inverse_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
 
     def plausible_msg_to_score(msg: str, inverse: bool) -> LeanTestScore:
         score = LeanTestScore.UNKNOWN
@@ -478,31 +779,48 @@ def update_spec_plausible_scores(
 # TODO: precond and postcond name
 async def metric_generated_spec_unit_tests(
     config: BenchmarkSpecEvaluationConfig,
-    template_engine: LeanGenerationTaskTemplate,
-    generated_spec_lean_content: str,
+    template_engine: ITPTemplate,
+    generated_spec_content: str,
     score: SpecMetricScore,
     evaluate_type: Literal["precond", "postcond"],
     reject_inputs: List[RejectInput],
     test_cases: List[TestCase],
     precond_name: str = "",
     postcond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> SpecMetricScore:
     score.init_test_scores(evaluate_type, reject_inputs, test_cases)
 
-    lean_content_header = (
-        template_engine.render_test_imports() + "\n" + generated_spec_lean_content
+    content_header = (
+        template_engine.render_test_imports() + "\n" + generated_spec_content
     )
 
-    lean_content_header += '\n#print "###test start###"\n\n'
+    # Print markers differ between ITPs
+    if itp_type == ITPType.COQ:
+        # Use Print with defined constants to output markers - Coq comments don't appear in output
+        # Define marker constants first, then print them
+        test_start_marker = '\nDefinition _marker_test_start := tt. Print _marker_test_start.\n\n'
+        sound_decidable_end_marker = '\nDefinition _marker_sound_decidable_end := tt. Print _marker_sound_decidable_end.\n\n'
+        sound_plausible_end_marker = '\nDefinition _marker_sound_plausible_end := tt. Print _marker_sound_plausible_end.\n\n'
+        sound_plausible_inv_end_marker = '\nDefinition _marker_sound_plausible_inverse_end := tt. Print _marker_sound_plausible_inverse_end.\n\n'
+        complete_plausible_end_marker = '\nDefinition _marker_complete_plausible_end := tt. Print _marker_complete_plausible_end.\n\n'
+    else:
+        test_start_marker = '\n#print "###test start###"\n\n'
+        sound_decidable_end_marker = '\n#print "###sound decidable end###"\n\n'
+        sound_plausible_end_marker = '\n#print "###sound plausible end###"\n\n'
+        sound_plausible_inv_end_marker = '\n#print "###sound plausible inverse end###"\n\n'
+        complete_plausible_end_marker = '\n#print "###complete plausible end###"\n\n'
+
+    content_header += test_start_marker
 
     # Decidable tests
 
-    decidable_lean_content = lean_content_header
+    decidable_content = content_header
 
     for idx, test_case in enumerate(test_cases):
         if evaluate_type == "precond":
             if score.sound_tests[idx].score == LeanTestScore.UNKNOWN:
-                decidable_lean_content += (
+                decidable_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_sound_decidable(
                         test_case, test_idx=idx
@@ -514,19 +832,19 @@ async def metric_generated_spec_unit_tests(
                     score.sound_tests[(idx, unexpected_idx)].score
                     == LeanTestScore.UNKNOWN
                 ):
-                    decidable_lean_content += (
+                    decidable_content += (
                         "\n\n"
                         + template_engine.render_postcond_unit_test_sound_decidable(
                             test_case, test_idx=idx, unexpected_idx=unexpected_idx
                         )
                     )
 
-    decidable_lean_content += '\n#print "###sound decidable end###"\n\n'
+    decidable_content += sound_decidable_end_marker
 
     if evaluate_type == "precond":
         for idx, reject_input in enumerate(reject_inputs):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                decidable_lean_content += (
+                decidable_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_complete_decidable(
                         reject_input, test_idx=idx
@@ -535,29 +853,29 @@ async def metric_generated_spec_unit_tests(
     else:
         for idx, test_case in enumerate(test_cases):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                decidable_lean_content += (
+                decidable_content += (
                     "\n\n"
                     + template_engine.render_postcond_unit_test_complete_decidable(
                         test_case, test_idx=idx
                     )
                 )
 
-    _, decidable_msg = await metric_lean_compile(decidable_lean_content)
+    _, decidable_msg = await metric_itp_compile(itp_type, decidable_content)
     if decidable_msg != "TIMEOUT" and "COMPERROR" not in decidable_msg:
         score = update_spec_decidable_scores(
-            template_engine, score, evaluate_type, decidable_msg
+            template_engine, score, evaluate_type, decidable_msg, itp_type
         )
     else:
-        print(f"Lean compile failed for decidable tests: {decidable_msg}")
+        print(f"ITP compile failed for decidable tests: {decidable_msg}")
 
     # Plausible tests
 
-    plausible_lean_content = lean_content_header
+    plausible_content = content_header
 
     for idx, test_case in enumerate(test_cases):
         if evaluate_type == "precond":
             if score.sound_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_sound_plausible(
                         test_case,
@@ -572,7 +890,7 @@ async def metric_generated_spec_unit_tests(
                     score.sound_tests[(idx, unexpected_idx)].score
                     == LeanTestScore.UNKNOWN
                 ):
-                    plausible_lean_content += (
+                    plausible_content += (
                         "\n\n"
                         + template_engine.render_postcond_unit_test_sound_plausible(
                             test_case,
@@ -583,12 +901,12 @@ async def metric_generated_spec_unit_tests(
                         )
                     )
 
-    plausible_lean_content += '\n#print "###sound plausible end###"\n\n'
+    plausible_content += sound_plausible_end_marker
 
     for idx, test_case in enumerate(test_cases):
         if evaluate_type == "precond":
             if score.sound_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_sound_plausible(
                         test_case,
@@ -603,7 +921,7 @@ async def metric_generated_spec_unit_tests(
                     score.sound_tests[(idx, unexpected_idx)].score
                     == LeanTestScore.UNKNOWN
                 ):
-                    plausible_lean_content += (
+                    plausible_content += (
                         "\n\n"
                         + template_engine.render_postcond_unit_test_sound_plausible(
                             test_case,
@@ -614,12 +932,12 @@ async def metric_generated_spec_unit_tests(
                         )
                     )
 
-    plausible_lean_content += '\n#print "###sound plausible inverse end###"\n\n'
+    plausible_content += sound_plausible_inv_end_marker
 
     if evaluate_type == "precond":
         for idx, reject_input in enumerate(reject_inputs):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_complete_plausible(
                         reject_input,
@@ -631,7 +949,7 @@ async def metric_generated_spec_unit_tests(
     else:
         for idx, test_case in enumerate(test_cases):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_postcond_unit_test_complete_plausible(
                         test_case,
@@ -641,12 +959,12 @@ async def metric_generated_spec_unit_tests(
                     )
                 )
 
-    plausible_lean_content += '\n#print "###complete plausible end###"\n\n'
+    plausible_content += complete_plausible_end_marker
 
     if evaluate_type == "precond":
         for idx, reject_input in enumerate(reject_inputs):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_precond_unit_test_complete_plausible(
                         reject_input,
@@ -658,7 +976,7 @@ async def metric_generated_spec_unit_tests(
     else:
         for idx, test_case in enumerate(test_cases):
             if score.complete_tests[idx].score == LeanTestScore.UNKNOWN:
-                plausible_lean_content += (
+                plausible_content += (
                     "\n\n"
                     + template_engine.render_postcond_unit_test_complete_plausible(
                         test_case,
@@ -668,7 +986,7 @@ async def metric_generated_spec_unit_tests(
                     )
                 )
 
-    _, plausible_msg = await metric_lean_compile(plausible_lean_content)
+    _, plausible_msg = await metric_itp_compile(itp_type, plausible_content)
     if plausible_msg != "TIMEOUT" and "COMPERROR" not in plausible_msg:
         score = update_spec_plausible_scores(
             template_engine,
@@ -676,9 +994,10 @@ async def metric_generated_spec_unit_tests(
             evaluate_type,
             plausible_msg,
             config.use_plausible_pass,
+            itp_type,
         )
     else:
-        print(f"Lean compile failed for plausible tests: {plausible_msg}")
+        print(f"ITP compile failed for plausible tests: {plausible_msg}")
 
     score.finalize_test_scores()
     return score
@@ -699,43 +1018,50 @@ def make_spec_aux_testable(spec_aux: str) -> str:
 
 
 def make_spec_test_content(
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     benchmark_data: BenchmarkData,
     artifact: EvaluationTaskArtifact,
     evaluate_type: Literal["precond", "postcond"],
     precond_name: str = "",
     postcond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> str:
-    lean_content = (
-        template_engine.render_imports(benchmark_data.lean_data.task_imports, "task")
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = benchmark_data.coq_data
+    else:
+        itp_data = benchmark_data.lean_data
+
+    content = (
+        template_engine.render_imports(itp_data.task_imports, "task")
         + "\n"
     )
-    lean_content += (
+    content += (
         template_engine.render_imports(artifact.imports, "llm_solution") + "\n"
     )
-    lean_content += (
-        template_engine.render_aux(benchmark_data.lean_data.task_aux, "task") + "\n"
+    content += (
+        template_engine.render_aux(itp_data.task_aux, "task") + "\n"
     )
 
-    lean_content += (
+    content += (
         template_engine.render_aux(
             make_spec_aux_testable(artifact.precond_aux), "precond"
         )
         + "\n"
     )
-    lean_content += (
+    content += (
         template_engine.render_precond(artifact.precond, precond_name=precond_name)
         + "\n"
     )
 
     if evaluate_type == "postcond":
-        lean_content += (
+        content += (
             template_engine.render_aux(
                 make_spec_aux_testable(artifact.postcond_aux), "postcond"
             )
             + "\n"
         )
-        lean_content += (
+        content += (
             template_engine.render_postcond(
                 artifact.postcond,
                 precond_name=precond_name,
@@ -744,31 +1070,33 @@ def make_spec_test_content(
             + "\n"
         )
 
-    return lean_content
+    return content
 
 
 async def metric_generated_spec_compile(
     existing_score: Optional[SpecMetricScore],
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     benchmark_data: BenchmarkData,
     artifact: EvaluationTaskArtifact,
     evaluate_type: Literal["precond", "postcond"],
     precond_name: str = "",
     postcond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> SpecMetricScore:
     if existing_score is not None:
         return existing_score
 
-    lean_content = make_spec_test_content(
+    content = make_spec_test_content(
         template_engine,
         benchmark_data,
         artifact,
         evaluate_type,
         precond_name=precond_name,
         postcond_name=postcond_name,
+        itp_type=itp_type,
     )
 
-    can_compile, compile_err = await metric_lean_compile(lean_content)
+    can_compile, compile_err = await metric_itp_compile(itp_type, content)
 
     return SpecMetricScore(
         can_compile=can_compile,
@@ -786,36 +1114,41 @@ async def metric_generated_spec_compile(
 async def metric_generated_spec_unit_test_entry(
     existing_score: SpecMetricScore,
     config: BenchmarkSpecEvaluationConfig,
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     benchmark_data: BenchmarkData,
     artifact: EvaluationTaskArtifact,
     evaluate_type: Literal["precond", "postcond"],
     precond_name: str = "",
     postcond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> SpecMetricScore:
     score = existing_score
 
-    lean_content = make_spec_test_content(
+    content = make_spec_test_content(
         template_engine,
         benchmark_data,
         artifact,
         evaluate_type,
         precond_name=precond_name,
         postcond_name=postcond_name,
+        itp_type=itp_type,
     )
 
     if score.can_compile:
         if config.unit_test:
+            # Select appropriate tests based on ITP type
+            tests = benchmark_data.coq_tests if (itp_type == ITPType.COQ and benchmark_data.coq_tests) else benchmark_data.tests
             score = await metric_generated_spec_unit_tests(
                 config,
                 template_engine,
-                lean_content,
+                content,
                 score,
                 evaluate_type,
                 benchmark_data.reject_inputs,
-                benchmark_data.tests,
+                tests,
                 precond_name,
                 postcond_name,
+                itp_type=itp_type,
             )
 
     return score
@@ -827,13 +1160,15 @@ class ProofMetricScore(MetricScore):
 
 
 async def metric_generated_proof(
-    template_engine: LeanGenerationTaskTemplate,
+    template_engine: ITPTemplate,
     benchmark_data: BenchmarkData,
     artifact: EvaluationTaskArtifact,
     precond_name: str = "",
     postcond_name: str = "",
+    itp_type: ITPType = ITPType.LEAN,
 ) -> ProofMetricScore:
-    cheat_codes = ["sorry", "admit", "axiom"]
+    # Get cheat codes from template
+    cheat_codes = template_engine.get_cheat_codes()
     for code in cheat_codes:
         if code in artifact.proof_aux or code in artifact.proof:
             return ProofMetricScore(
@@ -841,43 +1176,49 @@ async def metric_generated_proof(
                 error="cheatcodes like `sorry` or `admit` should not be used in proof",
             )
 
-    lean_content = (
-        template_engine.render_imports(benchmark_data.lean_data.task_imports, "task")
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = benchmark_data.coq_data
+    else:
+        itp_data = benchmark_data.lean_data
+
+    content = (
+        template_engine.render_imports(itp_data.task_imports, "task")
         + "\n"
     )
-    lean_content += (
+    content += (
         template_engine.render_imports(artifact.imports, "llm_solution") + "\n"
     )
-    lean_content += (
-        template_engine.render_aux(benchmark_data.lean_data.task_aux, "task") + "\n"
+    content += (
+        template_engine.render_aux(itp_data.task_aux, "task") + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.precond_aux, "precond") + "\n"
-    lean_content += (
+    content += template_engine.render_aux(artifact.precond_aux, "precond") + "\n"
+    content += (
         template_engine.render_precond(artifact.precond, precond_name=precond_name)
         + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.code_aux, "code") + "\n"
-    lean_content += (
+    content += template_engine.render_aux(artifact.code_aux, "code") + "\n"
+    content += (
         template_engine.render_code(artifact.code, precond_name=precond_name) + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.postcond_aux, "postcond") + "\n"
-    lean_content += (
+    content += template_engine.render_aux(artifact.postcond_aux, "postcond") + "\n"
+    content += (
         template_engine.render_postcond(
             artifact.postcond, precond_name=precond_name, postcond_name=postcond_name
         )
         + "\n"
     )
 
-    lean_content += template_engine.render_aux(artifact.proof_aux, "proof") + "\n"
-    lean_content += (
+    content += template_engine.render_aux(artifact.proof_aux, "proof") + "\n"
+    content += (
         template_engine.render_proof(
             artifact.proof, precond_name=precond_name, postcond_name=postcond_name
         )
         + "\n"
     )
 
-    can_compile, compile_err = await metric_lean_compile(lean_content)
+    can_compile, compile_err = await metric_itp_compile(itp_type, content)
     return ProofMetricScore(can_compile=can_compile, error=compile_err)

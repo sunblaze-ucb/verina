@@ -1,8 +1,11 @@
-output_dir = "output/qa"
+output_dir = "output/qa_coq"
 max_workers = 32
 rounds = 1
 fewshot_example_names = []
 run_type = "qa"
+
+# ITP selection - use Coq instead of Lean
+itp_type = "coq"
 
 [gen_lm_config]
 provider = "openai" # does not matter for qa
@@ -20,3 +23,8 @@ evidence_rel_dir = "./evidence"
 use_evidence = false
 generate_evidence_template = true
 save_evidence = true
+
+[coq_config]
+use_quickchick = true  # Enable QuickChick for plausible testing
+quickchick_num_tests = 1000
+docker_image = "verina-coq"  # Docker image with QuickChick

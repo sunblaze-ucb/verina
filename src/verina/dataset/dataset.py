@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from verina.dataset.parsing import parse_benchmark_lean_data
 from verina.dataset.schema import (
@@ -148,8 +148,34 @@ def load_benchmark_data_from_task_file(
     if test_path.exists():
         tests = parse_test_file(test_path)
 
+    # Read coq_test.json if it exists (Coq-specific tests with Coq literal values)
+    coq_test_path = task_dir / "coq_test.json"
+    coq_tests = None
+    if coq_test_path.exists():
+        coq_tests = parse_test_file(coq_test_path)
+
     metadata = task_data.get("metadata", {})
     metadata_json = json.dumps(metadata)
+
+    # Load Coq signature if present
+    coq_signature: Optional[Signature] = None
+    if "coq_signature" in task_data:
+        try:
+            coq_signature = Signature(**task_data["coq_signature"])
+        except Exception as e:
+            logger.warning(f"Error parsing coq_signature for {task_id}: {str(e)}")
+
+    # Read .v file if present
+    coq_file = task_data.get("coq_file", None)
+    coq_data = None
+    if coq_file:
+        coq_path = task_dir / coq_file
+        if coq_path.exists():
+            try:
+                from verina.coq.parsing import parse_benchmark_coq_data
+                coq_data = parse_benchmark_coq_data(coq_path.read_text())
+            except Exception as e:
+                logger.warning(f"Error parsing Coq file for {task_id}: {str(e)}")
 
     # Create benchmark data and convert to dict with consistent types
     benchmark_data = BenchmarkData(
@@ -157,9 +183,13 @@ def load_benchmark_data_from_task_file(
         description=description,
         signature=signature,
         lean_data=lean_data,
+        coq_signature=coq_signature,
+        coq_file=coq_file,
+        coq_data=coq_data,
         spec_desc=spec_desc,
         reject_inputs=reject_inputs,
         tests=tests,
+        coq_tests=coq_tests,
         metadata=metadata_json,
     )
 

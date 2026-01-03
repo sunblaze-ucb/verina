@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, Field, Json
 from rich import print
 
 from verina.dataset.parsing import BenchmarkLeanData
+
+if TYPE_CHECKING:
+    from verina.coq.parsing import BenchmarkCoqData
 
 
 class Parameter(BaseModel):
@@ -51,12 +54,29 @@ class BenchmarkData(BaseModel):
         description="The natural language description of the programming task",
     )
 
+    # Lean signature (original/primary)
     signature: Signature = Field(
-        description="The implementation function signature that defines the type of inputs and outputs",
+        description="The Lean implementation function signature that defines the type of inputs and outputs",
     )
 
     lean_data: BenchmarkLeanData = Field(
         description="The lean data that contains the imports, auxiliary code, and the solution",
+    )
+
+    # Coq signature and data (optional, for multi-ITP support)
+    coq_signature: Optional[Signature] = Field(
+        None,
+        description="The Coq implementation function signature with Coq types",
+    )
+
+    coq_file: Optional[str] = Field(
+        None,
+        description="Path to the Coq source file (task.v)",
+    )
+
+    coq_data: Optional[Any] = Field(
+        None,
+        description="The Coq data that contains the imports, auxiliary code, and the solution (BenchmarkCoqData)",
     )
 
     spec_desc: SpecDesc = Field(
@@ -69,6 +89,11 @@ class BenchmarkData(BaseModel):
 
     tests: List[TestCase] = Field(
         description="A list of test cases that cover the different possible behaviors of the implementation",
+    )
+
+    coq_tests: Optional[List[TestCase]] = Field(
+        default=None,
+        description="Coq-specific test cases with Coq literal values (from coq_test.json)",
     )
 
     metadata: Optional[Json[Any]] = Field(None, description="The metadata")
