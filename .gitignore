@@ -186,6 +186,22 @@ lean-playground/*
 
 .lake/
 
+# Coq compilation artifacts
+*.vo
+*.vok
+*.vos
+*.glob
+.*.aux
+
+# Coq playground
+coq-playground/
+
+# Backup files
+*.bak
+
+# Temporary directories
+dataset_bug/
+
 datasets/processed/*
 !datasets/processed/.gitkeep
 datasets/verina/verina_dataset.jsonl
