@@ -44,8 +44,9 @@ def FindEvenNumbers (arr : Array Int) (h_precond : FindEvenNumbers_precond (arr)
 @[reducible, simp]
 def FindEvenNumbers_postcond (arr : Array Int) (result: Array Int) (h_precond : FindEvenNumbers_precond (arr)) :=
   -- !benchmark @start postcond
-  -- Result contains exactly the even numbers from arr in order
-  result.toList = arr.toList.filter isEven
+  result.all (fun x => isEven x) ∧
+  result.toList.Sublist arr.toList ∧
+  result.size = arr.toList.countP isEven
   -- !benchmark @end postcond
 
 

@@ -6,5 +6,5 @@
       "param_type": "List Int"
     }
   ],
-  "return_type": "Int"
+  "return_type": "Option Int"
 }
