@@ -4,7 +4,7 @@ This task requires writing a Lean 4 method that's goal is to determine the minim
 -----Input-----
 
 The input consists of:
-- nums: A non-empty list of positive integers that forms a valid permutation of [1, 2, ..., n] where n = length of the list. The list has at most 50 elements.
+- nums: A permutation of [1, 2, ..., n] where n is the length of the list (all distinct integers in range [1, n]).
 
 ----Output-----
 

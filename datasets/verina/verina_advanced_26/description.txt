@@ -5,7 +5,7 @@ This task requires writing a Lean 4 method that generates all possible letter co
 The input consists of a string (String). The string may be empty.
 
 -----Output-----
-The output is a list of strings (List String) where each string represents a unique combination of letters corresponding to the input digits. If the input string is empty, the output is an empty list.
+The output is a list of strings (List String) where each string represents a unique combination of letters corresponding to the input digits. If the input string is empty or contains any invalid digit (not 2-9), the output is an empty list.
 
 -----Note-----
 

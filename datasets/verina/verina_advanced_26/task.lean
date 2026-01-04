@@ -22,7 +22,7 @@ def digitToLetters (c : Char) : List Char :=
 @[reducible]
 def letterCombinations_precond (digits : String) : Prop :=
   -- !benchmark @start precond
-  digits.all (fun c => c ∈ ['2','3','4','5','6','7','8','9'])  -- only valid digits
+  True
   -- !benchmark @end precond
 
 
@@ -33,7 +33,9 @@ def letterCombinations_precond (digits : String) : Prop :=
 def letterCombinations (digits : String) (h_precond : letterCombinations_precond (digits)) : List String :=
   -- !benchmark @start code
   let chars := digits.toList
-  go chars
+  -- Return [] if any invalid digit exists
+  if chars.any (fun c => digitToLetters c == []) then []
+  else go chars
   where
     go : List Char → List String
     | [] => []

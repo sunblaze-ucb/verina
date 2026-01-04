@@ -54,5 +54,25 @@
             "[\"r\"]",
             "[\"s\"]"
         ]
+    },
+    {
+        "input": {
+            "digits": "0"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "21"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"]",
+            "[\"b\"]"
+        ]
     }
 ]

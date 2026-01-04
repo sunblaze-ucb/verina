@@ -6,9 +6,9 @@ Return the length of the longest good subarray of nums.
 A subarray is a contiguous non-empty sequence of elements within an array.
 
 -----Input-----
-The input consists of an array of natural numbers nums and a natural number k:
+The input consists of an array of natural numbers nums and a positive natural number k:
 nums: an array of natural numbers.
-k: a natural number
+k: a positive natural number (k > 0)
 
 -----Output-----
 The output is a natural number:

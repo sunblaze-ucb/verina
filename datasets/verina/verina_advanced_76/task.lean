@@ -1,6 +1,5 @@
 -- !benchmark @start import type=solution
-import Std
-open Std
+
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
@@ -24,13 +23,14 @@ def topKFrequent_precond (nums : List Int) (k : Nat) : Prop :=
 
 def topKFrequent (nums : List Int) (k : Nat) (h_precond : topKFrequent_precond (nums) (k)) : List Int :=
   -- !benchmark @start code
-  let freqMap : HashMap Int Nat :=
-    nums.foldl (init := {}) fun acc n =>
-      let oldVal := match acc.toList.find? (fun (key, _) => key == n) with
-                    | some (_, c) => c
-                    | none        => 0
-      acc.insert n (oldVal + 1)
-  let sorted := freqMap.toList.foldl
+  -- Build frequency list maintaining first occurrence order (deterministic)
+  let freqList : List (Int × Nat) :=
+    nums.foldl (init := []) fun acc n =>
+      match acc.find? (fun (key, _) => key == n) with
+      | some _ => acc.map (fun (key, cnt) => if key == n then (key, cnt + 1) else (key, cnt))
+      | none => acc ++ [(n, 1)]
+  -- Sort by frequency (descending), stable sort preserves first-occurrence order for ties
+  let sorted := freqList.foldl
     (fun acc pair =>
       let (x, cx) := pair
       let rec insertSorted (xs : List (Int × Nat)) : List (Int × Nat) :=

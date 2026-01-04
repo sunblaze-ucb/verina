@@ -14,13 +14,9 @@ def semiOrderedPermutation_precond (nums : List Int) : Prop :=
   -- !benchmark @start precond
   let n := nums.length
   n > 0 ∧
-  n ≤ 50 ∧
-  -- All elements are positive integers in range [1..n]
-  nums.all (fun x => x ≥ 1 ∧ x ≤ Int.ofNat n) ∧
-  -- All elements are distinct (no duplicates)
+  -- Must be a permutation of [1..n]: all distinct, all in range
   List.Nodup nums ∧
-  -- Contains exactly 1 and n
-  (1 : Int) ∈ nums ∧ (Int.ofNat n) ∈ nums
+  nums.all (fun x => 1 ≤ x ∧ x ≤ Int.ofNat n)
   -- !benchmark @end precond
 
 
