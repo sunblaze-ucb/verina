@@ -13,7 +13,9 @@ def absDiff (a b : Float) : Float :=
 @[reducible, simp]
 def has_close_elements_precond (numbers : List Float) (threshold : Float) : Prop :=
   -- !benchmark @start precond
-  threshold ≥ 0.0
+  threshold ≥ 0.0 ∧
+  ¬threshold.isNaN ∧
+  numbers.all (fun x => ¬x.isNaN ∧ ¬x.isInf)  -- no NaN or Inf values
   -- !benchmark @end precond
 
 

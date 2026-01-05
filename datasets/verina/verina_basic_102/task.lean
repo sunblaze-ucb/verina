@@ -54,13 +54,13 @@ def twoSum (nums : Array Int) (target : Int) (h_precond : twoSum_precond (nums) 
 def twoSum_postcond (nums : Array Int) (target : Int) (result: (Nat × Nat)) (h_precond : twoSum_precond (nums) (target)) :=
   -- !benchmark @start postcond
   let (i, j) := result
-  -- two sum holds
+  -- Basic validity: i < j, in bounds, and sum equals target
   i < j ∧ j < nums.size ∧ nums[i]! + nums[j]! = target ∧
-  -- i must be the first i
-  List.Pairwise (fun a b => a + b ≠ target) (nums.toList.take i) ∧
-  List.all (nums.toList.take i) (fun a => List.all (nums.toList.drop i) (fun b => a + b ≠ target) ) ∧
-  -- j must be the first j
-  List.all (nums.toList.drop (j + 1)) (fun a => a + nums[j]! ≠ target)
+  -- Lexicographically first: no valid pair (i', j') with i' < i exists
+  (nums.toList.take i).zipIdx.all (fun ⟨a, i'⟩ =>
+    (nums.toList.drop (i' + 1)).all (fun b => a + b ≠ target)) ∧
+  -- For our i, j is the smallest valid partner
+  ((nums.toList.drop (i + 1)).take (j - i - 1)).all (fun b => nums[i]! + b ≠ target)
   -- !benchmark @end postcond
 
 

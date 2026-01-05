@@ -13,7 +13,7 @@ open Std
 @[reducible]
 def longestGoodSubarray_precond (nums : List Nat) (k : Nat) : Prop :=
   -- !benchmark @start precond
-  True
+  k > 0  -- k must be positive for non-trivial subarrays
   -- !benchmark @end precond
 
 

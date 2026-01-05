@@ -1,7 +1,7 @@
 -----Description-----
-Given a sequence of n integers, your task is to find the largest sum obtainable by choosing a contiguous subarray of the sequence. At least one number must be selected.
+Given a non-empty sequence of n integers, your task is to find the largest sum obtainable by choosing a contiguous subarray of the sequence. At least one number must be selected.
 
-The algorithm uses dynamic programming (Kadane’s Algorithm) to solve the problem:
+The algorithm uses dynamic programming (Kadane's Algorithm) to solve the problem:
 1. Initialize the current maximum (cur) and the overall maximum (maxSoFar) with the first element.
 2. For each subsequent element, update:
      cur = max(element, cur + element)
@@ -10,7 +10,7 @@ The algorithm uses dynamic programming (Kadane’s Algorithm) to solve the probl
 
 -----Input-----
 The input is provided as a list of integers:
-  sequence: A list of n integers.
+  sequence: A non-empty list of n integers (n >= 1).
 
 -----Output-----
 The output is a single integer representing the maximum subarray sum.

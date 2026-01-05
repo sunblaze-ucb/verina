@@ -5,5 +5,7 @@ Write a Lean 4 function that returns the first duplicate integer found in a list
 lst: A list of integers.
 
 -----Output-----
-An integer representing the first duplicated value if any exists, otherwise -1.
+An Option Int:
+- `some x` where x is the first duplicated value encountered when scanning left to right
+- `none` if no duplicates exist in the list
 

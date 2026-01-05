@@ -12,7 +12,11 @@
 @[reducible]
 def semiOrderedPermutation_precond (nums : List Int) : Prop :=
   -- !benchmark @start precond
-  True
+  let n := nums.length
+  n > 0 ∧
+  -- Must be a permutation of [1..n]: all distinct, all in range
+  List.Nodup nums ∧
+  nums.all (fun x => 1 ≤ x ∧ x ≤ Int.ofNat n)
   -- !benchmark @end precond
 
 

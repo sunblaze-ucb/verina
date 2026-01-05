@@ -10,7 +10,7 @@ The input consists of:
 The output is a pair of natural numbers (i, j) that satisfy:
 • 0 ≤ i < j < nums.size.
 • nums[i] + nums[j] = target.
-• Any valid pair with indices preceding (i, j) does not yield the target sum, and no index between i and j forms a valid sum with nums[i].
+• (i, j) is the lexicographically smallest such pair (i is minimized first, then j is minimized for that i).
 
 -----Note-----
 It is assumed that the array has at least two elements and that there exists at least one valid pair whose sum is equal to the target.

@@ -55,7 +55,12 @@ def increasingTriplet (nums : List Int) (h_precond : increasingTriplet_precond (
         match rest2 with
         | [] => false
         | _ =>
-          loop nums 2147483647 2147483647
+          -- Use Option to handle unbounded Int values instead of magic number
+          let initFirst := nums.head?
+          let initSecond := nums.head?
+          match initFirst, initSecond with
+          | some f, some s => loop nums f s
+          | _, _ => false
   -- !benchmark @end code
 
 

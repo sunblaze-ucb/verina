@@ -1,12 +1,12 @@
 -----Description---
-This task requires writing a Lean 4 method that's goal is to determine the minimum number of adjacent swaps needed to make the array semi-ordered. You may repeatedly swap 2 adjacent elements in the array. A permutation is called semi-ordered if the first number equals 1 and the last number equals n. 
+This task requires writing a Lean 4 method that's goal is to determine the minimum number of adjacent swaps needed to make the array semi-ordered. You may repeatedly swap 2 adjacent elements in the array. A permutation is called semi-ordered if the first number equals 1 and the last number equals n.
 
 -----Input-----
 
 The input consists of:
-- nums: A list of integeris.
+- nums: A permutation of [1, 2, ..., n] where n is the length of the list (all distinct integers in range [1, n]).
 
 ----Output-----
 
-The output is an integer.
+The output is an integer representing the minimum number of adjacent swaps needed.
 

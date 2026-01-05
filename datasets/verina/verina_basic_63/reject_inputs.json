@@ -4,5 +4,23 @@
             "numbers": "[1.0, 2.0, 3.0]",
             "threshold": -1.0
         }
+    },
+    {
+        "input": {
+            "numbers": "[Float.nan, 1.0]",
+            "threshold": 1.0
+        }
+    },
+    {
+        "input": {
+            "numbers": "[1.0, Float.nan, 2.0]",
+            "threshold": 0.5
+        }
+    },
+    {
+        "input": {
+            "numbers": "[Float.inf, 1.0]",
+            "threshold": 1.0
+        }
     }
 ]

@@ -21,12 +21,12 @@ def firstDuplicate_precond (lst : List Int) : Prop :=
 -- !benchmark @end code_aux
 
 
-def firstDuplicate (lst : List Int) (h_precond : firstDuplicate_precond (lst)) : Int :=
+def firstDuplicate (lst : List Int) (h_precond : firstDuplicate_precond (lst)) : Option Int :=
   -- !benchmark @start code
-  let rec helper (seen : List Int) (rem : List Int) : Int :=
+  let rec helper (seen : List Int) (rem : List Int) : Option Int :=
     match rem with
-    | [] => -1
-    | h :: t => if seen.contains h then h else helper (h :: seen) t
+    | [] => none
+    | h :: t => if seen.contains h then some h else helper (h :: seen) t
   helper [] lst
   -- !benchmark @end code
 
@@ -37,15 +37,13 @@ def firstDuplicate (lst : List Int) (h_precond : firstDuplicate_precond (lst)) :
 
 
 @[reducible]
-def firstDuplicate_postcond (lst : List Int) (result: Int) (h_precond : firstDuplicate_precond (lst)) : Prop :=
+def firstDuplicate_postcond (lst : List Int) (result: Option Int) (h_precond : firstDuplicate_precond (lst)) : Prop :=
   -- !benchmark @start postcond
-  -- if result = -1, then lst does not contain any duplicates
-  (result = -1 → List.Nodup lst) ∧
-  -- if result is not -1, then it is the first duplicate in lst
-  (result ≠ -1 →
-    lst.count result > 1 ∧
-    (lst.filter (fun x => lst.count x > 1)).head? = some result
-  )
+  match result with
+  | none => List.Nodup lst
+  | some x =>
+    lst.count x > 1 ∧
+    (lst.filter (fun y => lst.count y > 1)).head? = some x
   -- !benchmark @end postcond
 
 

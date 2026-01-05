@@ -13,7 +13,7 @@
 @[reducible, simp]
 def secondSmallest_precond (s : Array Int) : Prop :=
   -- !benchmark @start precond
-  s.size > 1
+  s.size > 1 ∧ ∃ i j, i < s.size ∧ j < s.size ∧ s[i]! ≠ s[j]!  -- at least two distinct values
   -- !benchmark @end precond
 
 

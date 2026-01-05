@@ -64,10 +64,12 @@ def maxSubarraySumDivisibleByK_postcond (arr : Array Int) (k : Int) (result: Int
   -- !benchmark @start postcond
   let subarrays := List.range (arr.size) |>.flatMap (fun start =>
     List.range (arr.size - start + 1) |>.map (fun len => arr.extract start (start + len)))
-  let divisibleSubarrays := subarrays.filter (fun subarray => subarray.size % k = 0 && subarray.size > 0)
-  let subarraySums := divisibleSubarrays.map (fun subarray => subarray.sum)
-  (result = 0 → subarraySums.length = 0) ∧
-  (result ≠ 0 → result ∈ subarraySums ∧ subarraySums.all (fun sum => sum ≤ result))
+  let divisibleSubarrays := subarrays.filter (fun subarray => subarray.size % k.toNat = 0 && subarray.size > 0)
+  let subarraySums := divisibleSubarrays.map (fun subarray => subarray.toList.sum)
+  -- No valid subarrays -> result is 0
+  (subarraySums.length = 0 → result = 0) ∧
+  -- Valid subarrays exist -> result is the maximum sum
+  (subarraySums.length > 0 → result ∈ subarraySums ∧ subarraySums.all (fun sum => sum ≤ result))
   -- !benchmark @end postcond
 
 

@@ -12,7 +12,10 @@ import Mathlib.Data.Nat.Prime.Defs
 @[reducible]
 def findExponents_precond (n : Nat) (primes : List Nat) : Prop :=
   -- !benchmark @start precond
-  primes.all (fun p => Nat.Prime p)
+  n > 0 ∧
+  primes.length > 0 ∧
+  primes.all (fun p => Nat.Prime p) ∧
+  List.Nodup primes
   -- !benchmark @end precond
 
 

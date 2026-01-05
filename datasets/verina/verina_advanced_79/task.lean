@@ -62,12 +62,11 @@ def twoSum_postcond (nums : List Int) (target : Int) (result: Option (Nat × Nat
         i < j ∧
         j < nums.length ∧
         nums[i]! + nums[j]! = target ∧
-        -- i must be the first i
-        List.Pairwise (fun a b => a + b ≠ target) (nums.take i) ∧
-        List.all (nums.take i) (fun a => List.all (nums.drop i) (fun b => a + b ≠ target) ) ∧
-        -- j must be the first j
-        List.all (nums.drop (j + 1)) (fun a => a + nums[j]! ≠ target)
-
+        -- Lexicographically first: no valid pair (i', j') with i' < i exists
+        (nums.take i).zipIdx.all (fun ⟨a, i'⟩ =>
+          (nums.drop (i' + 1)).all (fun b => a + b ≠ target)) ∧
+        -- For this i, j is the smallest valid partner
+        ((nums.drop (i + 1)).take (j - i - 1)).all (fun b => nums[i]! + b ≠ target)
   -- !benchmark @end postcond
 
 

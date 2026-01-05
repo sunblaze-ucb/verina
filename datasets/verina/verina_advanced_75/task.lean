@@ -12,7 +12,7 @@
 @[reducible, simp]
 def task_code_precond (sequence : List Int) : Prop :=
   -- !benchmark @start precond
-  True
+  sequence.length > 0  -- At least one element must be selected
   -- !benchmark @end precond
 
 

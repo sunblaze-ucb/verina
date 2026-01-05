@@ -6,7 +6,7 @@ You start the journey at one of the gas stations with an empty tank. The goal is
 If multiple solutions exist, return the one with the smallest starting gas station index.
 
 -----Input-----
-The input consists of two arrays:
+The input consists of two arrays of equal non-zero length:
 
 gas: An array of integers where gas[i] represents the amount of gas available at the ith station.
 
