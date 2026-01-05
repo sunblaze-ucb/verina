@@ -46,7 +46,7 @@ def majorityElement_postcond (nums : List Int) (result: Int) (h_precond : majori
   -- !benchmark @start postcond
   let n := nums.length
   (nums.count result) > n / 2
-  ∧ ∀ x, x ≠ result → nums.count x ≤ n / 2
+  ∧ ∀ x ∈ nums, x ≠ result → nums.count x ≤ n / 2
   -- !benchmark @end postcond
 
 

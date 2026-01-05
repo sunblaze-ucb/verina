@@ -8,7 +8,7 @@
                 "param_type": "List Int"
             }
         ],
-        "return_type": "Int"
+        "return_type": "Option Int"
     },
     "description_file": "./description.txt",
     "lean_file": "./task.lean",
