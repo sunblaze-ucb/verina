@@ -1,0 +1,53 @@
+[
+    {
+        "input": {
+            "s": "\"hello\"%string"
+        },
+        "expected": "\"olleh\"%string",
+        "unexpected": [
+            "\"hello\"%string",
+            "\"helo\"%string",
+            "\"hell\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"a\"%string"
+        },
+        "expected": "\"a\"%string",
+        "unexpected": [
+            "\"\"%string",
+            "\"aa\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\"a\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"racecar\"%string"
+        },
+        "expected": "\"racecar\"%string",
+        "unexpected": [
+            "\"rceacar\"%string",
+            "\"raeccar\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"Lean\"%string"
+        },
+        "expected": "\"naeL\"%string",
+        "unexpected": [
+            "\"Lean\"%string",
+            "\"aenL\"%string"
+        ]
+    }
+]

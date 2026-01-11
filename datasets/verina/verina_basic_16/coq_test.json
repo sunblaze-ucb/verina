@@ -1,0 +1,92 @@
+[
+    {
+        "input": {
+            "s": "\"hello, world!\"%string",
+            "oldChar": "\",\"%char",
+            "newChar": "\";\"%char"
+        },
+        "expected": "\"hello; world!\"%string",
+        "unexpected": [
+            "\"hello, world!\"%string",
+            "\"hello world!\"%string",
+            "\"hello;world!\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"a,b.c\"%string",
+            "oldChar": "\",\"%char",
+            "newChar": "\":\"%char"
+        },
+        "expected": "\"a:b.c\"%string",
+        "unexpected": [
+            "\"a,b.c\"%string",
+            "\"a;b.c\"%string",
+            "\"ab:c\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"hello, world!\"%string",
+            "oldChar": "\"o\"%char",
+            "newChar": "\"O\"%char"
+        },
+        "expected": "\"hellO, wOrld!\"%string",
+        "unexpected": [
+            "\"hello, world!\"%string",
+            "\"hellO, world!\"%string",
+            "\"hello, wOrld!\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string",
+            "oldChar": "\"x\"%char",
+            "newChar": "\"y\"%char"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\"abc\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"test\"%string",
+            "oldChar": "\"x\"%char",
+            "newChar": "\"y\"%char"
+        },
+        "expected": "\"test\"%string",
+        "unexpected": [
+            "\"testy\"%string",
+            "\"tset\"%string",
+            "\"yxest\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"unchanged\"%string",
+            "oldChar": "\"u\"%char",
+            "newChar": "\"u\"%char"
+        },
+        "expected": "\"unchanged\"%string",
+        "unexpected": [
+            "\"nchanged\"%string",
+            "\"unchanged!\"%string",
+            "\"unchangEd\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"aaa\"%string",
+            "oldChar": "\"a\"%char",
+            "newChar": "\"b\"%char"
+        },
+        "expected": "\"bbb\"%string",
+        "unexpected": [
+            "\"aaa\"%string",
+            "\"abb\"%string",
+            "\"bba\"%string"
+        ]
+    }
+]

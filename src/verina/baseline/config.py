@@ -12,3 +12,5 @@ class BaselineConfig(BaseModel):
     refinements: Optional[int] = None
     dspy_module: Optional[str] = None
     custom_prompt_template: Optional[str] = None
+    # ITP type: "lean" or "coq" - determines which prompts/generators to use
+    itp_type: str = "lean"

@@ -9,6 +9,11 @@ from verina.baseline.generate import (
     dspy_generate_proof,
     dspy_generate_spec,
 )
+from verina.baseline.generate_coq import (
+    dspy_generate_coq_code,
+    dspy_generate_coq_proof,
+    dspy_generate_coq_spec,
+)
 from verina.benchmark.report import EvaluationTaskArtifact
 from verina.benchmark.solution import (
     FewshotExample,
@@ -72,15 +77,22 @@ class BaselineSolution(SimpleSolution):
                     code_aux=checkpoint.code_aux,
                     code=checkpoint.code,
                 )
-        logger.info(f"Baseline: Generating code for data_id {data_id}")
+        logger.info(f"Baseline: Generating code for data_id {data_id} (itp_type={self.config.itp_type})")
         retry_count = 0
         while retry_count < max_retries:
             try:
-                output = await dspy_generate_code(
-                    self.dspy_module,
-                    input,
-                    fewshot_examples,
-                )
+                if self.config.itp_type == "coq":
+                    output = await dspy_generate_coq_code(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
+                else:
+                    output = await dspy_generate_code(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
                 return output
             except Exception as e:
                 logger.error(f"Error generating code for data_id {data_id}: {e}")
@@ -110,15 +122,22 @@ class BaselineSolution(SimpleSolution):
                     postcond_aux=checkpoint.postcond_aux,
                     postcond=checkpoint.postcond,
                 )
-        logger.info(f"Baseline: Generating spec for data_id {data_id}")
+        logger.info(f"Baseline: Generating spec for data_id {data_id} (itp_type={self.config.itp_type})")
         retry_count = 0
         while retry_count < max_retries:
             try:
-                output = await dspy_generate_spec(
-                    self.dspy_module,
-                    input,
-                    fewshot_examples,
-                )
+                if self.config.itp_type == "coq":
+                    output = await dspy_generate_coq_spec(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
+                else:
+                    output = await dspy_generate_spec(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
                 return output
             except Exception as e:
                 logger.error(f"Error generating spec for data_id {data_id}: {e}")
@@ -147,15 +166,22 @@ class BaselineSolution(SimpleSolution):
                     proof_aux=checkpoint.proof_aux,
                     proof=checkpoint.proof,
                 )
-        logger.info(f"Baseline: Generating proof for data_id {data_id}")
+        logger.info(f"Baseline: Generating proof for data_id {data_id} (itp_type={self.config.itp_type})")
         retry_count = 0
         while retry_count < max_retries:
             try:
-                output = await dspy_generate_proof(
-                    self.dspy_module,
-                    input,
-                    fewshot_examples,
-                )
+                if self.config.itp_type == "coq":
+                    output = await dspy_generate_coq_proof(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
+                else:
+                    output = await dspy_generate_proof(
+                        self.dspy_module,
+                        input,
+                        fewshot_examples,
+                    )
                 return output
             except Exception as e:
                 logger.error(f"Error generating proof for data_id {data_id}: {e}")

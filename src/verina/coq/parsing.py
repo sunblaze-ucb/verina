@@ -154,6 +154,8 @@ def parse_benchmark_coq_data(raw_coq_data: str) -> BenchmarkCoqData:
     ...section content...
     (* !benchmark @end section_name *)
 
+    Content before the first benchmark marker is captured as preamble_imports.
+
     Args:
         raw_coq_data: Raw content of the Coq file.
 
@@ -163,6 +165,8 @@ def parse_benchmark_coq_data(raw_coq_data: str) -> BenchmarkCoqData:
     sections = []
     current_section: Optional[BenchmarkCoqDataSection] = None
     content_buffer = []
+    preamble_buffer = []  # Capture content before first benchmark marker
+    found_first_marker = False
 
     lines = raw_coq_data.splitlines()
 
@@ -170,6 +174,8 @@ def parse_benchmark_coq_data(raw_coq_data: str) -> BenchmarkCoqData:
         # Check for benchmark start marker
         start_match = CoqParser.START_PATTERN.search(line)
         if start_match:
+            if not found_first_marker:
+                found_first_marker = True
             section_name = start_match.group(1)
             args_str = start_match.group(2).strip()
 
@@ -193,6 +199,11 @@ def parse_benchmark_coq_data(raw_coq_data: str) -> BenchmarkCoqData:
                 name=section_name, args=args, content=""
             )
             content_buffer = []
+            continue
+
+        # Accumulate preamble content (before first marker)
+        if not found_first_marker:
+            preamble_buffer.append(line)
             continue
 
         # Check for benchmark end marker
@@ -223,7 +234,15 @@ def parse_benchmark_coq_data(raw_coq_data: str) -> BenchmarkCoqData:
     if current_section is not None:
         raise ValueError(f"Unclosed section: {current_section.name}")
 
-    return BenchmarkCoqData.from_sections(sections)
+    # Build data from sections
+    coq_data = BenchmarkCoqData.from_sections(sections)
+
+    # Prepend preamble to task_imports (imports before first benchmark marker)
+    preamble = "\n".join(preamble_buffer).strip()
+    if preamble:
+        coq_data.task_imports = preamble + "\n" + coq_data.task_imports
+
+    return coq_data
 
 
 # Export public API

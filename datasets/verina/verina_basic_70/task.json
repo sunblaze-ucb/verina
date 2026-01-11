@@ -39,7 +39,7 @@
             },
             {
                 "param_name": "P",
-                "param_type": "(Z -> Bool)"
+                "param_type": "(Z -> bool)"
             }
         ],
         "return_type": "nat"

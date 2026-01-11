@@ -1,0 +1,110 @@
+[
+    {
+        "input": {
+            "n": "0"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(11)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(22)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(23)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "n": "(33)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(44)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(-11)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(-22)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "1"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "n": "(-1)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "n": "(121)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "n": "(123)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

@@ -1,0 +1,49 @@
+[
+    {
+        "input": {
+            "prices": "[7; 1; 5; 3; 6; 4]"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4",
+            "6"
+        ]
+    },
+    {
+        "input": {
+            "prices": "[7; 6; 4; 3; 1]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "prices": "[2; 4; 1]"
+        },
+        "expected": "2",
+        "unexpected": [
+            "1"
+        ]
+    },
+    {
+        "input": {
+            "prices": "[1; 2]"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "prices": "[]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1"
+        ]
+    }
+]

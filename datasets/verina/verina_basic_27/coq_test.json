@@ -1,0 +1,65 @@
+[
+    {
+        "input": {
+            "s": "\"abca\"%string"
+        },
+        "expected": "(Some \"a\"%char)",
+        "unexpected": [
+            "(Some \"b\"%char)",
+            "(Some \"c\"%char)",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abcdef\"%string"
+        },
+        "expected": "None",
+        "unexpected": [
+            "(Some \"a\"%char)",
+            "(Some \"z\"%char)"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"aabbcc\"%string"
+        },
+        "expected": "(Some \"a\"%char)",
+        "unexpected": [
+            "(Some \"b\"%char)",
+            "(Some \"c\"%char)",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "None",
+        "unexpected": [
+            "(Some \"x\"%char)",
+            "(Some \"y\"%char)"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abbc\"%string"
+        },
+        "expected": "(Some \"b\"%char)",
+        "unexpected": [
+            "(Some \"a\"%char)",
+            "(Some \"c\"%char)",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"Aa\"%string"
+        },
+        "expected": "None",
+        "unexpected": [
+            "(Some \"A\"%char)",
+            "(Some \"a\"%char)"
+        ]
+    }
+]

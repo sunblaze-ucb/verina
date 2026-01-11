@@ -1,0 +1,65 @@
+[
+    {
+        "input": {
+            "a": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(5)%Z; (4)%Z; (3)%Z; (2)%Z; (1)%Z]"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(1)%Z; (3)%Z; (2)%Z; (4)%Z; (5)%Z]"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "[]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(10)%Z]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(2)%Z; (2)%Z; (2)%Z; (2)%Z]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(1)%Z; (2)%Z; (2)%Z; (3)%Z]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    }
+]

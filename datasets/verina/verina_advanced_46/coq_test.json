@@ -1,0 +1,86 @@
+[
+    {
+        "input": {
+            "numbers": "[(1)%Z; (2)%Z; (3)%Z; (-2)%Z; (5)%Z]"
+        },
+        "expected": "(9)%Z",
+        "unexpected": [
+            "(6)%Z",
+            "(10)%Z",
+            "(1)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(-2)%Z; (-3)%Z; (4)%Z; (-1)%Z; (-2)%Z; (1)%Z; (5)%Z; (-3)%Z]"
+        },
+        "expected": "(7)%Z",
+        "unexpected": [
+            "(5)%Z",
+            "(4)%Z",
+            "(9)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(-1)%Z; (-2)%Z; (-3)%Z; (-4)%Z]"
+        },
+        "expected": "(0)%Z",
+        "unexpected": [
+            "(1)%Z",
+            "(-1)%Z",
+            "(-10)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(5)%Z; (-3)%Z; (2)%Z; (1)%Z; (-2)%Z]"
+        },
+        "expected": "(5)%Z",
+        "unexpected": [
+            "(3)%Z",
+            "(6)%Z",
+            "(4)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(0)%Z; (0)%Z; (0)%Z; (0)%Z]"
+        },
+        "expected": "(0)%Z",
+        "unexpected": [
+            "(1)%Z",
+            "(-1)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[]"
+        },
+        "expected": "(0)%Z",
+        "unexpected": [
+            "(1)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(10)%Z]"
+        },
+        "expected": "(10)%Z",
+        "unexpected": [
+            "(0)%Z",
+            "(5)%Z"
+        ]
+    },
+    {
+        "input": {
+            "numbers": "[(-5)%Z; (8)%Z; (-3)%Z; (4)%Z; (-1)%Z]"
+        },
+        "expected": "(9)%Z",
+        "unexpected": [
+            "(8)%Z",
+            "(3)%Z",
+            "(0)%Z"
+        ]
+    }
+]

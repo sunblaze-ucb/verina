@@ -1,0 +1,57 @@
+[
+    {
+        "input": {
+            "operations": "[(1)%Z; (2)%Z; (3)%Z]"
+        },
+        "expected": "([(0)%Z; (1)%Z; (3)%Z; (6)%Z], false)",
+        "unexpected": [
+            "([(0)%Z; (1)%Z; (3)%Z; (5)%Z], false)",
+            "([(0)%Z; (2)%Z; (3)%Z; (6)%Z], false)",
+            "([(0)%Z; (1)%Z; (3)%Z; (6)%Z], true)"
+        ]
+    },
+    {
+        "input": {
+            "operations": "[(-1)%Z; (2)%Z; (-1)%Z]"
+        },
+        "expected": "([(0)%Z; (-1)%Z; (1)%Z; (0)%Z], true)",
+        "unexpected": [
+            "([(0)%Z; (-1)%Z; (1)%Z; (0)%Z], false)",
+            "([(0)%Z; (-1)%Z; (0)%Z; (0)%Z], true)",
+            "([(0)%Z; (-2)%Z; (1)%Z; (0)%Z], true)"
+        ]
+    },
+    {
+        "input": {
+            "operations": "[]"
+        },
+        "expected": "([(0)%Z], false)",
+        "unexpected": [
+            "([(0)%Z], true)",
+            "([(0)%Z; (0)%Z], false)",
+            "([(0)%Z; (1)%Z], false)"
+        ]
+    },
+    {
+        "input": {
+            "operations": "[(0)%Z; (0)%Z; (0)%Z]"
+        },
+        "expected": "([(0)%Z; (0)%Z; (0)%Z; (0)%Z], false)",
+        "unexpected": [
+            "([(0)%Z; (0)%Z; (0)%Z; (0)%Z], true)",
+            "([(0)%Z; (0)%Z; (0)%Z], false)",
+            "([(0)%Z; (0)%Z; (1)%Z; (0)%Z], false)"
+        ]
+    },
+    {
+        "input": {
+            "operations": "[(10)%Z; (-20)%Z; (5)%Z]"
+        },
+        "expected": "([(0)%Z; (10)%Z; (-10)%Z; (-5)%Z], true)",
+        "unexpected": [
+            "([(0)%Z; (10)%Z; (-10)%Z; (-5)%Z], false)",
+            "([(0)%Z; (10)%Z; (-9)%Z; (-5)%Z], true)",
+            "([(0)%Z; (10)%Z; (-10)%Z; (-6)%Z], true)"
+        ]
+    }
+]

@@ -1,0 +1,58 @@
+[
+    {
+        "input": {
+            "str1": "[\"a\"%char; \"b\"%char; \"c\"%char]",
+            "str2": "[\"a\"%char; \"b\"%char; \"d\"%char]"
+        },
+        "expected": "[\"a\"%char; \"b\"%char]",
+        "unexpected": [
+            "[\"a\"%char]",
+            "[\"a\"%char; \"b\"%char; \"c\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "str1": "[\"x\"%char; \"y\"%char; \"z\"%char]",
+            "str2": "[\"x\"%char; \"y\"%char; \"z\"%char]"
+        },
+        "expected": "[\"x\"%char; \"y\"%char; \"z\"%char]",
+        "unexpected": [
+            "[\"x\"%char; \"y\"%char]",
+            "[\"x\"%char; \"z\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "str1": "[\"w\"%char; \"o\"%char]",
+            "str2": "[\"w\"%char; \"o\"%char; \"w\"%char]"
+        },
+        "expected": "[\"w\"%char; \"o\"%char]",
+        "unexpected": [
+            "[\"w\"%char]",
+            "[\"o\"%char]",
+            "[\"w\"%char; \"o\"%char; \"w\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "str1": "[\"a\"%char; \"x\"%char]",
+            "str2": "[\"b\"%char; \"y\"%char]"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"%char]",
+            "[\"b\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "str1": "[]",
+            "str2": "[\"h\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char]"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"h\"%char]",
+            "[\"e\"%char]"
+        ]
+    }
+]

@@ -1,0 +1,86 @@
+[
+    {
+        "input": {
+            "s": "[3; 1; 4; 1; 5; 9; 2; 6; 5; 3; 5]"
+        },
+        "expected": "Some 1",
+        "unexpected": [
+            "Some 2",
+            "Some 0",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[0; 1; 2; 3; 4; 5]"
+        },
+        "expected": "Some 0",
+        "unexpected": [
+            "Some 1",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[1]"
+        },
+        "expected": "Some 1",
+        "unexpected": [
+            "Some 0",
+            "Some 2",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[10; 10; 10]"
+        },
+        "expected": "Some 10",
+        "unexpected": [
+            "Some 9",
+            "Some 0",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[3; 2; 2; 2; 2; 2; 2; 1]"
+        },
+        "expected": "Some 1",
+        "unexpected": [
+            "Some 2",
+            "Some 0",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[0]"
+        },
+        "expected": "Some 0",
+        "unexpected": [
+            "Some 1",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[100; 99; 98]"
+        },
+        "expected": "Some 98",
+        "unexpected": [
+            "Some 99",
+            "Some 97",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "s": "[]"
+        },
+        "expected": "None",
+        "unexpected": [
+            "Some 0"
+        ]
+    }
+]

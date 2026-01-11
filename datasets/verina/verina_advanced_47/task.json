@@ -34,9 +34,9 @@
         "parameters": [
             {
                 "param_name": "intervals",
-                "param_type": "(list (Prod Int Int))"
+                "param_type": "(list (Z * Z))"
             }
         ],
-        "return_type": "(list (Prod Int Int))"
+        "return_type": "(list (Z * Z))"
     }
 }

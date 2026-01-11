@@ -1,0 +1,52 @@
+[
+    {
+        "input": {
+            "lst": "[1; 2; 3]"
+        },
+        "expected": "3",
+        "unexpected": [
+            "2",
+            "1",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[5; 5; 5]"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[10; 1; 9]"
+        },
+        "expected": "10",
+        "unexpected": [
+            "1",
+            "9"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[7]"
+        },
+        "expected": "7",
+        "unexpected": [
+            "0",
+            "6"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[0; 0; 0; 0]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1"
+        ]
+    }
+]

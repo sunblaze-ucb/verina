@@ -73,13 +73,21 @@ def execution_task_cache_key_fn(
 
 
 def benchmark_data_to_gen_code_input(
-    data: BenchmarkData, with_ref_spec: bool
+    data: BenchmarkData, with_ref_spec: bool, itp_type: ITPType = ITPType.LEAN
 ) -> GenCodeInput:
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = data.coq_data
+        signature = data.coq_signature
+    else:
+        itp_data = data.lean_data
+        signature = data.signature
+
     if with_ref_spec:
-        ref_precond_aux = data.lean_data.precond_aux
-        ref_precond = data.lean_data.precond
-        ref_postcond_aux = data.lean_data.postcond_aux
-        ref_postcond = data.lean_data.postcond
+        ref_precond_aux = itp_data.precond_aux
+        ref_precond = itp_data.precond
+        ref_postcond_aux = itp_data.postcond_aux
+        ref_postcond = itp_data.postcond
     else:
         ref_precond_aux = None
         ref_precond = None
@@ -87,9 +95,9 @@ def benchmark_data_to_gen_code_input(
         ref_postcond = None
     return GenCodeInput(
         description=data.description,
-        signature=data.signature,
-        task_imports=data.lean_data.task_imports,
-        task_aux=data.lean_data.task_aux,
+        signature=signature,
+        task_imports=itp_data.task_imports,
+        task_aux=itp_data.task_aux,
         ref_precond_aux=ref_precond_aux,
         ref_precond=ref_precond,
         ref_postcond_aux=ref_postcond_aux,
@@ -127,6 +135,7 @@ async def execute_code_gen(
     checkpoint: Optional[EvaluationTaskReport],
     *,
     with_ref_spec: bool,
+    itp_type: ITPType = ITPType.LEAN,
 ) -> EvaluationTaskReport:
     """
     Execute the code generation task from solution.
@@ -143,7 +152,7 @@ async def execute_code_gen(
         benchmark_data_to_gen_code_fewshot_example(example)
         for example in fewshot_examples
     ]
-    gen_code_input = benchmark_data_to_gen_code_input(data, with_ref_spec=with_ref_spec)
+    gen_code_input = benchmark_data_to_gen_code_input(data, with_ref_spec=with_ref_spec, itp_type=itp_type)
     gen_code_output = await solution.gen_code(
         data.data_id, gen_code_input, gen_code_fewshot_examples, gen_checkpoint
     )
@@ -162,17 +171,25 @@ async def execute_code_gen(
 
 
 def benchmark_data_to_gen_spec_input(
-    data: BenchmarkData, with_spec_desc: bool, with_ref_code: bool
+    data: BenchmarkData, with_spec_desc: bool, with_ref_code: bool, itp_type: ITPType = ITPType.LEAN
 ) -> GenSpecInput:
+    # Select appropriate data based on ITP type
+    if itp_type == ITPType.COQ:
+        itp_data = data.coq_data
+        signature = data.coq_signature
+    else:
+        itp_data = data.lean_data
+        signature = data.signature
+
     return GenSpecInput(
         description=data.description,
-        signature=data.signature,
-        task_imports=data.lean_data.task_imports,
-        task_aux=data.lean_data.task_aux,
+        signature=signature,
+        task_imports=itp_data.task_imports,
+        task_aux=itp_data.task_aux,
         precond_desc=data.spec_desc.precond_desc if with_spec_desc else None,
         postcond_desc=data.spec_desc.postcond_desc if with_spec_desc else None,
-        ref_code_aux=data.lean_data.code_aux if with_ref_code else None,
-        ref_code=data.lean_data.code if with_ref_code else None,
+        ref_code_aux=itp_data.code_aux if with_ref_code else None,
+        ref_code=itp_data.code if with_ref_code else None,
     )
 
 
@@ -222,6 +239,7 @@ async def execute_spec_gen(
     *,
     with_spec_desc: bool,
     with_ref_code: bool,
+    itp_type: ITPType = ITPType.LEAN,
 ) -> EvaluationTaskReport:
     """
     Execute the spec generation task from solution.
@@ -241,7 +259,7 @@ async def execute_spec_gen(
         for example in fewshot_examples
     ]
     gen_spec_input = benchmark_data_to_gen_spec_input(
-        data, with_spec_desc=with_spec_desc, with_ref_code=with_ref_code
+        data, with_spec_desc=with_spec_desc, with_ref_code=with_ref_code, itp_type=itp_type
     )
     gen_spec_output = await solution.gen_spec(
         data.data_id, gen_spec_input, gen_spec_fewshot_examples, gen_checkpoint
@@ -311,6 +329,8 @@ async def execute_proof_gen(
     data: BenchmarkData,
     fewshot_examples: Iterable[BenchmarkData],
     checkpoint: Optional[EvaluationTaskReport],
+    *,
+    itp_type: ITPType = ITPType.LEAN,
 ) -> EvaluationTaskReport:
     """
     Execute the proof generation task.
@@ -327,7 +347,7 @@ async def execute_proof_gen(
         benchmark_data_to_gen_proof_fewshot_example(example)
         for example in fewshot_examples
     ]
-    gen_proof_input = benchmark_data_to_gen_proof_input(data)
+    gen_proof_input = benchmark_data_to_gen_proof_input(data, itp_type=itp_type)
     gen_proof_output = await solution.gen_proof(
         data.data_id, gen_proof_input, gen_proof_fewshot_examples, gen_checkpoint
     )

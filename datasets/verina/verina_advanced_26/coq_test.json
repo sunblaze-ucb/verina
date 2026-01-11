@@ -1,0 +1,78 @@
+[
+    {
+        "input": {
+            "digits": "\"\"%string"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"%string]",
+            "[\"b\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"2\"%string"
+        },
+        "expected": "[\"a\"%string; \"b\"%string; \"c\"%string]",
+        "unexpected": [
+            "[\"a\"%string]",
+            "[\"b\"%string]",
+            "[\"c\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"9\"%string"
+        },
+        "expected": "[\"w\"%string; \"x\"%string; \"y\"%string; \"z\"%string]",
+        "unexpected": [
+            "[\"w\"%string]",
+            "[\"x\"%string]",
+            "[\"y\"%string]",
+            "[\"z\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"23\"%string"
+        },
+        "expected": "[\"ad\"%string; \"ae\"%string; \"af\"%string; \"bd\"%string; \"be\"%string; \"bf\"%string; \"cd\"%string; \"ce\"%string; \"cf\"%string]",
+        "unexpected": [
+            "[\"a\"%string]",
+            "[\"b\"%string]",
+            "[\"c\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"27\"%string"
+        },
+        "expected": "[\"ap\"%string; \"aq\"%string; \"ar\"%string; \"as\"%string; \"bp\"%string; \"bq\"%string; \"br\"%string; \"bs\"%string; \"cp\"%string; \"cq\"%string; \"cr\"%string; \"cs\"%string]",
+        "unexpected": [
+            "[\"p\"%string]",
+            "[\"q\"%string]",
+            "[\"r\"%string]",
+            "[\"s\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"0\"%string"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"%string]",
+            "[\"b\"%string]"
+        ]
+    },
+    {
+        "input": {
+            "digits": "\"21\"%string"
+        },
+        "expected": "[]",
+        "unexpected": [
+            "[\"a\"%string]",
+            "[\"b\"%string]"
+        ]
+    }
+]

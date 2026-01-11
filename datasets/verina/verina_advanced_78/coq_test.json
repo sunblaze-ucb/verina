@@ -1,0 +1,52 @@
+[
+    {
+        "input": {
+            "nums": "[(2)%Z; (7)%Z; (11)%Z; (15)%Z]",
+            "target": "(9)%Z"
+        },
+        "expected": "(0%nat, 1%nat)",
+        "unexpected": [
+            "(2%nat, 3%nat)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(3)%Z; (2)%Z; (4)%Z]",
+            "target": "(6)%Z"
+        },
+        "expected": "(1%nat, 2%nat)",
+        "unexpected": [
+            "(0%nat, 2%nat)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(3)%Z; (3)%Z]",
+            "target": "(6)%Z"
+        },
+        "expected": "(0%nat, 1%nat)",
+        "unexpected": [
+            "(1%nat, 0%nat)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z]",
+            "target": "(7)%Z"
+        },
+        "expected": "(2%nat, 3%nat)",
+        "unexpected": [
+            "(0%nat, 1%nat)"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(0)%Z; (4)%Z; (3)%Z; (0)%Z]",
+            "target": "(0)%Z"
+        },
+        "expected": "(0%nat, 3%nat)",
+        "unexpected": [
+            "(1%nat, 2%nat)"
+        ]
+    }
+]

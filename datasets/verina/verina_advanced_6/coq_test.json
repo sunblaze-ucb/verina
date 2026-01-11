@@ -1,0 +1,56 @@
+[
+    {
+        "input": {
+            "s": "\"education\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"education123\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"AEIOU\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"hello\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"apple orange union\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    }
+]

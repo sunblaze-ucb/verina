@@ -1,0 +1,47 @@
+[
+    {
+        "input": {
+            "x": "(4)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "(7)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "x": "(0)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "(-2)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "(-3)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

@@ -1,0 +1,47 @@
+[
+    {
+        "input": {
+            "x": "[]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "[\"a\"%char]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "[\"a\"%char; \"b\"%char; \"a\"%char]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "x": "[\"a\"%char; \"b\"%char; \"c\"%char]"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "x": "[\"r\"%char; \"a\"%char; \"c\"%char; \"e\"%char; \"c\"%char; \"a\"%char; \"r\"%char]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    }
+]

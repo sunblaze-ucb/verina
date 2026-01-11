@@ -1,0 +1,22 @@
+[
+    {
+        "input": {
+            "a": "(1)%Z",
+            "b": "(1)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "(1)%Z",
+            "b": "(2)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

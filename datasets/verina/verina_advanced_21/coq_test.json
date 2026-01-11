@@ -1,0 +1,47 @@
+[
+    {
+        "input": {
+            "s": "\"racecar\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abba\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"a\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    }
+]

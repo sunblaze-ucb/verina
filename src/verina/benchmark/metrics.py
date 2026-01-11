@@ -195,10 +195,14 @@ async def metric_generated_code_unit_tests(
 
     for idx, test_case in enumerate(test_cases):
         msg = code_msg_map.get(idx, "")
-        if template_engine.DECIDABLE_ERR_MSG in msg:
+        if msg == "":
+            # No message for this test - compile failed before reaching this test
+            # This means the code has an error, so the test should fail
             scores[idx] = LeanTestScore.FAIL
-        elif "error" in msg:
-            # should not happen -- code should always be evaluable
+        elif template_engine.DECIDABLE_ERR_MSG in msg:
+            scores[idx] = LeanTestScore.FAIL
+        elif "error" in msg.lower():
+            # Error in test evaluation (not expected for code tests)
             scores[idx] = LeanTestScore.UNKNOWN
         else:
             scores[idx] = LeanTestScore.PASS
@@ -372,6 +376,64 @@ class SpecMetricScore(MetricScore):
         self.complete_test_score.update_score()
 
 
+def _parse_coq_decidable_markers(
+    section_msg: str,
+    marker_base: str,
+    evaluate_type: Literal["precond", "postcond"],
+) -> Dict[int | Tuple[int, int], str]:
+    """Parse Coq Print-based decidable test markers.
+
+    The Print output looks like:
+        _m_precond_test_decidable_0 = tt
+             : unit
+        Goal...Qed. (or Error:...)
+        _m_precond_test_decidable_1 = tt
+             : unit
+        Goal...
+
+    For postcond sound tests (tuple index):
+        _m_postcond_test_decidable_0_1 = tt
+             : unit
+
+    Args:
+        section_msg: The output section to parse (sound or complete)
+        marker_base: The base marker name (e.g., "precond_test_decidable")
+        evaluate_type: "precond" or "postcond"
+    """
+    import re
+
+    result: Dict[int | Tuple[int, int], str] = {}
+
+    # Pattern to match Print marker output: _m_{marker_base}_{idx} = tt
+    # For postcond sound tests, idx can be "0_1" format (test_idx_unexpected_idx)
+    safe_marker = marker_base.replace("-", "_")
+    pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?)\s*="
+
+    # Find all marker positions
+    matches = list(re.finditer(pattern, section_msg))
+
+    for i, match in enumerate(matches):
+        idx_str = match.group(1)
+        start_pos = match.end()
+        # End position is either the next marker or end of string
+        end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(section_msg)
+
+        msg_content = section_msg[start_pos:end_pos]
+
+        # Parse the index
+        if "_" in idx_str:
+            # Tuple index (e.g., "0_1" -> (0, 1))
+            parts = idx_str.split("_")
+            idx = (int(parts[0]), int(parts[1]))
+        else:
+            # Single index
+            idx = int(idx_str)
+
+        result[idx] = msg_content
+
+    return result
+
+
 def update_spec_decidable_scores(
     template_engine: ITPTemplate,
     score: SpecMetricScore,
@@ -401,42 +463,57 @@ def update_spec_decidable_scores(
     else:
         marker = template_engine.POSTCOND_TEST_DECIDABLE_MSG_MARKER
 
-    spec_decidable_start_marker = f"<{marker}>"
-    spec_decidable_end_marker = f"</{marker}>"
-    sound_decidable_msg = sound_decidable_msg.split(spec_decidable_start_marker)[1:]
-    complete_decidable_msg = complete_decidable_msg.split(spec_decidable_start_marker)[
-        1:
-    ]
+    # Use different parsing logic for Coq (Print-based markers) vs Lean (XML-like markers)
+    if itp_type == ITPType.COQ:
+        # Parse Coq Print-based markers
+        sound_decidable_msg_map = _parse_coq_decidable_markers(
+            sound_decidable_msg, marker, evaluate_type
+        )
+        complete_decidable_msg_map = _parse_coq_decidable_markers(
+            complete_decidable_msg, marker, evaluate_type
+        )
+    else:
+        # Parse Lean XML-like markers
+        spec_decidable_start_marker = f"<{marker}>"
+        spec_decidable_end_marker = f"</{marker}>"
+        sound_decidable_msg_parts = sound_decidable_msg.split(spec_decidable_start_marker)[1:]
+        complete_decidable_msg_parts = complete_decidable_msg.split(spec_decidable_start_marker)[
+            1:
+        ]
 
-    for msg in sound_decidable_msg:
-        msg = msg.split(spec_decidable_end_marker)
-        assert len(msg) == 2, f"Decidable msg should be split into 2 parts: {msg}"
-        if evaluate_type == "precond":
-            sound_decidable_msg_map[int(msg[0])] = msg[1]
-        else:
-            idxs = msg[0].split(",")
-            assert len(idxs) == 2, (
-                f"Decidable msg idx should be split into 2 parts: {msg}"
-            )
-            sound_decidable_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
-    for msg in complete_decidable_msg:
-        msg = msg.split(spec_decidable_end_marker)
-        assert len(msg) == 2, f"Decidable msg should be split into 2 parts: {msg}"
-        complete_decidable_msg_map[int(msg[0])] = msg[1]
+        for msg in sound_decidable_msg_parts:
+            msg = msg.split(spec_decidable_end_marker)
+            assert len(msg) == 2, f"Decidable msg should be split into 2 parts: {msg}"
+            if evaluate_type == "precond":
+                sound_decidable_msg_map[int(msg[0])] = msg[1]
+            else:
+                idxs = msg[0].split(",")
+                assert len(idxs) == 2, (
+                    f"Decidable msg idx should be split into 2 parts: {msg}"
+                )
+                sound_decidable_msg_map[(int(idxs[0]), int(idxs[1]))] = msg[1]
+        for msg in complete_decidable_msg_parts:
+            msg = msg.split(spec_decidable_end_marker)
+            assert len(msg) == 2, f"Decidable msg should be split into 2 parts: {msg}"
+            complete_decidable_msg_map[int(msg[0])] = msg[1]
 
     for idx, msg in sound_decidable_msg_map.items():
+        if idx not in score.sound_tests:
+            continue
         if template_engine.DECIDABLE_ERR_MSG in msg:
             decide_score = LeanTestScore.FAIL
-        elif "error" in msg:
+        elif "error" in msg.lower():
             decide_score = LeanTestScore.UNKNOWN
         else:
             decide_score = LeanTestScore.PASS
         score.sound_tests[idx].score_detail.decide = decide_score
 
     for idx, msg in complete_decidable_msg_map.items():
+        if idx not in score.complete_tests:
+            continue
         if template_engine.DECIDABLE_ERR_MSG in msg:
             decide_score = LeanTestScore.FAIL
-        elif "error" in msg:
+        elif "error" in msg.lower():
             decide_score = LeanTestScore.UNKNOWN
         else:
             decide_score = LeanTestScore.PASS
@@ -736,16 +813,33 @@ def update_spec_plausible_scores(
 
     def plausible_msg_to_score(msg: str, inverse: bool) -> LeanTestScore:
         score = LeanTestScore.UNKNOWN
-        if template_engine.PLAUSIBLE_FAILED_MSG in msg:
-            score = LeanTestScore.FAIL
-        elif (
-            template_engine.PLAUSIBLE_SUCCESS_MSG in msg
-            or template_engine.SIMP_SUCCESS_MSG in msg
-        ):
-            if use_plausible_pass:
-                score = LeanTestScore.PASS
-            else:
-                score = LeanTestScore.UNKNOWN
+
+        if itp_type == ITPType.COQ:
+            # For Coq with auto tactics: no error = success, error = fail
+            # Check for common error patterns in Coq output
+            error_patterns = ["Error:", "error:", "Tactic failure", "Cannot find"]
+            has_error = any(pattern in msg for pattern in error_patterns)
+
+            if has_error:
+                score = LeanTestScore.FAIL
+            elif msg.strip():  # Non-empty message without error = success
+                if use_plausible_pass:
+                    score = LeanTestScore.PASS
+                else:
+                    score = LeanTestScore.UNKNOWN
+        else:
+            # For Lean: use QuickChick/Plausible success/fail messages
+            if template_engine.PLAUSIBLE_FAILED_MSG in msg:
+                score = LeanTestScore.FAIL
+            elif (
+                template_engine.PLAUSIBLE_SUCCESS_MSG in msg
+                or template_engine.SIMP_SUCCESS_MSG in msg
+            ):
+                if use_plausible_pass:
+                    score = LeanTestScore.PASS
+                else:
+                    score = LeanTestScore.UNKNOWN
+
         if inverse:
             if score == LeanTestScore.PASS:
                 score = (
@@ -868,7 +962,13 @@ async def metric_generated_spec_unit_tests(
     else:
         print(f"ITP compile failed for decidable tests: {decidable_msg}")
 
-    # Plausible tests
+    # Skip plausible tests for Coq - auto tactics are used in decidable tests
+    # Plausible (PBT) only makes sense for Lean where we have #check_plausible
+    if itp_type == ITPType.COQ:
+        score.finalize_test_scores()
+        return score
+
+    # Plausible tests (Lean only)
 
     plausible_content = content_header
 

@@ -1,0 +1,61 @@
+[
+    {
+        "input": {
+            "s1": "\"abcde\"%string",
+            "s2": "\"ace\"%string"
+        },
+        "expected": "\"ace\"%string",
+        "unexpected": [
+            "\"ab\"%string",
+            "\"abc\"%string",
+            "\"bce\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s1": "\"aaaa\"%string",
+            "s2": "\"bbaaa\"%string"
+        },
+        "expected": "\"aaa\"%string",
+        "unexpected": [
+            "\"aaaaa\"%string",
+            "\"b\"%string",
+            "\"aaab\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s1": "\"xyz\"%string",
+            "s2": "\"abc\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\"x\"%string",
+            "\"y\"%string",
+            "\"a\"%string",
+            "\"abc\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s1": "\"axbxc\"%string",
+            "s2": "\"abxc\"%string"
+        },
+        "expected": "\"abxc\"%string",
+        "unexpected": [
+            "\"axc\"%string",
+            "\"abcx\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s1": "\"AGGTAB\"%string",
+            "s2": "\"GXTXAYB\"%string"
+        },
+        "expected": "\"GTAB\"%string",
+        "unexpected": [
+            "\"GGTAB\"%string",
+            "\"AGGTA\"%string"
+        ]
+    }
+]

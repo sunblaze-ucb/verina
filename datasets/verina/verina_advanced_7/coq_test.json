@@ -1,0 +1,61 @@
+[
+    {
+        "input": {
+            "digits": "[1; 0; 1]"
+        },
+        "expected": "5",
+        "unexpected": [
+            "3",
+            "4",
+            "6"
+        ]
+    },
+    {
+        "input": {
+            "digits": "[1; 1; 1; 1]"
+        },
+        "expected": "15",
+        "unexpected": [
+            "14",
+            "16"
+        ]
+    },
+    {
+        "input": {
+            "digits": "[0; 0; 0]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "digits": "[1; 0; 0; 0; 0]"
+        },
+        "expected": "16",
+        "unexpected": [
+            "8",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "digits": "[]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1"
+        ]
+    },
+    {
+        "input": {
+            "digits": "[1]"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0"
+        ]
+    }
+]

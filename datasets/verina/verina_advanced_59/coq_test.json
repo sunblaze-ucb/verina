@@ -1,0 +1,56 @@
+[
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"A man, a plan, a canal: Panama\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"race a car\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"No 'x' in Nixon\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc!!cba?\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"Hello, world!\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

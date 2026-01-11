@@ -1,0 +1,79 @@
+[
+    {
+        "input": {
+            "s": "\"123abc456\"%string"
+        },
+        "expected": "6",
+        "unexpected": [
+            "5",
+            "7",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"no digits here!\"%string"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2",
+            "3"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"1234567890\"%string"
+        },
+        "expected": "10",
+        "unexpected": [
+            "9",
+            "11",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2",
+            "10"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"a1b2c3\"%string"
+        },
+        "expected": "3",
+        "unexpected": [
+            "2",
+            "4",
+            "5"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"0\"%string"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0",
+            "2",
+            "10"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc\"%string"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "8",
+            "9"
+        ]
+    }
+]

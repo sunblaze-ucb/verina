@@ -1,0 +1,51 @@
+[
+    {
+        "input": {
+            "words_str": "\"the sky is blue\"%string"
+        },
+        "expected": "\"blue is sky the\"%string",
+        "unexpected": [
+            "\"the sky is blue\"%string",
+            "\"sky the blue is\"%string"
+        ]
+    },
+    {
+        "input": {
+            "words_str": "\"  hello world  \"%string"
+        },
+        "expected": "\"world hello\"%string",
+        "unexpected": [
+            "\"hello world\"%string",
+            "\"worldhello\"%string"
+        ]
+    },
+    {
+        "input": {
+            "words_str": "\"a good   example\"%string"
+        },
+        "expected": "\"example good a\"%string",
+        "unexpected": [
+            "\"a good example\"%string",
+            "\"example a good\"%string"
+        ]
+    },
+    {
+        "input": {
+            "words_str": "\"  Bob    Loves  Alice   \"%string"
+        },
+        "expected": "\"Alice Loves Bob\"%string",
+        "unexpected": [
+            "\"Bob Loves Alice\"%string",
+            "\"Alice Loves Bob \"%string"
+        ]
+    },
+    {
+        "input": {
+            "words_str": "\"this lab is interesting\"%string"
+        },
+        "expected": "\"interesting is lab this\"%string",
+        "unexpected": [
+            "\"gnitseretni si bal siht\"%string"
+        ]
+    }
+]

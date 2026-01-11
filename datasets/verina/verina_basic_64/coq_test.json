@@ -1,0 +1,77 @@
+[
+    {
+        "input": {
+            "oline": "[\"a\"%char; \"b\"%char; \"c\"%char; \"d\"%char; \"e\"%char]",
+            "l": "5",
+            "nl": "[\"X\"%char; \"Y\"%char]",
+            "p": "2",
+            "atPos": "2"
+        },
+        "expected": "[\"a\"%char; \"b\"%char; \"X\"%char; \"Y\"%char; \"c\"%char; \"d\"%char; \"e\"%char]",
+        "unexpected": [
+            "[\"a\"%char; \"b\"%char; \"X\"%char; \"Y\"%char; \"c\"%char; \"d\"%char]",
+            "[\"a\"%char; \"b\"%char; \"X\"%char; \"Y\"%char; \"c\"%char; \"d\"%char; \"f\"%char]",
+            "[\"a\"%char; \"X\"%char; \"b\"%char; \"Y\"%char; \"c\"%char; \"d\"%char; \"e\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "oline": "[\"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char]",
+            "l": "5",
+            "nl": "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char]",
+            "p": "5",
+            "atPos": "0"
+        },
+        "expected": "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char; \"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char]",
+        "unexpected": [
+            "[\"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char; \"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char]",
+            "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char; \"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char; \"!\"%char]",
+            "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char; \"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "oline": "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char]",
+            "l": "4",
+            "nl": "[\"4\"%char]",
+            "p": "1",
+            "atPos": "4"
+        },
+        "expected": "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char; \"4\"%char]",
+        "unexpected": [
+            "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char]",
+            "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char; \" \"%char]",
+            "[\"4\"%char; \"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "oline": "[\"T\"%char; \"e\"%char; \"s\"%char; \"t\"%char]",
+            "l": "4",
+            "nl": "[]",
+            "p": "0",
+            "atPos": "2"
+        },
+        "expected": "[\"T\"%char; \"e\"%char; \"s\"%char; \"t\"%char]",
+        "unexpected": [
+            "[\"T\"%char; \"e\"%char; \"s\"%char]",
+            "[\"T\"%char; \"s\"%char; \"t\"%char; \"e\"%char]",
+            "[\"t\"%char; \"e\"%char; \"s\"%char; \"T\"%char]"
+        ]
+    },
+    {
+        "input": {
+            "oline": "[\"1\"%char; \"2\"%char; \"3\"%char; \"4\"%char; \"5\"%char; \"6\"%char]",
+            "l": "5",
+            "nl": "[\"a\"%char; \"b\"%char; \"c\"%char]",
+            "p": "3",
+            "atPos": "3"
+        },
+        "expected": "[\"1\"%char; \"2\"%char; \"3\"%char; \"a\"%char; \"b\"%char; \"c\"%char; \"4\"%char; \"5\"%char]",
+        "unexpected": [
+            "[\"1\"%char; \"2\"%char; \"3\"%char; \"a\"%char; \"b\"%char; \"c\"%char; \"4\"%char; \"5\"%char; \"6\"%char]",
+            "[\"1\"%char; \"2\"%char; \"3\"%char; \"4\"%char; \"a\"%char; \"b\"%char; \"c\"%char; \"5\"%char; \"6\"%char]",
+            "[\"1\"%char; \"2\"%char; \"3\"%char; \"a\"%char; \"b\"%char; \"4\"%char; \"c\"%char; \"5\"%char; \"6\"%char]"
+        ]
+    }
+]

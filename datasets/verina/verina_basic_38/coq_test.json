@@ -1,0 +1,56 @@
+[
+    {
+        "input": {
+            "s": "\"aaa\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"aba\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"a\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"bbbb\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"bbab\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

@@ -1,0 +1,64 @@
+[
+    {
+        "input": {
+            "a": "[(2)%Z; (4)%Z; (6)%Z; (8)%Z]"
+        },
+        "expected": "None",
+        "unexpected": [
+            "Some 0%nat"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(3)%Z; (4)%Z; (6)%Z; (8)%Z]"
+        },
+        "expected": "Some 0%nat",
+        "unexpected": [
+            "Some 1%nat",
+            "Some 2%nat",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(2)%Z; (4)%Z; (5)%Z; (8)%Z]"
+        },
+        "expected": "Some 2%nat",
+        "unexpected": [
+            "Some 0%nat",
+            "Some 1%nat",
+            "Some 3%nat",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(7)%Z]"
+        },
+        "expected": "Some 0%nat",
+        "unexpected": [
+            "Some 1%nat",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(2)%Z]"
+        },
+        "expected": "None",
+        "unexpected": [
+            "Some 0%nat"
+        ]
+    },
+    {
+        "input": {
+            "a": "[(1)%Z; (2)%Z; (3)%Z]"
+        },
+        "expected": "Some 0%nat",
+        "unexpected": [
+            "Some 1%nat",
+            "Some 2%nat",
+            "None"
+        ]
+    }
+]

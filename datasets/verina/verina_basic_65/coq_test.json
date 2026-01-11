@@ -1,0 +1,55 @@
+[
+    {
+        "input": {
+            "N": "0"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "N": "1"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "N": "15"
+        },
+        "expected": "3",
+        "unexpected": [
+            "2",
+            "4",
+            "5"
+        ]
+    },
+    {
+        "input": {
+            "N": "16"
+        },
+        "expected": "4",
+        "unexpected": [
+            "3",
+            "5",
+            "6"
+        ]
+    },
+    {
+        "input": {
+            "N": "26"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4",
+            "6",
+            "7"
+        ]
+    }
+]

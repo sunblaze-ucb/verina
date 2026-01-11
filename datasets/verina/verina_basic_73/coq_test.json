@@ -1,0 +1,52 @@
+[
+    {
+        "input": {
+            "s": "\"abc\"%string",
+            "p": "\"a?c\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"hello\"%string",
+            "p": "\"he?lo\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"world\"%string",
+            "p": "\"w?rld\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"test\"%string",
+            "p": "\"te?t\"%string"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc\"%string",
+            "p": "\"abd\"%string"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

@@ -1,0 +1,112 @@
+[
+    {
+        "input": {
+            "a": "(-5)%Z",
+            "b": "(10)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "(5)%Z",
+            "b": "(-10)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "(5)%Z",
+            "b": "(10)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(-5)%Z",
+            "b": "(-10)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(0)%Z",
+            "b": "(10)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(10)%Z",
+            "b": "(0)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(0)%Z",
+            "b": "(-10)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(-10)%Z",
+            "b": "(0)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(0)%Z",
+            "b": "(0)%Z"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "a": "(-1)%Z",
+            "b": "(1)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "a": "(1)%Z",
+            "b": "(-1)%Z"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    }
+]

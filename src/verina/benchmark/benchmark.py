@@ -102,6 +102,7 @@ class Benchmark:
         futures = {}
 
         existing_report = existing_report or {}
+        itp_type = self.config.get_itp_type()
 
         # Only run tasks that are enabled in the configuration
         if self.config.code_gen:
@@ -114,6 +115,7 @@ class Benchmark:
                 fewshot_examples,
                 checkpoint,
                 with_ref_spec=False,
+                itp_type=itp_type,
                 return_state=False,
             )
 
@@ -128,6 +130,7 @@ class Benchmark:
                 checkpoint,
                 with_ref_code=False,
                 with_spec_desc=False,
+                itp_type=itp_type,
                 return_state=False,
             )
 
@@ -136,7 +139,7 @@ class Benchmark:
                 existing_report, "execute_proof_gen"
             )
             futures["proof_gen"] = execute_proof_gen(
-                solution, data, fewshot_examples, checkpoint, return_state=False
+                solution, data, fewshot_examples, checkpoint, itp_type=itp_type, return_state=False
             )
 
         if self.config.code_spec_gen:

@@ -37,6 +37,6 @@
                 "param_type": "(list Z)"
             }
         ],
-        "return_type": "Z"
+        "return_type": "(option Z)"
     }
 }

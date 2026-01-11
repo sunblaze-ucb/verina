@@ -3,7 +3,7 @@
 This module provides the Coq-specific template engine for rendering
 benchmark code, specifications, proofs, and tests.
 
-Includes QuickChick integration for property-based testing.
+Uses auto tactics (lia, intuition, etc.) for spec evaluation.
 """
 
 from typing import Any, List
@@ -17,7 +17,7 @@ class CoqGenerationTaskTemplate(ITPTemplate):
     """Coq template engine implementing ITPTemplate interface.
 
     Renders Coq code for code generation, specification, proofs, and testing.
-    Includes QuickChick for property-based testing (equivalent to Lean's Plausible).
+    Uses auto tactics for spec evaluation (not QuickChick, which doesn't support Prop).
     """
 
     # Test message markers (same format as Lean for consistency)
@@ -25,29 +25,10 @@ class CoqGenerationTaskTemplate(ITPTemplate):
     PRECOND_TEST_DECIDABLE_MSG_MARKER = "precond_test_decidable"
     POSTCOND_TEST_DECIDABLE_MSG_MARKER = "postcond_test_decidable"
 
-    # Undecidable test types (must match metrics.py expectations)
-    UNDECIDABLE_COMPUTE = "compute"
-    UNDECIDABLE_PLAUSIBLE = "plausible"  # QuickChick for Coq (matches Lean's plausible)
-    UNDECIDABLE_QUICKCHICK = "plausible"  # Alias for backward compatibility
-    UNDECIDABLE_LLM = "llm"
-
     # Error/success messages for test evaluation
     DECIDABLE_ERR_MSG = "The command has indeed failed"
     DECIDABLE_UNKNOWN_MSG = "Cannot infer"
     COMPUTE_SUCCESS_MSG = "= true"
-
-    # QuickChick messages (actual output from QuickChick)
-    QUICKCHICK_SUCCESS_MSG = "+++ Passed"  # QuickChick prints "+++ Passed N tests"
-    QUICKCHICK_GAVE_UP_MSG = "Gave up"
-    QUICKCHICK_FAILED_MSG = "Failed"  # QuickChick prints "*** Failed after N tests!"
-
-    # Plausible test messages (must match metrics.py expectations)
-    # These are aliases for QuickChick messages since QuickChick is Coq's plausible
-    PLAUSIBLE_SUCCESS_MSG = "+++ Passed"  # QuickChick success
-    PLAUSIBLE_FAILED_MSG = "Failed"  # QuickChick failure
-    SIMP_SUCCESS_MSG = "no goals"  # Not really used in Coq but needed for compatibility
-
-    QUICKCHICK_TEST_COMMAND = "QuickChick"
 
     @staticmethod
     def PRECOND_TEST_UNDECIDABLE_MSG_MARKER(type_: str) -> str:
@@ -109,16 +90,20 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         return self.DECIDABLE_UNKNOWN_MSG
 
     def get_pbt_success_msg(self) -> str:
-        return self.QUICKCHICK_SUCCESS_MSG
+        # Not used for Coq - we use auto tactics, not QuickChick PBT
+        return ""
 
     def get_pbt_failed_msg(self) -> str:
-        return self.QUICKCHICK_FAILED_MSG
+        # Not used for Coq - we use auto tactics, not QuickChick PBT
+        return ""
 
     def get_pbt_gave_up_msg(self) -> str:
-        return self.QUICKCHICK_GAVE_UP_MSG
+        # Not used for Coq - we use auto tactics, not QuickChick PBT
+        return ""
 
     def get_pbt_test_command(self) -> str:
-        return self.QUICKCHICK_TEST_COMMAND
+        # Not used for Coq - we use auto tactics, not QuickChick PBT
+        return ""
 
     def get_cheat_codes(self) -> List[str]:
         return ["admit", "Admitted", "Abort"]
@@ -140,13 +125,14 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         return rendered
 
     def render_test_imports(self) -> str:
-        """Render imports needed for testing (QuickChick)."""
-        imports = """From QuickChick Require Import QuickChick.
-Require Import ZArith.
-Require Import Bool.
-Require Import List.
-Import ListNotations.
-Open Scope Z_scope."""
+        """Render imports needed for testing (auto tactics).
+
+        Note: Basic imports (ZArith, Bool, List, etc.) should be in the task.v
+        preamble which is automatically captured as task_imports.
+        This method only adds test-specific imports like Lia for auto tactics.
+        """
+        imports = """Require Import Lia.
+Require Import Arith."""
         return self.render_imports(imports, "test")
 
     def render_param_list(self) -> str:
@@ -369,9 +355,12 @@ Open Scope Z_scope."""
         knowing the specific proof ahead of time.
 
         Compilation fails if no automation tactic can prove the precondition.
+        Uses Print-based markers instead of comments since Coq comments don't appear in output.
         """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
-        rendered = f'(* <{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}>{test_idx}</{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}> *)\n'
+        # Use Print-based marker that appears in output
+        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
         rendered += f"Goal {full_precond_name}"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
@@ -412,9 +401,12 @@ Open Scope Z_scope."""
 
         Note: For simple preconditions like `True`, this test would fail
         since we can't prove ~True. Such tasks shouldn't have reject_inputs.
+        Uses Print-based markers instead of comments since Coq comments don't appear in output.
         """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
-        rendered = f'(* <{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}>{test_idx}</{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}> *)\n'
+        # Use Print-based marker that appears in output
+        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
         rendered += f"Goal ~({full_precond_name}"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
@@ -431,11 +423,14 @@ Open Scope Z_scope."""
 
         Tests that postcond accepts the expected output using automation tactics.
         Uses hammer-like tactics to close the goal without knowing the proof.
+        Uses Print-based markers instead of comments since Coq comments don't appear in output.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
 
-        rendered = f'(* <{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}>{test_idx}</{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}> *)\n'
+        # Use Print-based marker that appears in output
+        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
         rendered += f"Goal {full_postcond_name}"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
@@ -457,11 +452,14 @@ Open Scope Z_scope."""
 
         Tests that postcond rejects unexpected output by proving the negation.
         Uses automation tactics to prove ~(postcond args unexpected I).
+        Uses Print-based markers instead of comments since Coq comments don't appear in output.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
 
-        rendered = f'(* <{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}>{test_idx},{unexpected_idx}</{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}> *)\n'
+        # Use Print-based marker that appears in output (tuple index uses underscore)
+        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
         rendered += f"Goal ~({full_postcond_name}"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
@@ -470,184 +468,6 @@ Open Scope Z_scope."""
         rendered += f"  unfold {full_postcond_name}.\n"
         rendered += f"  intro H.\n"
         rendered += f"  first [{self.NEGATION_AUTOMATION_TACTICS}].\nQed."
-        return rendered
-
-    # ==========================================================================
-    # Plausible (PBT) test rendering methods - QuickChick equivalents
-    #
-    # These tests are used as fallback when decidable tests (automation tactics)
-    # fail. They use QuickChick for property-based testing or Compute for
-    # simple evaluation.
-    #
-    # Note: For QuickChick to work, the property must be "checkable" (return bool).
-    # Since precond/postcond return Prop, we need decidable instances or
-    # explicit bool-returning checkers.
-    # ==========================================================================
-
-    def render_precond_unit_test_sound_plausible(
-        self,
-        test_case: TestCase,
-        *,
-        test_idx: int,
-        inverse: bool,
-        use_grind: bool = False,
-        precond_name: str = "",
-    ) -> str:
-        """Render QuickChick-based precond soundness test.
-
-        Uses QuickChick with a bool-returning checker. For Prop-based preconditions,
-        we generate a checker that uses decidability or explicit computation.
-
-        If inverse=True, tests that the precond does NOT hold.
-        """
-        marker = self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(self.UNDECIDABLE_PLAUSIBLE)
-        # Use Print statement for marker so it appears in coqc output
-        # Add suffix: _s for sound, _inv for inverse
-        suffix = "_s_inv" if inverse else "_s"
-        rendered = self._render_test_marker_print(marker, str(test_idx), suffix)
-
-        # Generate argument list
-        args = ""
-        for param in self.signature.parameters:
-            coq_type = self._get_type(param.param_type)
-            args += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-
-        # Use QuickChick with the precond checker
-        # Assumes a decidable precond or a bool-returning checker exists
-        precond_name_full = self.render_full_precond_name(precond_name=precond_name)
-        if inverse:
-            rendered += f"QuickChick (negb ({precond_name_full}_dec{args}))."
-        else:
-            rendered += f"QuickChick ({precond_name_full}_dec{args})."
-
-        return rendered
-
-    def render_precond_unit_test_complete_plausible(
-        self,
-        reject_input: RejectInput,
-        *,
-        test_idx: int,
-        inverse: bool,
-        use_grind: bool = False,
-        precond_name: str = "",
-    ) -> str:
-        """Render QuickChick-based precond completeness test.
-
-        Tests that precond rejects invalid input using QuickChick.
-        If inverse=True, tests that the precond DOES hold (for negative testing).
-        """
-        marker = self.PRECOND_TEST_UNDECIDABLE_MSG_MARKER(self.UNDECIDABLE_PLAUSIBLE)
-        # Use Print statement for marker so it appears in coqc output
-        # Add suffix: _c for complete, _inv for inverse
-        suffix = "_c_inv" if inverse else "_c"
-        rendered = self._render_test_marker_print(marker, str(test_idx), suffix)
-
-        # Generate argument list
-        args = ""
-        for param in self.signature.parameters:
-            coq_type = self._get_type(param.param_type)
-            args += f" {self.render_unit_test_value(coq_type, reject_input.input[param.param_name])}"
-
-        precond_name_full = self.render_full_precond_name(precond_name=precond_name)
-        # For completeness, we want precond to be false (reject the input)
-        if inverse:
-            rendered += f"QuickChick ({precond_name_full}_dec{args})."
-        else:
-            rendered += f"QuickChick (negb ({precond_name_full}_dec{args}))."
-
-        return rendered
-
-    def render_postcond_unit_test_complete_plausible(
-        self,
-        test_case: TestCase,
-        *,
-        test_idx: int,
-        inverse: bool,
-        use_grind: bool = False,
-        postcond_name: str = "",
-    ) -> str:
-        """Render QuickChick-based postcond completeness test.
-
-        Tests that postcond accepts the expected output using QuickChick.
-        If inverse=True, tests that the postcond does NOT hold.
-        """
-        marker = self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(self.UNDECIDABLE_PLAUSIBLE)
-        coq_return_type = self._get_type(self.signature.return_type)
-
-        # Use Print statement for marker so it appears in coqc output
-        # Add suffix: _c for complete, _inv for inverse
-        suffix = "_c_inv" if inverse else "_c"
-        rendered = self._render_test_marker_print(marker, str(test_idx), suffix)
-
-        # Generate argument list
-        args = ""
-        for param in self.signature.parameters:
-            coq_type = self._get_type(param.param_type)
-            args += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        args += f" {self.render_unit_test_value(coq_return_type, test_case.expected)}"
-
-        postcond_name_full = self.render_full_postcond_name(postcond_name=postcond_name)
-        if inverse:
-            rendered += f"QuickChick (negb ({postcond_name_full}_dec{args}))."
-        else:
-            rendered += f"QuickChick ({postcond_name_full}_dec{args})."
-
-        return rendered
-
-    def _render_test_marker_print(self, marker: str, idx: str, suffix: str = "") -> str:
-        """Render a test marker as a Print statement for Coq.
-
-        Uses Print with a unique definition name that includes the marker info.
-        This makes the marker appear in coqc output for parsing.
-
-        Args:
-            marker: The marker type (e.g., "postcond_test_undecidable_plausible")
-            idx: The test index (e.g., "0" or "0,0")
-            suffix: Optional suffix to distinguish test types (e.g., "_inv" for inverse tests)
-        """
-        # Create a unique definition name that includes marker and index
-        # Replace non-identifier chars with underscores
-        safe_marker = marker.replace("-", "_")
-        def_name = f"_m_{safe_marker}_{idx.replace(',', '_')}{suffix}"
-        return f"Definition {def_name} := tt. Print {def_name}.\n"
-
-    def render_postcond_unit_test_sound_plausible(
-        self,
-        test_case: TestCase,
-        *,
-        test_idx: int,
-        unexpected_idx: int,
-        inverse: bool,
-        use_grind: bool = False,
-        postcond_name: str = "",
-    ) -> str:
-        """Render QuickChick-based postcond soundness test.
-
-        Tests that postcond rejects unexpected output using QuickChick.
-        If inverse=True, tests that the postcond DOES hold (for negative testing).
-        """
-        marker = self.POSTCOND_TEST_UNDECIDABLE_MSG_MARKER(self.UNDECIDABLE_PLAUSIBLE)
-        coq_return_type = self._get_type(self.signature.return_type)
-
-        # Use Print statement for marker so it appears in coqc output
-        # Add suffix: _s for sound, _inv for inverse
-        suffix = "_s_inv" if inverse else "_s"
-        rendered = self._render_test_marker_print(marker, f"{test_idx},{unexpected_idx}", suffix)
-
-        # Generate argument list
-        args = ""
-        for param in self.signature.parameters:
-            coq_type = self._get_type(param.param_type)
-            args += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        args += f" {self.render_unit_test_value(coq_return_type, test_case.unexpected[unexpected_idx])}"
-
-        postcond_name_full = self.render_full_postcond_name(postcond_name=postcond_name)
-        # For soundness, we want postcond to be false (reject the unexpected output)
-        if inverse:
-            rendered += f"QuickChick ({postcond_name_full}_dec{args})."
-        else:
-            rendered += f"QuickChick (negb ({postcond_name_full}_dec{args}))."
-
         return rendered
 
     # ==========================================================================

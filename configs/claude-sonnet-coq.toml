@@ -1,0 +1,37 @@
+output_dir = "output/claude-opus-coq-10basic-v5"
+max_workers = 10
+rounds = 1
+fewshot_example_names = []
+
+# ITP selection - use Coq instead of Lean
+itp_type = "coq"
+
+code_gen = true
+spec_gen = true
+proof_gen = true
+code_spec_gen = false
+code_proof_gen = false
+spec_proof_gen = false
+code_spec_proof_gen = false
+
+[gen_lm_config]
+provider = "anthropic"
+model_name = "claude-opus-4-5-20251101"
+
+[baseline_config]
+name = "baseline"
+resume_from_checkpoint = false
+
+[eval_spec_config]
+formal_proving = false
+unit_test = true
+unit_test_proving = false
+use_plausible_pass = true
+evidence_rel_dir = "./evidence"
+use_evidence = false
+save_evidence = true
+
+[coq_config]
+use_quickchick = true
+quickchick_num_tests = 1000
+docker_image = "verina-coq"

@@ -1,0 +1,53 @@
+[
+    {
+        "input": {
+            "s": "\"Hello, World!\"%string"
+        },
+        "expected": "\"HELLO, WORLD!\"%string",
+        "unexpected": [
+            "\"hello, world!\"%string",
+            "\"HeLLo, WORld!\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc\"%string"
+        },
+        "expected": "\"ABC\"%string",
+        "unexpected": [
+            "\"AbC\"%string",
+            "\"abc\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"ABC\"%string"
+        },
+        "expected": "\"ABC\"%string",
+        "unexpected": [
+            "\"abc\"%string",
+            "\"aBC\"%string",
+            "\"Abc\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"123!?@\"%string"
+        },
+        "expected": "\"123!?@\"%string",
+        "unexpected": [
+            "\"123!@?\"%string",
+            "\"321!?@\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\"a\"%string"
+        ]
+    }
+]

@@ -1,0 +1,90 @@
+[
+    {
+        "input": {
+            "n": "123"
+        },
+        "expected": "3",
+        "unexpected": [
+            "2",
+            "1",
+            "23"
+        ]
+    },
+    {
+        "input": {
+            "n": "0"
+        },
+        "expected": "0",
+        "unexpected": [
+            "10",
+            "5",
+            "9"
+        ]
+    },
+    {
+        "input": {
+            "n": "987654321"
+        },
+        "expected": "1",
+        "unexpected": [
+            "9",
+            "0",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "n": "10"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "10",
+            "5"
+        ]
+    },
+    {
+        "input": {
+            "n": "999"
+        },
+        "expected": "9",
+        "unexpected": [
+            "8",
+            "99",
+            "0"
+        ]
+    },
+    {
+        "input": {
+            "n": "45"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4",
+            "0",
+            "55"
+        ]
+    },
+    {
+        "input": {
+            "n": "100"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1",
+            "10",
+            "5"
+        ]
+    },
+    {
+        "input": {
+            "n": "5"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4",
+            "0",
+            "6"
+        ]
+    }
+]

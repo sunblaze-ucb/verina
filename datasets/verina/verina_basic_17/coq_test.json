@@ -1,0 +1,67 @@
+[
+    {
+        "input": {
+            "s": "\"Hello, World!\"%string"
+        },
+        "expected": "\"hello, world!\"%string",
+        "unexpected": [
+            "\"Hello, world!\"%string",
+            "\"HELLO, WORLD!\"%string",
+            "\"hello, World!\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"ABC\"%string"
+        },
+        "expected": "\"abc\"%string",
+        "unexpected": [
+            "\"ABC\"%string",
+            "\"Abc\"%string",
+            "\"aBC\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"abc\"%string"
+        },
+        "expected": "\"abc\"%string",
+        "unexpected": [
+            "\"ABC\"%string",
+            "\"aBc\"%string",
+            "\"abC\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\"empty\"%string",
+            "\"null\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"1234!@\"%string"
+        },
+        "expected": "\"1234!@\"%string",
+        "unexpected": [
+            "\"1234!#\"%string",
+            "\"12345!@\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"MixedCASE123\"%string"
+        },
+        "expected": "\"mixedcase123\"%string",
+        "unexpected": [
+            "\"Mixedcase123\"%string",
+            "\"mixedCASE123\"%string",
+            "\"MIXEDCASE123\"%string"
+        ]
+    }
+]

@@ -1,0 +1,59 @@
+[
+    {
+        "input": {
+            "nums": "[(1)%Z; (2)%Z; (3)%Z; (2)%Z; (4)%Z; (5)%Z; (6)%Z]"
+        },
+        "expected": "4",
+        "unexpected": [
+            "3",
+            "5"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z]"
+        },
+        "expected": "4",
+        "unexpected": [
+            "3"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(5)%Z; (5)%Z; (5)%Z; (5)%Z]"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(10)%Z; (9)%Z; (8)%Z; (7)%Z]"
+        },
+        "expected": "1",
+        "unexpected": [
+            "0",
+            "2"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[]"
+        },
+        "expected": "0",
+        "unexpected": [
+            "1"
+        ]
+    },
+    {
+        "input": {
+            "nums": "[(1)%Z; (2)%Z; (1)%Z; (2)%Z; (3)%Z; (0)%Z; (1)%Z; (2)%Z; (3)%Z; (4)%Z]"
+        },
+        "expected": "5",
+        "unexpected": [
+            "4"
+        ]
+    }
+]

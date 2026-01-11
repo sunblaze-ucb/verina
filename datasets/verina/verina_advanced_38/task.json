@@ -34,7 +34,7 @@
         "parameters": [
             {
                 "param_name": "intervals",
-                "param_type": "(list (Prod Nat Nat))"
+                "param_type": "(list (nat * nat))"
             }
         ],
         "return_type": "nat"

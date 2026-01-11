@@ -1,0 +1,63 @@
+[
+    {
+        "input": {
+            "lst": "[(1)%Z; (2)%Z; (3)%Z; (2)%Z; (4)%Z]"
+        },
+        "expected": "Some (2)%Z",
+        "unexpected": [
+            "Some (1)%Z",
+            "Some (3)%Z",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[(5)%Z; (1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z]"
+        },
+        "expected": "Some (5)%Z",
+        "unexpected": [
+            "Some (1)%Z",
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z]"
+        },
+        "expected": "None",
+        "unexpected": [
+            "Some (1)%Z",
+            "Some (2)%Z",
+            "Some (3)%Z"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[(7)%Z; (7)%Z; (7)%Z; (7)%Z]"
+        },
+        "expected": "Some (7)%Z",
+        "unexpected": [
+            "None"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[]"
+        },
+        "expected": "None",
+        "unexpected": [
+            "Some (0)%Z",
+            "Some (1)%Z"
+        ]
+    },
+    {
+        "input": {
+            "lst": "[(-1)%Z; (2)%Z; (-1)%Z]"
+        },
+        "expected": "Some ((-1)%Z)",
+        "unexpected": [
+            "None",
+            "Some ((2)%Z)"
+        ]
+    }
+]

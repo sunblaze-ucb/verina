@@ -1,0 +1,98 @@
+[
+    {
+        "input": {
+            "s": "\"100011001\"%string",
+            "k": "3"
+        },
+        "expected": "\"11001\"%string",
+        "unexpected": [
+            "\"00011\"%string",
+            "\"10001\"%string",
+            "\"\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"1011\"%string",
+            "k": "2"
+        },
+        "expected": "\"11\"%string",
+        "unexpected": [
+            "\"101\"%string",
+            "\"01\"%string",
+            "\"\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"000\"%string",
+            "k": "1"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\"0\"%string",
+            "\"00\"%string",
+            "\"000\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"11111\"%string",
+            "k": "3"
+        },
+        "expected": "\"111\"%string",
+        "unexpected": [
+            "\"11\"%string",
+            "\"1111\"%string",
+            "\"\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"10100101\"%string",
+            "k": "2"
+        },
+        "expected": "\"101\"%string",
+        "unexpected": [
+            "\"010\"%string",
+            "\"1001\"%string",
+            "\"0101\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"1001001\"%string",
+            "k": "2"
+        },
+        "expected": "\"1001\"%string",
+        "unexpected": [
+            "\"0010\"%string",
+            "\"0100\"%string",
+            "\"001\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"10010001\"%string",
+            "k": "1"
+        },
+        "expected": "\"1\"%string",
+        "unexpected": [
+            "\"10\"%string",
+            "\"100\"%string",
+            "\"000\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"1001\"%string",
+            "k": "0"
+        },
+        "expected": "\"0\"%string",
+        "unexpected": [
+            "\"10\"%string",
+            "\"100\"%string",
+            "\"1\"%string"
+        ]
+    }
+]

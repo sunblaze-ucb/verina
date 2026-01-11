@@ -53,6 +53,12 @@ def main(
     eval_workers: Annotated[
         Optional[int], typer.Option("--eval-workers", "-ew")
     ] = None,
+    filter_pattern: Annotated[
+        Optional[str], typer.Option("--filter", "-f", help="Filter data points by pattern in data_id (e.g., 'basic', 'advanced')")
+    ] = None,
+    limit: Annotated[
+        Optional[int], typer.Option("--limit", "-l", help="Limit the number of data points to run")
+    ] = None,
 ):
     # Load configuration
     config = BenchmarkRunConfig.from_toml_file(Path(config_path))
@@ -76,6 +82,16 @@ def main(
 
     dataset = load_dataset()
 
+    # Apply filter if specified
+    if filter_pattern:
+        dataset = [data for data in dataset if filter_pattern in data.data_id]
+        print(f"Filtered to {len(dataset)} data points matching '{filter_pattern}'")
+
+    # Apply limit if specified
+    if limit:
+        dataset = dataset[:limit]
+        print(f"Limited to {len(dataset)} data points")
+
     # clean_playground()
     Path(config.output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -83,6 +99,8 @@ def main(
         dataset, config.fewshot_example_names
     )
 
+    # Propagate itp_type from top-level config to baseline_config
+    config.baseline_config.itp_type = config.itp_type
     baseline = get_baseline(config.baseline_config)
     benchmark = Benchmark(config)
 

@@ -1,0 +1,42 @@
+[
+    {
+        "input": {
+            "N": "3",
+            "chords": "[[1; 3]; [4; 2]; [5; 6]]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "N": "3",
+            "chords": "[[6; 1]; [4; 3]; [2; 5]]"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    },
+    {
+        "input": {
+            "N": "4",
+            "chords": "[[2; 4]; [3; 7]; [8; 6]; [5; 1]]"
+        },
+        "expected": "true",
+        "unexpected": [
+            "false"
+        ]
+    },
+    {
+        "input": {
+            "N": "2",
+            "chords": "[[1; 2]; [3; 4]]"
+        },
+        "expected": "false",
+        "unexpected": [
+            "true"
+        ]
+    }
+]

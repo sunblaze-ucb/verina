@@ -1,0 +1,100 @@
+[
+    {
+        "input": {
+            "input": "\"aaabbbcc\"%string"
+        },
+        "expected": "\"a3b3c2\"%string",
+        "unexpected": [
+            "\"a3b3\"%string",
+            "\"a3b3c2x\"%string",
+            "\"abc\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"!!!$$$%%%\"%string"
+        },
+        "expected": "\"!3$3%3\"%string",
+        "unexpected": [
+            "\"!3$3%\"%string",
+            "\"!!!$$$%%\"%string",
+            "\"!3$3%4\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"aaaaa\"%string"
+        },
+        "expected": "\"a5\"%string",
+        "unexpected": [
+            "\"a4\"%string",
+            "\"a6\"%string",
+            "\"a\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"abcd\"%string"
+        },
+        "expected": "\"a1b1c1d1\"%string",
+        "unexpected": [
+            "\"abcd\"%string",
+            "\"a1b1c1\"%string",
+            "\"a1b1c1d2\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\"a1\"%string",
+            "\" \"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"AaABb\"%string"
+        },
+        "expected": "\"A1a1A1B1b1\"%string",
+        "unexpected": [
+            "\"AaABb\"%string",
+            "\"A1a1A1B1\"%string",
+            "\"A1a1A1B1b2\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"wwwwwwwwwwwwwwwww\"%string"
+        },
+        "expected": "\"w17\"%string",
+        "unexpected": [
+            "\"w16\"%string",
+            "\"w18\"%string",
+            "\"w\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"a\"%string"
+        },
+        "expected": "\"a1\"%string",
+        "unexpected": [
+            "\"a\"%string",
+            "\"a2\"%string",
+            "\"\"%string"
+        ]
+    },
+    {
+        "input": {
+            "input": "\"  \"%string"
+        },
+        "expected": "\" 2\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\" 1\"%string",
+            "\" 3\"%string"
+        ]
+    }
+]

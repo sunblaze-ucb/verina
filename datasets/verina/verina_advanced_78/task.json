@@ -45,6 +45,6 @@
                 "param_type": "Z"
             }
         ],
-        "return_type": "Prod Nat Nat"
+        "return_type": "(nat * nat)"
     }
 }

@@ -1,0 +1,43 @@
+[
+    {
+        "input": {
+            "s": "\"Hello, world. How are you?\"%string"
+        },
+        "expected": "\"Hello::world::How:are:you?\"%string",
+        "unexpected": [
+            "\"Hello,world,How,are,you?\"%string",
+            "\"Hello: world: How: are: you?\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"No-changes!\"%string"
+        },
+        "expected": "\"No-changes!\"%string",
+        "unexpected": [
+            "\"No changes!\"%string",
+            "\"No\u2013changes!\"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\",. \"%string"
+        },
+        "expected": "\":::\"%string",
+        "unexpected": [
+            "\"::\"%string",
+            "\";:;\"%string",
+            "\"::: \"%string"
+        ]
+    },
+    {
+        "input": {
+            "s": "\"\"%string"
+        },
+        "expected": "\"\"%string",
+        "unexpected": [
+            "\" \"%string",
+            "\"a\"%string"
+        ]
+    }
+]
