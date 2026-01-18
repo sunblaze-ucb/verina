@@ -99,6 +99,8 @@ def get_openai_model(model_name: str, max_tokens: Optional[int]) -> dspy.LM:
         "o4-mini": {"temperature": 1.0, "max_tokens": max_tokens},
         "gpt-4.1": {"temperature": 1.0, "max_tokens": None},
         "gpt-4.1-nano": {"temperature": 1.0, "max_tokens": None},
+        "gpt-5.2": {"temperature": 1.0, "max_tokens": 20000},
+        "gpt-5": {"temperature": 1.0, "max_tokens": 20000},
     }
 
     if model_name not in model_configs:
@@ -109,7 +111,7 @@ def get_openai_model(model_name: str, max_tokens: Optional[int]) -> dspy.LM:
 
     lm = dspy.LM(f"openai/{model_name}", cache=False, **kwargs)
     if use_default_max_tokens:
-        if model_name == "o4-mini":
+        if model_name == "o4-mini" or model_name == "gpt-5.2":
             lm.kwargs["max_completion_tokens"] = (
                 10000  # ensure o4-mini uses the default max tokens
             )

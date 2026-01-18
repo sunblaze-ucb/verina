@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-Combined Lean watchdog for:
-1. Killing Lean/Lake processes running longer than timeout
-2. Killing processes > 200GB (default)
-3. Warning on processes > 100GB (default)
+Coq Watchdog Service:
+1. Kills Coq processes (coqc, coqtop) running longer than timeout
+2. Kills Coq processes exceeding memory limit (> 200GB default)
+3. Warns on Coq processes exceeding warning limit (> 100GB default)
 4. Periodic reporting of memory usage
-5. Cleaning up stale temp files
+5. Cleans up core dumps
 
 Usage:
-    python lean_watchdog.py <lean_project_path> [options]
+    python coq_watchdog.py <project_path> [options]
 
 Options:
-    --process-timeout   Seconds before killing Lean processes (default: 80)
+    --process-timeout   Seconds before killing Coq processes (default: 300)
     --memory-limit      GB of RAM before killing process (default: 200)
     --memory-warn       GB of RAM before warning (default: 100)
-    --file-max-age      Seconds before deleting stale temp files (default: 130)
     --interval          Check interval in seconds (default: 5)
     --once              Run once and exit
 """
@@ -33,20 +32,19 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler("lean_watchdog.log"),
+        logging.FileHandler("coq_watchdog.log"),
     ],
 )
 logger = logging.getLogger(__name__)
 
 
-class LeanWatchdog:
+class CoqWatchdog:
     def __init__(
         self,
         project_path: str,
-        process_timeout: int = 80,
+        process_timeout: int = 300,
         memory_limit_gb: float = 200.0,
         memory_warn_gb: float = 100.0,
-        file_max_age: int = 130,
     ):
         self.project_path = Path(project_path)
         self.process_timeout = process_timeout
@@ -56,8 +54,6 @@ class LeanWatchdog:
         
         self.memory_warn_gb = memory_warn_gb
         self.memory_warn_bytes = int(memory_warn_gb * (1024**3))
-        
-        self.file_max_age = file_max_age
 
         # Process monitoring state
         self.monitored_processes: Dict[int, float] = {}
@@ -71,24 +67,31 @@ class LeanWatchdog:
     # Process Monitoring
     # -------------------------------------------------------------------------
 
-    def is_lean_process(self, process: psutil.Process) -> bool:
-        """Check if a process is a lean/lake process (not Python)."""
+    def is_coq_process(self, process: psutil.Process) -> bool:
+        """Check if a process is a Coq process (coqc, coqtop, etc)."""
         try:
             name = process.name().lower()
+            
+            # Skip Python processes (including this script)
             if "python" in name:
                 return False
 
             cmdline = process.cmdline()
-            # Skip self
-            if cmdline and any("lean_watchdog.py" in arg for arg in cmdline):
+            # Skip self if run via python
+            if cmdline and any("coq_watchdog.py" in arg for arg in cmdline):
                 return False
 
-            if name.startswith("lean") or name.startswith("lake"):
+            # Check for standard Coq binaries
+            target_binaries = ["coqc", "coqtop", "coqide", "coq-tex", "coqdep"]
+            
+            # 1. Check simple process name
+            if any(target in name for target in target_binaries):
                 return True
 
+            # 2. Check executable path/command line
             if cmdline:
                 exe_name = cmdline[0].split("/")[-1].lower()
-                if exe_name.startswith("lean") or exe_name.startswith("lake"):
+                if any(target in exe_name for target in target_binaries):
                     return True
 
             return False
@@ -134,7 +137,7 @@ class LeanWatchdog:
         
         for process in psutil.process_iter(attrs):
             try:
-                if not self.is_lean_process(process):
+                if not self.is_coq_process(process):
                     continue
 
                 pid = process.pid
@@ -154,7 +157,7 @@ class LeanWatchdog:
                     if self.kill_process(process, reason):
                         self.killed_processes.add(pid)
                         self.processes_killed += 1
-                    continue # Stop processing this pid
+                    continue 
 
                 # Case B: Warn Limit (> 100GB)
                 if rss_bytes > self.memory_warn_bytes:
@@ -171,7 +174,7 @@ class LeanWatchdog:
 
                 # 3. Track valid process
                 if pid not in self.monitored_processes:
-                    logger.debug(f"Monitoring lean process {pid}")
+                    logger.debug(f"Monitoring Coq process {pid}")
                     self.monitored_processes[pid] = process.create_time()
 
                 # Add to periodic summary report
@@ -188,43 +191,18 @@ class LeanWatchdog:
 
         # Log periodic summary of active processes
         if status_reports:
-            logger.info(f"Active Lean Processes: {', '.join(status_reports)}")
-        elif len(self.monitored_processes) == 0 and len(current_pids) > 0:
-            # Small edge case: processes exist but were skipped or just finished
-            pass
-        else:
-            # Optional: Log "No lean processes" if you want verbose heartbeat
-            # logger.debug("No active Lean processes found.")
-            pass
+            logger.info(f"Active Coq Processes: {', '.join(status_reports)}")
 
     # -------------------------------------------------------------------------
     # File Cleanup
     # -------------------------------------------------------------------------
 
-    def is_temp_lean_file(self, filepath: Path) -> bool:
-        name = filepath.name
-        return name.endswith(".lean") and "-" in name
-
     def cleanup_files(self):
+        """Delete core dumps."""
         if not self.project_path.exists():
             return
 
-        current_time = time.time()
-
-        for filepath in self.project_path.glob("*.lean"):
-            if not self.is_temp_lean_file(filepath):
-                continue
-            try:
-                file_age = current_time - filepath.stat().st_mtime
-                if file_age > self.file_max_age:
-                    logger.warning(
-                        f"Deleting stale temp file: {filepath.name} (age: {file_age:.1f}s)"
-                    )
-                    filepath.unlink()
-                    self.files_deleted += 1
-            except (OSError, FileNotFoundError):
-                pass
-
+        # Delete core dumps
         for filepath in self.project_path.glob("core.*"):
             try:
                 size_mb = filepath.stat().st_size / (1024 * 1024)
@@ -244,7 +222,7 @@ class LeanWatchdog:
 
     def run(self, interval: float = 5.0):
         logger.info(
-            f"Starting Lean watchdog: path={self.project_path}, "
+            f"Starting Coq watchdog: path={self.project_path}, "
             f"timeout={self.process_timeout}s, "
             f"mem_kill={self.memory_limit_gb}GB, "
             f"mem_warn={self.memory_warn_gb}GB"
@@ -262,32 +240,26 @@ class LeanWatchdog:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Lean watchdog: kill hung/OOM processes and clean stale temp files"
+        description="Coq watchdog: kill hung/OOM coqc/coqtop processes"
     )
-    parser.add_argument("project_path", help="Path to Lean project directory")
+    parser.add_argument("project_path", help="Path to Coq project directory (for core dumps)")
     parser.add_argument(
         "-p", "--process-timeout",
         type=int,
-        default=80,
-        help="Kill Lean processes older than this (seconds, default: 80)",
+        default=300,
+        help="Kill Coq processes older than this (seconds, default: 300)",
     )
     parser.add_argument(
         "-m", "--memory-limit",
         type=float,
         default=200.0,
-        help="Kill Lean processes using more than this RAM in GB (default: 200)",
+        help="Kill Coq processes using more than this RAM in GB (default: 200)",
     )
     parser.add_argument(
         "-w", "--memory-warn",
         type=float,
         default=100.0,
-        help="Warn if Lean processes use more than this RAM in GB (default: 100)",
-    )
-    parser.add_argument(
-        "-f", "--file-max-age",
-        type=int,
-        default=130,
-        help="Delete temp files older than this (seconds, default: 130)",
+        help="Warn if Coq processes use more than this RAM in GB (default: 100)",
     )
     parser.add_argument(
         "-i", "--interval",
@@ -302,12 +274,11 @@ def main():
     )
 
     args = parser.parse_args()
-    watchdog = LeanWatchdog(
+    watchdog = CoqWatchdog(
         args.project_path,
         process_timeout=args.process_timeout,
         memory_limit_gb=args.memory_limit,
         memory_warn_gb=args.memory_warn,
-        file_max_age=args.file_max_age,
     )
 
     if args.once:

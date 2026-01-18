@@ -1,0 +1,37 @@
+output_dir = "output/gpt-5.2-coq-1rnd"
+max_workers = 128
+rounds = 1
+fewshot_example_names = ["verina_basic_15", "verina_basic_44"]
+
+
+itp_type = "coq"
+
+code_gen = true
+spec_gen = true
+proof_gen = false
+code_spec_gen = false
+code_proof_gen = false
+spec_proof_gen = false
+code_spec_proof_gen = false
+
+[gen_lm_config]
+provider = "openai"
+model_name = "gpt-5.2"
+
+[baseline_config]
+name = "baseline"
+resume_from_checkpoint = true
+
+[eval_spec_config]
+formal_proving = false
+unit_test = true
+unit_test_proving = false
+use_plausible_pass = true
+evidence_rel_dir = "./evidence"
+use_evidence = false
+save_evidence = true
+
+[coq_config]
+use_quickchick = true
+quickchick_num_tests = 1000
+docker_image = "verina-coq"

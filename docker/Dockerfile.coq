@@ -7,7 +7,7 @@ FROM coqorg/coq:8.18
 # Install ATP provers for CoqHammer's hammer tactic
 USER root
 RUN apt-get update && apt-get install -y \
-    wget unzip eprover z3 cvc4 \
+    wget unzip eprover z3 cvc4 python3 python3-distutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Vampire binary (not in apt)

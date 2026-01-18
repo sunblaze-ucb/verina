@@ -210,3 +210,6 @@ verina_dataset/
 ./*.pdf
 ./*.sh
 !setup-dev.sh
+
+# direnv
+.envrc
