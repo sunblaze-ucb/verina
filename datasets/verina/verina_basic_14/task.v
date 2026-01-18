@@ -4,10 +4,19 @@ Require Import String.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
+Require Import Ascii.
+Require Import String.
+Require Import List.
+Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
+(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
 (* !benchmark @end task_aux *)
+
+(* !benchmark @start solution_aux *)
+(* complete helper definitions with Fixpoint/Definition keywords *)
+(* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
 Definition containsZ_precond_dec (s : string) : bool := true.
@@ -19,23 +28,42 @@ Definition containsZ_precond (s : string) : Prop :=
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+Definition is_z_char (c : ascii) : bool :=
+  if ascii_dec c "122"%char then true
+  else if ascii_dec c "090"%char then true
+  else false.
+
+Fixpoint existsb_string (f : ascii -> bool) (s : string) : bool :=
+  match s with
+  | EmptyString => false
+  | String c s' => if f c then true else existsb_string f s'
+  end.
 (* !benchmark @end code_aux *)
 
 Definition containsZ (s : string) (h_precond : containsZ_precond s) : bool :=
   (* !benchmark @start code *)
-  true
+  existsb_string is_z_char s
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition containsZ_postcond_dec (s : string) (result : bool) : bool := true.
+Fixpoint string_to_list (s : string) : list ascii :=
+  match s with
+  | EmptyString => []
+  | String c s' => c :: string_to_list s'
+  end.
+
+Definition containsZ_postcond_dec (s : string) (result : bool) : bool :=
+  result.
 (* !benchmark @end postcond_aux *)
 
 Definition containsZ_postcond (s : string) (result : bool) (h_precond : containsZ_precond s) : Prop :=
   (* !benchmark @start postcond *)
-  True
+  let cs := string_to_list s in
+  (exists x, In x cs /\ (x = "122"%char \/ x = "090"%char)) <-> result = true
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
+
 (* !benchmark @end proof_aux *)
 
 Theorem containsZ_postcond_satisfied (s : string) (h_precond : containsZ_precond s) :

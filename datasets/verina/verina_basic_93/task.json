@@ -35,13 +35,13 @@
         "parameters": [
             {
                 "param_name": "X",
-                "param_type": "UInt8"
+                "param_type": "Z"
             },
             {
                 "param_name": "Y",
-                "param_type": "UInt8"
+                "param_type": "Z"
             }
         ],
-        "return_type": "UInt8 * UInt8"
+        "return_type": "(Z * Z)"
     }
 }

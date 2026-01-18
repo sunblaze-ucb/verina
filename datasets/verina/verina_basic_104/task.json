@@ -35,13 +35,13 @@
         "parameters": [
             {
                 "param_name": "m1",
-                "param_type": "Map Int Int"
+                "param_type": "list (Z * Z)"
             },
             {
                 "param_name": "m2",
-                "param_type": "Map Int Int"
+                "param_type": "list (Z * Z)"
             }
         ],
-        "return_type": "Map Int Int"
+        "return_type": "list (Z * Z)"
     }
 }

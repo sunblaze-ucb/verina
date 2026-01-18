@@ -11,6 +11,7 @@ from typing_extensions import Annotated
 
 from verina.benchmark import Benchmark
 from verina.benchmark.common import BenchmarkRunConfig, ExperimentId
+from verina.coq import clean_coq_playground
 from verina.dataset.dataset import load_dataset
 from verina.dataset.schema import BenchmarkData
 from verina.lean import clean_playground
@@ -62,7 +63,10 @@ def main(
         dataset = [data for data in dataset if data.data_id in wanted]
         print(f"Filtered to {len(dataset)} data points: {[d.data_id for d in dataset]}")
 
-    clean_playground()
+    if config.itp_type == "coq":
+        clean_coq_playground()
+    else:
+        clean_playground()
     Path(config.output_dir).mkdir(parents=True, exist_ok=True)
 
     benchmark = Benchmark(config)

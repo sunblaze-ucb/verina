@@ -37,6 +37,6 @@
                 "param_type": "(list nat)"
             }
         ],
-        "return_type": "(list (nat  * (list nat)))"
+        "return_type": "(list nat * list nat)"
     }
 }

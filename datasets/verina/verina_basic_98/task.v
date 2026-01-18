@@ -4,10 +4,17 @@ Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
+Require Import ZArith.
+Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
+(* No task-level type definitions *)
 (* !benchmark @end task_aux *)
+
+(* !benchmark @start solution_aux *)
+(* No solution auxiliary definitions *)
+(* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
 Definition Triple_precond_dec (x : Z) : bool := true.
@@ -19,23 +26,26 @@ Definition Triple_precond (x : Z) : Prop :=
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+(* No code auxiliary definitions *)
 (* !benchmark @end code_aux *)
 
 Definition Triple (x : Z) (h_precond : Triple_precond x) : Z :=
   (* !benchmark @start code *)
-  0%Z
+  (x * 3)%Z
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition Triple_postcond_dec (x : Z) (result : Z) : bool := true.
+Definition Triple_postcond_dec (x : Z) (result : Z) : bool :=
+  (Z.eqb (result / 3) x) && (Z.eqb ((result / 3) * 3) result).
 (* !benchmark @end postcond_aux *)
 
 Definition Triple_postcond (x : Z) (result : Z) (h_precond : Triple_precond x) : Prop :=
   (* !benchmark @start postcond *)
-  True
+  (result / 3 = x) /\ ((result / 3) * 3 = result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
+
 (* !benchmark @end proof_aux *)
 
 Theorem Triple_postcond_satisfied (x : Z) (h_precond : Triple_precond x) :

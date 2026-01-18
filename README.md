@@ -12,7 +12,9 @@ Each datapoint in the dataset is organized as a folder containing the following 
 - `task.json`: A JSON file describing the task, including the id, task signature, paths to necessary data files, and other metadata.
 - `description.txt`: The description of programming task.
 - `task.lean`: The Lean 4 file containing ground truth code, specification, and proof.
+- `task.v`: The Coq file containing translated code, specification, and proof (when available).
 - `test.json` and `reject_inputs.json`: JSON files containing test cases and rejected inputs for the task.
+- `coq_test.json` and `coq_reject_inputs.json`: Coq-specific test cases with translated value literals (when available).
 
 The HuggingFace [dataset](https://huggingface.co/datasets/sunblaze-ucb/verina) is an aggregated dataset exctraced from [`datasets/verina`](./datasets/verina/).
 To contribute to Verina, please submit a pull request to this repository.
@@ -20,8 +22,8 @@ To contribute to Verina, please submit a pull request to this repository.
 ## Prerequisites
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- [lean](https://docs.lean-lang.org/lean4/doc/quickstart.html)
-- docker (optional)
+- [lean](https://docs.lean-lang.org/lean4/doc/quickstart.html) (for Lean benchmarks)
+- [docker](https://docs.docker.com/get-docker/) (required for Coq benchmarks, optional for Prefect database)
 
 ## Setup
 
@@ -37,6 +39,19 @@ source .venv/bin/activate  # Activate the virtual environment created by uv
 lake exe cache get
 lake update
 ```
+
+### Coq Setup
+
+To run Coq benchmarks, build the Docker image with Coq, QuickChick, and SMTCoq:
+
+```bash
+docker build -f docker/Dockerfile.coq -t verina-coq .
+```
+
+This image includes:
+- Coq 8.18
+- QuickChick (for property-based testing)
+- SMTCoq with veriT solver (for SMT-based proof automation)
 
 ## API Key Configuration
 
@@ -127,8 +142,14 @@ PREFECT_API_URL=http://127.0.0.1:4200/api uv run scripts/benchmark.py -c configs
 
 ### Running Quality Assurance
 
+For Lean:
 ```bash
 PREFECT_API_URL=http://127.0.0.1:4200/api uv run scripts/quality_assurance.py -c configs/qa.toml
+```
+
+For Coq:
+```bash
+PREFECT_API_URL=http://127.0.0.1:4200/api uv run scripts/quality_assurance.py -c configs/qa_coq.toml
 ```
 
 ### Reading Results

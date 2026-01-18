@@ -5,13 +5,22 @@ Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
+Require Import ZArith.
+Require Import Bool.
+Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
+(* No task-level type definitions *)
 (* !benchmark @end task_aux *)
 
+(* !benchmark @start solution_aux *)
+(* No solution auxiliary definitions *)
+(* !benchmark @end solution_aux *)
+
 (* !benchmark @start precond_aux *)
-Definition ComputeIsEven_precond_dec (x : Z) : bool := true.
+Definition ComputeIsEven_precond_dec (x : Z) : bool :=
+  true.
 (* !benchmark @end precond_aux *)
 
 Definition ComputeIsEven_precond (x : Z) : Prop :=
@@ -20,23 +29,26 @@ Definition ComputeIsEven_precond (x : Z) : Prop :=
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+(* No code auxiliary definitions *)
 (* !benchmark @end code_aux *)
 
 Definition ComputeIsEven (x : Z) (h_precond : ComputeIsEven_precond x) : bool :=
   (* !benchmark @start code *)
-  true
+  if (x mod 2 =? 0)%Z then true else false
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition ComputeIsEven_postcond_dec (x : Z) (result : bool) : bool := true.
+Definition ComputeIsEven_postcond_dec (x : Z) (result : bool) : bool :=
+  result.
 (* !benchmark @end postcond_aux *)
 
 Definition ComputeIsEven_postcond (x : Z) (result : bool) (h_precond : ComputeIsEven_precond x) : Prop :=
   (* !benchmark @start postcond *)
-  True
+  result = true <-> exists k : Z, x = (2 * k)%Z
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
+
 (* !benchmark @end proof_aux *)
 
 Theorem ComputeIsEven_postcond_satisfied (x : Z) (h_precond : ComputeIsEven_precond x) :

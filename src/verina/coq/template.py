@@ -130,9 +130,13 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         Note: Basic imports (ZArith, Bool, List, etc.) should be in the task.v
         preamble which is automatically captured as task_imports.
         This method only adds test-specific imports like Lia for auto tactics.
+        SMTCoq is included for the verit tactic (requires veriT solver).
         """
         imports = """Require Import Lia.
-Require Import Arith."""
+Require Import Arith.
+Require Import SMTCoq.SMTCoq.
+Require Import ZArith.
+Local Open Scope Z_scope."""
         return self.render_imports(imports, "test")
 
     def render_param_list(self) -> str:
@@ -254,12 +258,26 @@ Require Import Arith."""
         return rendered
 
     @staticmethod
+    def _wrap_parens(value: str) -> str:
+        """Wrap value in parentheses if not already wrapped or bracketed."""
+        if not value:
+            return value
+        # Already parenthesized or bracketed
+        if (value.startswith('(') and value.endswith(')')) or \
+           (value.startswith('[') and value.endswith(']')):
+            return value
+        return f"({value})"
+
+    @staticmethod
     def render_unit_test_value(coq_type: str, value: Any) -> str:
         """Render a value literal in Coq syntax.
 
         If value is already a Coq literal string (contains %Z, %string, %nat, or
         is a Coq-style list like "[1; 2]"), return it as-is. Otherwise, convert
         the value to Coq syntax based on the type.
+
+        All values are wrapped in parentheses to ensure correct parsing in
+        function application context (e.g., "Some 1" -> "(Some 1)").
         """
         import json
 
@@ -267,28 +285,30 @@ Require Import Arith."""
         if isinstance(value, str):
             # Check for common Coq literal markers
             if '%Z' in value or '%string' in value or '%nat' in value or '%char' in value:
-                return value
+                return CoqGenerationTaskTemplate._wrap_parens(value)
             # Check for Coq-style list syntax (semicolon separator)
             if value.startswith('[') and ';' in value:
                 return value
             # Check for empty list
             if value == '[]':
                 return value
+            # Any other string value - wrap in parens
+            return CoqGenerationTaskTemplate._wrap_parens(value)
 
         # Normalize type
         coq_type_lower = coq_type.lower()
 
         if coq_type_lower == "bool":
-            return str(value).lower()
+            return CoqGenerationTaskTemplate._wrap_parens(str(value).lower())
         elif coq_type_lower == "string":
-            return f'"{value}"%string'
+            return f'("{value}"%string)'
         elif coq_type_lower == "z":
             # Z type (integers)
             return f"({value})%Z"
         elif coq_type_lower == "nat":
-            return str(value)
+            return CoqGenerationTaskTemplate._wrap_parens(str(value))
         elif coq_type_lower == "ascii":
-            return f'"{value}"'
+            return f'("{value}")'
         elif coq_type_lower.startswith("list"):
             # Handle list values
             list_value = value
@@ -302,9 +322,9 @@ Require Import Arith."""
             if isinstance(list_value, list):
                 items = [CoqGenerationTaskTemplate.render_unit_test_value("Z", v) for v in list_value]
                 return "[" + "; ".join(items) + "]"
-            return str(value)
+            return CoqGenerationTaskTemplate._wrap_parens(str(value))
         else:
-            return str(value)
+            return CoqGenerationTaskTemplate._wrap_parens(str(value))
 
     def render_code_unit_test(self, test_case: TestCase, *, test_idx: int) -> str:
         """Render a Compute-based unit test for code.
@@ -328,8 +348,10 @@ Require Import Arith."""
 
     # Automation tactics for solving goals without knowing the specific proof
     # These are tried in sequence by `solve [...]` - first success wins
+    # verit (SMTCoq) is tried first as it's the most powerful SMT-based tactic
     # Key: `intuition lia` handles most cases (equalities, conjunctions, disjunctions, implications)
     AUTOMATION_TACTICS = (
+        "smt | "  # SMTCoq tactic - combines verit + cvc4
         "reflexivity | trivial | easy | "
         "lia | nia | tauto | "
         "intuition lia | intuition nia | "
@@ -339,7 +361,9 @@ Require Import Arith."""
 
     # Automation tactics for proving negation (rejecting invalid inputs/outputs)
     # Applied AFTER `intro H` - first success wins
+    # smt is tried first for SMT-based reasoning (combines verit + cvc4)
     NEGATION_AUTOMATION_TACTICS = (
+        "smt | "  # SMTCoq tactic - combines verit + cvc4
         "discriminate | contradiction | "
         "lia | nia | tauto | "
         "intuition lia | easy"

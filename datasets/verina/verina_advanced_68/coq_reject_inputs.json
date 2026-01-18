@@ -1,22 +1,22 @@
 [
     {
         "input": {
-            "input": """111"""
+            "input": "\"111\"%string"
         }
     },
     {
         "input": {
-            "input": """a1b"""
+            "input": "\"a1b\"%string"
         }
     },
     {
         "input": {
-            "input": """123"""
+            "input": "\"123\"%string"
         }
     },
     {
         "input": {
-            "input": """abc123def"""
+            "input": "\"abc123def\"%string"
         }
     }
 ]

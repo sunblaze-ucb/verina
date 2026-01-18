@@ -33,7 +33,7 @@
         "name": "mergeSort",
         "parameters": [
             {
-                "param_name": "list",
+                "param_name": "lst",
                 "param_type": "(list Z)"
             }
         ],

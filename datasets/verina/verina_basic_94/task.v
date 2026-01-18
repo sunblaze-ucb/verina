@@ -6,13 +6,22 @@ Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
+Require Import Lia.
+Require Import ZArith.
+Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
+(* No additional type definitions needed *)
 (* !benchmark @end task_aux *)
 
+(* !benchmark @start solution_aux *)
+(* No additional solution helpers needed *)
+(* !benchmark @end solution_aux *)
+
 (* !benchmark @start precond_aux *)
-Definition iter_copy_precond_dec (s : (list Z)) : bool := true.
+Definition iter_copy_precond_dec (s : list Z) : bool :=
+  true.
 (* !benchmark @end precond_aux *)
 
 Definition iter_copy_precond (s : (list Z)) : Prop :=
@@ -21,23 +30,39 @@ Definition iter_copy_precond (s : (list Z)) : Prop :=
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+Fixpoint loop (s : list Z) (i : nat) (acc : list Z) : list Z :=
+  match i with
+  | O => acc
+  | S i' =>
+      match nth_error s ((length s) - i)%nat with
+      | Some val => loop s i' (acc ++ [val])
+      | None => acc
+      end
+  end.
 (* !benchmark @end code_aux *)
 
 Definition iter_copy (s : (list Z)) (h_precond : iter_copy_precond s) : (list Z) :=
   (* !benchmark @start code *)
-  []
+  loop s (length s) []
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition iter_copy_postcond_dec (s : (list Z)) (result : (list Z)) : bool := true.
+Definition iter_copy_postcond_dec (s result : list Z) : bool :=
+  (Nat.eqb (length s) (length result)) &&
+  (forallb (fun i => 
+    match nth_error s i, nth_error result i with
+    | Some x, Some y => Z.eqb x y
+    | _, _ => false
+    end) (seq 0 (length s))).
 (* !benchmark @end postcond_aux *)
 
 Definition iter_copy_postcond (s : (list Z)) (result : (list Z)) (h_precond : iter_copy_precond s) : Prop :=
   (* !benchmark @start postcond *)
-  True
+  (length s = length result) /\ (forall i : nat, (i < length s)%nat -> nth i s 0 = nth i result 0)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
+
 (* !benchmark @end proof_aux *)
 
 Theorem iter_copy_postcond_satisfied (s : (list Z)) (h_precond : iter_copy_precond s) :

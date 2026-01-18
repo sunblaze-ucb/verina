@@ -1,8 +1,8 @@
 [
     {
         "input": {
-            "s": """abc""",
-            "p": """ac"""
+            "s": "\"abc\"%string",
+            "p": "\"ac\"%string"
         }
     }
 ]

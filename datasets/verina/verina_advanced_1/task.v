@@ -1,72 +1,78 @@
-(* Coq version of FindSingleNumber benchmark task *)
-(* Find the element that appears exactly once in a list where all others appear twice *)
-
 (* !benchmark @start import type=task *)
 Require Import ZArith.
-Require Import Bool.
-Require Import List.
-Import ListNotations.
-Require Import Lia.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-(* Solution-specific imports *)
+Require Import ZArith List Lia.
+Import ListNotations.
+Open Scope Z_scope.
 (* !benchmark @end import *)
 
+(* !benchmark @start task_aux *)
+(* No task-level type definitions *)
+(* !benchmark @end task_aux *)
+
 (* !benchmark @start solution_aux *)
-(* Count occurrences of x in list *)
-Fixpoint count_occ (x : Z) (lst : list Z) : nat :=
-  match lst with
-  | [] => 0
-  | h :: t => (if Z.eqb h x then 1 else 0) + count_occ x t
-  end.
-
-(* Filter list to keep only elements equal to x *)
-Fixpoint filterlist (x : Z) (lst : list Z) : list Z :=
-  match lst with
-  | [] => []
-  | h :: t => if Z.eqb h x then h :: filterlist x t else filterlist x t
-  end.
-
-(* Find the unique element *)
-Fixpoint findUnique (remaining : list Z) (nums : list Z) : Z :=
-  match remaining with
-  | [] => 0  (* default, should never happen with valid input *)
-  | x :: xs =>
-      if Nat.eqb (length (filterlist x nums)) 1 then x
-      else findUnique xs nums
-  end.
+(* No solution-level auxiliary definitions *)
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* Check if all counts are 1 or 2 *)
-Definition all_counts_valid (nums : list Z) : bool :=
-  forallb (fun x =>
-    let c := count_occ x nums in
-    Nat.eqb c 1 || Nat.eqb c 2
-  ) nums.
+Fixpoint count_in_list (x : Z) (l : list Z) : nat :=
+  match l with
+  | [] => 0%nat
+  | y :: ys => if (y =? x)%Z then S (count_in_list x ys) else count_in_list x ys
+  end.
 
-(* Count how many elements appear exactly once *)
-Definition count_singles (nums : list Z) : nat :=
-  length (filter (fun x => Nat.eqb (count_occ x nums) 1) nums).
+Fixpoint map_count (l : list Z) (original : list Z) : list nat :=
+  match l with
+  | [] => []
+  | x :: xs => count_in_list x original :: map_count xs original
+  end.
 
-(* Decidable precondition for QuickChick *)
+Fixpoint all_pred_nat (f : nat -> bool) (l : list nat) : bool :=
+  match l with
+  | [] => true
+  | x :: xs => andb (f x) (all_pred_nat f xs)
+  end.
+
+Definition count_is_1_or_2 (n : nat) : bool :=
+  orb (Nat.eqb n 1%nat) (Nat.eqb n 2%nat).
+
+Fixpoint count_ones (l : list nat) : nat :=
+  match l with
+  | [] => 0%nat
+  | x :: xs => if Nat.eqb x 1%nat then S (count_ones xs) else count_ones xs
+  end.
+
 Definition FindSingleNumber_precond_dec (nums : list Z) : bool :=
-  negb (Nat.eqb (length nums) 0) &&
-  all_counts_valid nums &&
-  Nat.eqb (count_singles nums) 1.
+  let numsCount := map_count nums nums in
+  andb (all_pred_nat count_is_1_or_2 numsCount) (Nat.eqb (count_ones numsCount) 1%nat).
 (* !benchmark @end precond_aux *)
 
 Definition FindSingleNumber_precond (nums : list Z) : Prop :=
   (* !benchmark @start precond *)
-  (* All elements appear 1 or 2 times, and exactly one element appears once *)
-  (length nums > 0)%nat /\
-  (forall x, In x nums -> count_occ x nums = 1%nat \/ count_occ x nums = 2%nat) /\
-  count_singles nums = 1%nat
+  let numsCount := map_count nums nums in
+  (forall count, In count numsCount -> count = 1%nat \/ count = 2%nat) /\
+  count_ones numsCount = 1%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+Fixpoint filterlist (x : Z) (nums : list Z) : list Z :=
+  match nums with
+  | [] => []
+  | y :: ys => if (y =? x)%Z then y :: filterlist x ys else filterlist x ys
+  end.
+
+Fixpoint findUnique (remaining : list Z) (nums : list Z) : Z :=
+  match remaining with
+  | [] => 0
+  | x :: xs =>
+      let filtered := filterlist x nums in
+      let count := length filtered in
+      if Nat.eqb count 1%nat then x
+      else findUnique xs nums
+  end.
 (* !benchmark @end code_aux *)
 
 Definition FindSingleNumber (nums : list Z) (h_precond : FindSingleNumber_precond nums) : Z :=
@@ -75,25 +81,36 @@ Definition FindSingleNumber (nums : list Z) (h_precond : FindSingleNumber_precon
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Decidable postcondition for QuickChick *)
+Fixpoint length_nat {A : Type} (l : list A) : nat :=
+  match l with
+  | [] => 0%nat
+  | _ :: xs => S (length_nat xs)
+  end.
+
 Definition FindSingleNumber_postcond_dec (nums : list Z) (result : Z) : bool :=
-  negb (Nat.eqb (length nums) 0) &&
-  Nat.eqb (length (filterlist result nums)) 1 &&
-  forallb (fun x =>
-    Z.eqb x result || Nat.eqb (length (filterlist x nums)) 2
-  ) nums.
+  let len := length_nat nums in
+  let filtered_result := filterlist result nums in
+  let filtered_len := length_nat filtered_result in
+  andb (andb (Nat.ltb 0 len) (Nat.eqb filtered_len 1%nat))
+    (forallb (fun x => orb ((x =? result)%Z) (Nat.eqb (length_nat (filterlist x nums)) 2%nat)) nums).
 (* !benchmark @end postcond_aux *)
 
 Definition FindSingleNumber_postcond (nums : list Z) (result : Z) (h_precond : FindSingleNumber_precond nums) : Prop :=
   (* !benchmark @start postcond *)
-  (* Result appears exactly once, and all other elements appear twice *)
   (length nums > 0)%nat /\
-  (length (filterlist result nums) = 1)%nat /\
-  (forall x, In x nums -> x = result \/ (length (filterlist x nums) = 2)%nat)
+  length (filterlist result nums) = 1%nat /\
+  (forall x : Z, In x nums ->
+    x = result \/ length (filterlist x nums) = 2%nat)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
+
 (* !benchmark @end proof_aux *)
 
-(* Note: Full formal proof is complex due to quantifiers *)
-(* For benchmarking, we rely on unit tests and QuickChick *)
+Theorem FindSingleNumber_postcond_satisfied (nums : list Z) (h_precond : FindSingleNumber_precond nums) :
+    FindSingleNumber_postcond nums (FindSingleNumber nums h_precond) h_precond.
+Proof.
+  (* !benchmark @start proof *)
+  admit.
+  (* !benchmark @end proof *)
+Admitted.
