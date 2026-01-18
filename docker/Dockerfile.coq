@@ -35,6 +35,12 @@ RUN opam update && \
     opam install -y coq-quickchick coq-smtcoq.2.2+8.18 && \
     opam clean -a -c -s --logs
 
+# Set opam environment variables for non-interactive shells
+ENV OPAM_SWITCH_PREFIX="/home/coq/.opam/default"
+ENV CAML_LD_LIBRARY_PATH="/home/coq/.opam/default/lib/stublibs:/home/coq/.opam/default/lib/ocaml/stublibs:/home/coq/.opam/default/lib/ocaml"
+ENV OCAML_TOPLEVEL_PATH="/home/coq/.opam/default/lib/toplevel"
+ENV PATH="/home/coq/.opam/default/bin:${PATH}"
+
 # Set working directory
 WORKDIR /workspace
 
