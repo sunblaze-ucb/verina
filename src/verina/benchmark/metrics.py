@@ -66,7 +66,7 @@ class MetricScore(BaseModel):
 
 @task(
     cache_policy=(INPUTS - "file_name") + TASK_SOURCE,
-    timeout_seconds=200,
+    timeout_seconds=400,  # Coq with hammer needs longer timeout (300s compile + buffer)
 )
 async def metric_itp_compile(
     itp_type: ITPType,
@@ -93,7 +93,9 @@ async def metric_itp_compile(
     compiler_kwargs = get_compiler_config(itp_type)
     compiler = get_compiler(itp_type, **compiler_kwargs)
     source_file = compiler.create_source_file(file_name, content)
-    return compiler.check_compile(source_file)
+    # Use longer timeout for Coq (hammer is slow)
+    timeout = 300 if itp_type == ITPType.COQ else 120
+    return compiler.check_compile(source_file, timeout=timeout)
 
 
 @task(
@@ -113,7 +115,7 @@ async def metric_lean_compile(
 
 @task(
     cache_policy=(INPUTS - "file_name") + TASK_SOURCE,
-    timeout_seconds=200,
+    timeout_seconds=400,  # Coq with hammer needs longer timeout
 )
 async def metric_coq_compile(
     coq_content: str, file_name: Optional[str] = None
@@ -380,6 +382,7 @@ def _parse_coq_decidable_markers(
     section_msg: str,
     marker_base: str,
     evaluate_type: Literal["precond", "postcond"],
+    inverse: bool = False,
 ) -> Dict[int | Tuple[int, int], str]:
     """Parse Coq Print-based decidable test markers.
 
@@ -387,6 +390,9 @@ def _parse_coq_decidable_markers(
         _m_precond_test_decidable_0 = tt
              : unit
         Goal...Qed. (or Error:...)
+        _m_precond_test_decidable_0_inv = tt
+             : unit
+        Goal ~(...)...
         _m_precond_test_decidable_1 = tt
              : unit
         Goal...
@@ -394,26 +400,38 @@ def _parse_coq_decidable_markers(
     For postcond sound tests (tuple index):
         _m_postcond_test_decidable_0_1 = tt
              : unit
+        _m_postcond_test_decidable_0_1_inv = tt
+             : unit
 
     Args:
         section_msg: The output section to parse (sound or complete)
         marker_base: The base marker name (e.g., "precond_test_decidable")
         evaluate_type: "precond" or "postcond"
+        inverse: If True, parse only _inv markers; if False, parse only non-_inv markers
     """
     import re
 
     result: Dict[int | Tuple[int, int], str] = {}
 
-    # Pattern to match Print marker output: _m_{marker_base}_{idx} = tt
+    # Pattern to match Print marker output: _m_{marker_base}_{idx}[_inv] = tt
     # For postcond sound tests, idx can be "0_1" format (test_idx_unexpected_idx)
+    # Capture group 1: the index (e.g., "0" or "0_1")
+    # Capture group 2: optional "_inv" suffix
     safe_marker = marker_base.replace("-", "_")
-    pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?)\s*="
+    pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?)((?:_inv)?)\s*="
 
     # Find all marker positions
     matches = list(re.finditer(pattern, section_msg))
 
     for i, match in enumerate(matches):
         idx_str = match.group(1)
+        inv_suffix = match.group(2)
+        is_inverse_marker = inv_suffix == "_inv"
+
+        # Skip markers that don't match our inverse flag
+        if is_inverse_marker != inverse:
+            continue
+
         start_pos = match.end()
         # End position is either the next marker or end of string
         end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(section_msg)
@@ -446,12 +464,28 @@ def update_spec_decidable_scores(
         markers = ["_marker_test_start", "_marker_sound_decidable_end"]
     else:
         markers = ["###test start###", "###sound decidable end###"]
+
+    # Debug: Log the decidable_msg info
+    if itp_type == ITPType.COQ:
+        print(f"[DEBUG] update_spec_decidable_scores called for {evaluate_type}")
+        print(f"[DEBUG] decidable_msg length: {len(decidable_msg)}")
+        print(f"[DEBUG] Looking for markers: {markers}")
+        print(f"[DEBUG] Marker 0 found: {markers[0] in decidable_msg}")
+        print(f"[DEBUG] Marker 1 found: {markers[1] in decidable_msg}")
+        print(f"[DEBUG] decidable_msg repr: {repr(decidable_msg[:2000])}")
+
     decidable_msg_split = split_message(
         decidable_msg,
         markers,
         remove_first=True,
     )
+
+    if itp_type == ITPType.COQ:
+        print(f"[DEBUG] decidable_msg_split length: {len(decidable_msg_split)}")
+
     if len(decidable_msg_split) != 2:
+        if itp_type == ITPType.COQ:
+            print(f"[DEBUG] Early return - split didn't produce 2 parts")
         return score
     sound_decidable_msg = decidable_msg_split[0]
     complete_decidable_msg = decidable_msg_split[1]
@@ -465,13 +499,69 @@ def update_spec_decidable_scores(
 
     # Use different parsing logic for Coq (Print-based markers) vs Lean (XML-like markers)
     if itp_type == ITPType.COQ:
-        # Parse Coq Print-based markers
+        # Parse Coq Print-based markers - both primary and inverse for bidirectional testing
         sound_decidable_msg_map = _parse_coq_decidable_markers(
-            sound_decidable_msg, marker, evaluate_type
+            sound_decidable_msg, marker, evaluate_type, inverse=False
+        )
+        sound_decidable_inv_msg_map = _parse_coq_decidable_markers(
+            sound_decidable_msg, marker, evaluate_type, inverse=True
         )
         complete_decidable_msg_map = _parse_coq_decidable_markers(
-            complete_decidable_msg, marker, evaluate_type
+            complete_decidable_msg, marker, evaluate_type, inverse=False
         )
+        complete_decidable_inv_msg_map = _parse_coq_decidable_markers(
+            complete_decidable_msg, marker, evaluate_type, inverse=True
+        )
+
+        print(f"[DEBUG] Parsing Coq decidable markers for {evaluate_type}")
+        print(f"[DEBUG] Sound primary results: {list(sound_decidable_msg_map.keys())}")
+        print(f"[DEBUG] Sound inverse results: {list(sound_decidable_inv_msg_map.keys())}")
+        print(f"[DEBUG] Complete primary results: {list(complete_decidable_msg_map.keys())}")
+        print(f"[DEBUG] Complete inverse results: {list(complete_decidable_inv_msg_map.keys())}")
+
+        # Bidirectional scoring for sound tests using SOLVED/UNSOLVED markers
+        # Note: Check UNSOLVED first since "UNSOLVED" contains "SOLVED" as substring
+        for idx, msg in sound_decidable_msg_map.items():
+            if idx not in score.sound_tests:
+                continue
+            # Check for UNSOLVED first (since UNSOLVED contains SOLVED as substring)
+            primary_solved = template_engine.UNSOLVED_MARKER not in msg and template_engine.SOLVED_MARKER in msg
+            inv_msg = sound_decidable_inv_msg_map.get(idx, "")
+            inverse_solved = template_engine.UNSOLVED_MARKER not in inv_msg and template_engine.SOLVED_MARKER in inv_msg
+
+            if primary_solved:
+                decide_score = LeanTestScore.PASS
+            elif inverse_solved:
+                # Primary failed but inverse succeeded -> spec is wrong
+                decide_score = LeanTestScore.FAIL
+            else:
+                # Both failed -> unknown
+                decide_score = LeanTestScore.UNKNOWN
+
+            print(f"[DEBUG] Sound test {idx}: primary_solved={primary_solved}, inverse_solved={inverse_solved} -> {decide_score}")
+            score.sound_tests[idx].score_detail.decide = decide_score
+
+        # Bidirectional scoring for complete tests using SOLVED/UNSOLVED markers
+        for idx, msg in complete_decidable_msg_map.items():
+            if idx not in score.complete_tests:
+                continue
+            # Check for UNSOLVED first (since UNSOLVED contains SOLVED as substring)
+            primary_solved = template_engine.UNSOLVED_MARKER not in msg and template_engine.SOLVED_MARKER in msg
+            inv_msg = complete_decidable_inv_msg_map.get(idx, "")
+            inverse_solved = template_engine.UNSOLVED_MARKER not in inv_msg and template_engine.SOLVED_MARKER in inv_msg
+
+            if primary_solved:
+                decide_score = LeanTestScore.PASS
+            elif inverse_solved:
+                # Primary failed but inverse succeeded -> spec is wrong
+                decide_score = LeanTestScore.FAIL
+            else:
+                # Both failed -> unknown
+                decide_score = LeanTestScore.UNKNOWN
+
+            print(f"[DEBUG] Complete test {idx}: primary_solved={primary_solved}, inverse_solved={inverse_solved} -> {decide_score}")
+            score.complete_tests[idx].score_detail.decide = decide_score
+
     else:
         # Parse Lean XML-like markers
         spec_decidable_start_marker = f"<{marker}>"
@@ -497,27 +587,28 @@ def update_spec_decidable_scores(
             assert len(msg) == 2, f"Decidable msg should be split into 2 parts: {msg}"
             complete_decidable_msg_map[int(msg[0])] = msg[1]
 
-    for idx, msg in sound_decidable_msg_map.items():
-        if idx not in score.sound_tests:
-            continue
-        if template_engine.DECIDABLE_ERR_MSG in msg:
-            decide_score = LeanTestScore.FAIL
-        elif "error" in msg.lower():
-            decide_score = LeanTestScore.UNKNOWN
-        else:
-            decide_score = LeanTestScore.PASS
-        score.sound_tests[idx].score_detail.decide = decide_score
+        # Lean scoring (unchanged - no bidirectional testing)
+        for idx, msg in sound_decidable_msg_map.items():
+            if idx not in score.sound_tests:
+                continue
+            if template_engine.DECIDABLE_ERR_MSG in msg:
+                decide_score = LeanTestScore.FAIL
+            elif "error" in msg.lower():
+                decide_score = LeanTestScore.UNKNOWN
+            else:
+                decide_score = LeanTestScore.PASS
+            score.sound_tests[idx].score_detail.decide = decide_score
 
-    for idx, msg in complete_decidable_msg_map.items():
-        if idx not in score.complete_tests:
-            continue
-        if template_engine.DECIDABLE_ERR_MSG in msg:
-            decide_score = LeanTestScore.FAIL
-        elif "error" in msg.lower():
-            decide_score = LeanTestScore.UNKNOWN
-        else:
-            decide_score = LeanTestScore.PASS
-        score.complete_tests[idx].score_detail.decide = decide_score
+        for idx, msg in complete_decidable_msg_map.items():
+            if idx not in score.complete_tests:
+                continue
+            if template_engine.DECIDABLE_ERR_MSG in msg:
+                decide_score = LeanTestScore.FAIL
+            elif "error" in msg.lower():
+                decide_score = LeanTestScore.UNKNOWN
+            else:
+                decide_score = LeanTestScore.PASS
+            score.complete_tests[idx].score_detail.decide = decide_score
 
     score.update_test_scores()
     return score

@@ -1,38 +1,28 @@
-# Coq + QuickChick + SMTCoq Docker Image for Verina
+# Coq + QuickChick + CoqHammer Docker Image for Verina
 # Build: docker build -f docker/Dockerfile.coq -t verina-coq .
 # Run: docker run --rm -v "$(pwd):/workspace" verina-coq coqc /workspace/file.v
 
 FROM coqorg/coq:8.18
 
-# Install veriT SMT solver (required for SMTCoq)
+# Install ATP provers for CoqHammer's hammer tactic
 USER root
 RUN apt-get update && apt-get install -y \
-    wget \
-    build-essential \
-    libgmp-dev \
-    flex \
-    bison \
-    autoconf \
+    wget unzip eprover z3 cvc4 \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and build veriT (SMTCoq-compatible snapshot)
-# Source: https://usr.lmf.cnrs.fr/~ckeller/Documents-recherche/Smtcoq/
-# Note: -fcommon is needed for GCC 10+ compatibility with old C code
+# Download Vampire binary (not in apt)
 RUN cd /tmp && \
-    wget https://usr.lmf.cnrs.fr/~ckeller/Documents-recherche/Smtcoq/veriT9f48a98.tar.gz && \
-    tar xzf veriT9f48a98.tar.gz && \
-    cd veriT9f48a98 && \
-    autoconf && \
-    ./configure && \
-    make CFLAGS="-fcommon -Wall -finline-limit=1000000 -Wno-unused-function -O3 -DNDEBUG -fomit-frame-pointer" && \
-    cp veriT /usr/local/bin/ && \
-    cd / && rm -rf /tmp/veriT*
+    wget https://github.com/vprover/vampire/releases/download/v5.0.1/vampire-Linux-X64.zip && \
+    unzip vampire-Linux-X64.zip && \
+    cp vampire /usr/local/bin/ && \
+    chmod +x /usr/local/bin/vampire && \
+    rm -rf /tmp/vampire*
 
 USER coq
 
-# Install QuickChick and SMTCoq (version 2.2+8.18 for Coq 8.18)
+# Install QuickChick, CoqHammer, and z3_tptp (Z3 TPTP frontend for hammer)
 RUN opam update && \
-    opam install -y coq-quickchick coq-smtcoq.2.2+8.18 && \
+    opam install -y coq-quickchick coq-hammer.1.3.2+8.18 z3_tptp && \
     opam clean -a -c -s --logs
 
 # Set opam environment variables for non-interactive shells

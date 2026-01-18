@@ -42,7 +42,7 @@ lake update
 
 ### Coq Setup
 
-To run Coq benchmarks, build the Docker image with Coq, QuickChick, and SMTCoq:
+To run Coq benchmarks, build the Docker image with Coq, QuickChick, and CoqHammer:
 
 ```bash
 docker build -f docker/Dockerfile.coq -t verina-coq .
@@ -51,7 +51,7 @@ docker build -f docker/Dockerfile.coq -t verina-coq .
 This image includes:
 - Coq 8.18
 - QuickChick (for property-based testing)
-- SMTCoq with veriT solver (for SMT-based proof automation)
+- CoqHammer with ATP provers (E, Vampire, Z3, CVC4) for automated proof search
 
 ## API Key Configuration
 

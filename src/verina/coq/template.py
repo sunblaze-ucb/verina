@@ -130,13 +130,64 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         Note: Basic imports (ZArith, Bool, List, etc.) should be in the task.v
         preamble which is automatically captured as task_imports.
         This method only adds test-specific imports like Lia for auto tactics.
-        SMTCoq is included for the verit tactic (requires veriT solver).
+        CoqHammer is included for sauto/hammer tactics.
+
+        Includes unified verina_auto Ltac tactic that handles both completeness
+        and soundness goals with case analysis on concrete lists and nat indices.
         """
         imports = """Require Import Lia.
 Require Import Arith.
-Require Import SMTCoq.SMTCoq.
+Require Import List.
+Import ListNotations.
+From Hammer Require Import Tactics.
+From Hammer Require Import Hammer.
 Require Import ZArith.
-Local Open Scope Z_scope."""
+Local Open Scope Z_scope.
+
+(* Try witness n for a forall over nat, discharge implications, derive contradiction *)
+Ltac try_nat_forall n :=
+  match goal with
+  | [ H : forall _ : nat, _ |- False ] =>
+      let H' := fresh "H" in
+      pose proof (H n) as H';
+      simpl in H';
+      repeat match type of H' with
+      | ?P -> ?Q =>
+          let Hp := fresh in
+          assert (Hp : P) by (lia || reflexivity || trivial);
+          specialize (H' Hp); clear Hp
+      end;
+      try match type of H' with
+      | forall v : _, Some ?x = Some v -> _ => specialize (H' x eq_refl)
+      end;
+      lia
+  end.
+
+Ltac solve_forall_false :=
+  first [ try_nat_forall 0%nat | try_nat_forall 1%nat
+        | try_nat_forall 2%nat | try_nat_forall 3%nat
+        | try_nat_forall 4%nat | try_nat_forall 5%nat
+        | try_nat_forall 6%nat | try_nat_forall 7%nat ].
+
+(* Verina automation tactic for spec testing - with timeout on hammer *)
+Ltac verina_auto :=
+  cbn [length nth_error nth firstn skipn app rev List.In];
+  simpl;
+  repeat match goal with
+  | [ |- ~ _ ] => intro
+  | [ |- _ /\\ _ ] => split
+  | [ |- _ <-> _ ] => split; intro
+  | [ H : _ /\\ _ |- _ ] => destruct H
+  | [ H : _ <-> _ |- _ ] => destruct H
+  | [ H : exists _, _ |- _ ] => destruct H
+  end;
+  try solve [reflexivity | discriminate | contradiction | lia | tauto | intuition lia];
+  try (intros;
+    repeat match goal with [ i : nat |- _ ] => destruct i; simpl; try lia end;
+    try match goal with [ H : Some _ = Some _ |- _ ] => inversion H; subst; clear H end;
+    try solve [lia | tauto | intuition lia]);
+  try solve_forall_false;
+  try sauto; try (timeout 5 hammer)."""
         return self.render_imports(imports, "test")
 
     def render_param_list(self) -> str:
@@ -346,51 +397,59 @@ Local Open Scope Z_scope."""
         rendered += f" {expected})."
         return rendered
 
-    # Automation tactics for solving goals without knowing the specific proof
-    # These are tried in sequence by `solve [...]` - first success wins
-    # verit (SMTCoq) is tried first as it's the most powerful SMT-based tactic
-    # Key: `intuition lia` handles most cases (equalities, conjunctions, disjunctions, implications)
-    AUTOMATION_TACTICS = (
-        "smt | "  # SMTCoq tactic - combines verit + cvc4
-        "reflexivity | trivial | easy | "
-        "lia | nia | tauto | "
-        "intuition lia | intuition nia | "
-        "firstorder | firstorder lia | "
-        "vm_compute; reflexivity | vm_compute; lia"
-    )
+    # Automation tactics use verina_auto which dispatches to verina_complete or verina_sound
+    # based on goal shape. The Ltac tactics handle case analysis on nat indices, list
+    # computations, and forall witness specialization that ATPs cannot do directly.
+    # Fall back to hammer/sauto for remaining goals.
+    AUTOMATION_TACTICS = "verina_auto"
 
-    # Automation tactics for proving negation (rejecting invalid inputs/outputs)
-    # Applied AFTER `intro H` - first success wins
-    # smt is tried first for SMT-based reasoning (combines verit + cvc4)
-    NEGATION_AUTOMATION_TACTICS = (
-        "smt | "  # SMTCoq tactic - combines verit + cvc4
-        "discriminate | contradiction | "
-        "lia | nia | tauto | "
-        "intuition lia | easy"
-    )
+    # For negation goals, verina_auto will automatically dispatch to verina_sound
+    NEGATION_AUTOMATION_TACTICS = "verina_auto"
+
+    # Markers for SOLVED/UNSOLVED detection in bidirectional testing
+    SOLVED_MARKER = "SOLVED"
+    UNSOLVED_MARKER = "UNSOLVED"
 
     def render_precond_unit_test_sound_decidable(
         self, test_case: TestCase, *, test_idx: int, precond_name: str = ""
     ) -> str:
-        """Render decidable precondition soundness test.
+        """Render decidable precondition soundness test with bidirectional testing.
 
         Tests that precond holds for valid input using Goal/Proof pattern.
         Uses automation tactics (hammer-like) to close the goal without
         knowing the specific proof ahead of time.
 
-        Compilation fails if no automation tactic can prove the precondition.
-        Uses Print-based markers instead of comments since Coq comments don't appear in output.
+        Generates both primary and inverse goals for bidirectional testing:
+        - Primary: prove precond holds (expected behavior)
+        - Inverse: prove ~precond (if this succeeds, spec is wrong)
+
+        Uses try/first/solve pattern with Abort to avoid axiom leakage.
+        Outputs SOLVED/UNSOLVED markers for parsing.
         """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
-        # Use Print-based marker that appears in output
-        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
-        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal {full_precond_name}"
+
+        # Build argument string once
+        args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
-            rendered += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        rendered += f".\n  unfold {full_precond_name}.\n"
-        rendered += f"  solve [{self.AUTOMATION_TACTICS}].\nQed."
+            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
+
+        # Primary: prove precond holds (expected behavior)
+        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
+        rendered += f"Goal {full_precond_name}{args_str}.\n"
+        rendered += f"  unfold {full_precond_name}.\n"
+        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort.\n\n"
+
+        # Inverse: prove ~precond (if this succeeds, spec is wrong)
+        marker_name_inv = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
+        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
+        rendered += f"Goal ~({full_precond_name}{args_str}).\n"
+        rendered += f"  unfold {full_precond_name}.\n"
+        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort."
+
         return rendered
 
     def render_precond_unit_test_sound_quickchick(
@@ -418,50 +477,86 @@ Local Open Scope Z_scope."""
     def render_precond_unit_test_complete_decidable(
         self, reject_input: RejectInput, *, test_idx: int, precond_name: str = ""
     ) -> str:
-        """Render decidable precondition completeness test (should reject).
+        """Render decidable precondition completeness test with bidirectional testing.
 
         Tests that precond rejects invalid input by proving the negation.
         Uses automation tactics to prove ~(precond args).
 
+        Generates both primary and inverse goals for bidirectional testing:
+        - Primary: prove ~precond (expected: should reject invalid input)
+        - Inverse: prove precond (if this succeeds, spec incorrectly accepts invalid input)
+
+        Uses try/first/solve pattern with Abort to avoid axiom leakage.
+
         Note: For simple preconditions like `True`, this test would fail
         since we can't prove ~True. Such tasks shouldn't have reject_inputs.
-        Uses Print-based markers instead of comments since Coq comments don't appear in output.
         """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
-        # Use Print-based marker that appears in output
-        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
-        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal ~({full_precond_name}"
+
+        # Build argument string once
+        args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
-            rendered += f" {self.render_unit_test_value(coq_type, reject_input.input[param.param_name])}"
-        rendered += f").\n  unfold {full_precond_name}.\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  first [{self.NEGATION_AUTOMATION_TACTICS}].\nQed."
+            args_str += f" {self.render_unit_test_value(coq_type, reject_input.input[param.param_name])}"
+
+        # Primary: prove ~precond (expected behavior - should reject invalid input)
+        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
+        rendered += f"Goal ~({full_precond_name}{args_str}).\n"
+        rendered += f"  unfold {full_precond_name}.\n"
+        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort.\n\n"
+
+        # Inverse: prove precond (if this succeeds, spec incorrectly accepts invalid input)
+        marker_name_inv = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
+        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
+        rendered += f"Goal {full_precond_name}{args_str}.\n"
+        rendered += f"  unfold {full_precond_name}.\n"
+        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort."
+
         return rendered
 
     def render_postcond_unit_test_complete_decidable(
         self, test_case: TestCase, *, test_idx: int, postcond_name: str = ""
     ) -> str:
-        """Render decidable postcondition completeness test.
+        """Render decidable postcondition completeness test with bidirectional testing.
 
         Tests that postcond accepts the expected output using automation tactics.
         Uses hammer-like tactics to close the goal without knowing the proof.
-        Uses Print-based markers instead of comments since Coq comments don't appear in output.
+
+        Generates both primary and inverse goals for bidirectional testing:
+        - Primary: prove postcond holds for expected output
+        - Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
+
+        Uses try/first/solve pattern with Abort to avoid axiom leakage.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
 
-        # Use Print-based marker that appears in output
-        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
-        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal {full_postcond_name}"
+        # Build argument string once
+        args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
-            rendered += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        rendered += f" {self.render_unit_test_value(coq_return_type, test_case.expected)} I.\n"
+            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
+        expected_str = self.render_unit_test_value(coq_return_type, test_case.expected)
+
+        # Primary: prove postcond holds for expected output
+        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
+        rendered += f"Goal {full_postcond_name}{args_str} {expected_str} I.\n"
         rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f"  solve [{self.AUTOMATION_TACTICS}].\nQed."
+        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort.\n\n"
+
+        # Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
+        marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
+        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
+        rendered += f"Goal ~({full_postcond_name}{args_str} {expected_str} I).\n"
+        rendered += f"  unfold {full_postcond_name}.\n"
+        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort."
+
         return rendered
 
     def render_postcond_unit_test_sound_decidable(
@@ -472,26 +567,43 @@ Local Open Scope Z_scope."""
         unexpected_idx: int,
         postcond_name: str = "",
     ) -> str:
-        """Render decidable postcondition soundness test (should reject unexpected).
+        """Render decidable postcondition soundness test with bidirectional testing.
 
         Tests that postcond rejects unexpected output by proving the negation.
         Uses automation tactics to prove ~(postcond args unexpected I).
-        Uses Print-based markers instead of comments since Coq comments don't appear in output.
+
+        Generates both primary and inverse goals for bidirectional testing:
+        - Primary: prove ~postcond for unexpected output (expected: should reject)
+        - Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
+
+        Uses try/first/solve pattern with Abort to avoid axiom leakage.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
 
-        # Use Print-based marker that appears in output (tuple index uses underscore)
-        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}"
-        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal ~({full_postcond_name}"
+        # Build argument string once
+        args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
-            rendered += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        rendered += f" {self.render_unit_test_value(coq_return_type, test_case.unexpected[unexpected_idx])} I).\n"
+            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
+        unexpected_str = self.render_unit_test_value(coq_return_type, test_case.unexpected[unexpected_idx])
+
+        # Primary: prove ~postcond for unexpected output (expected behavior - should reject)
+        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
+        rendered += f"Goal ~({full_postcond_name}{args_str} {unexpected_str} I).\n"
         rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  first [{self.NEGATION_AUTOMATION_TACTICS}].\nQed."
+        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort.\n\n"
+
+        # Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
+        marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}_inv"
+        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
+        rendered += f"Goal {full_postcond_name}{args_str} {unexpected_str} I.\n"
+        rendered += f"  unfold {full_postcond_name}.\n"
+        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
+        rendered += "Abort."
+
         return rendered
 
     # ==========================================================================

@@ -57,8 +57,10 @@ class CoqCompiler(ITPCompiler):
         if self.docker_image:
             # Use Docker with volume mount
             # Mount the playground directory to /workspace
+            # Limit memory to 200GB to prevent runaway processes
             return [
                 "docker", "run", "--rm",
+                "--memory=200g",
                 "-v", f"{COQ_PLAYGROUND_DIR}:/workspace",
                 self.docker_image,
                 "coqc",
