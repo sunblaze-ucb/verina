@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "nums": "[0; 0; 1]"
+            "nums": "[0%nat; 0%nat; 1%nat]"
         }
     }
 ]

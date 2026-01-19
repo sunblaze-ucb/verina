@@ -1,24 +1,24 @@
 [
     {
         "input": {
-            "numbers": "[1.0; 2.0; 3.0]",
-            "threshold": "1.5"
+            "numbers": "[1%R; 2%R; 3%R]",
+            "threshold": "(3/2)%R"
         },
         "expected": "true",
         "unexpected": []
     },
     {
         "input": {
-            "numbers": "[10.0; 12.0; 15.0]",
-            "threshold": "1.5"
+            "numbers": "[10%R; 12%R; 15%R]",
+            "threshold": "(3/2)%R"
         },
         "expected": "false",
         "unexpected": []
     },
     {
         "input": {
-            "numbers": "[5.0; 5.0]",
-            "threshold": "0.1"
+            "numbers": "[5%R; 5%R]",
+            "threshold": "(1/10)%R"
         },
         "expected": "true",
         "unexpected": []
@@ -26,15 +26,15 @@
     {
         "input": {
             "numbers": "[]",
-            "threshold": "2.0"
+            "threshold": "2%R"
         },
         "expected": "false",
         "unexpected": []
     },
     {
         "input": {
-            "numbers": "[0.0; 0.5; 1.1; 2.2]",
-            "threshold": "0.6"
+            "numbers": "[0%R; (1/2)%R; (11/10)%R; (11/5)%R]",
+            "threshold": "(3/5)%R"
         },
         "expected": "true",
         "unexpected": []

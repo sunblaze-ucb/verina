@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "digits": "[1; 0; 1]"
+            "digits": "[1%nat; 0%nat; 1%nat]"
         },
         "expected": "5",
         "unexpected": [
@@ -12,7 +12,7 @@
     },
     {
         "input": {
-            "digits": "[1; 1; 1; 1]"
+            "digits": "[1%nat; 1%nat; 1%nat; 1%nat]"
         },
         "expected": "15",
         "unexpected": [
@@ -22,7 +22,7 @@
     },
     {
         "input": {
-            "digits": "[0; 0; 0]"
+            "digits": "[0%nat; 0%nat; 0%nat]"
         },
         "expected": "0",
         "unexpected": [
@@ -32,7 +32,7 @@
     },
     {
         "input": {
-            "digits": "[1; 0; 0; 0; 0]"
+            "digits": "[1%nat; 0%nat; 0%nat; 0%nat; 0%nat]"
         },
         "expected": "16",
         "unexpected": [
@@ -51,7 +51,7 @@
     },
     {
         "input": {
-            "digits": "[1]"
+            "digits": "[1%nat]"
         },
         "expected": "1",
         "unexpected": [

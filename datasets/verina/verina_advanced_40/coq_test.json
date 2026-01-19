@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "lst": "[1; 2; 3]"
+            "lst": "[1%nat; 2%nat; 3%nat]"
         },
         "expected": "3",
         "unexpected": [
@@ -12,7 +12,7 @@
     },
     {
         "input": {
-            "lst": "[5; 5; 5]"
+            "lst": "[5%nat; 5%nat; 5%nat]"
         },
         "expected": "5",
         "unexpected": [
@@ -22,7 +22,7 @@
     },
     {
         "input": {
-            "lst": "[10; 1; 9]"
+            "lst": "[10%nat; 1%nat; 9%nat]"
         },
         "expected": "10",
         "unexpected": [
@@ -32,7 +32,7 @@
     },
     {
         "input": {
-            "lst": "[7]"
+            "lst": "[7%nat]"
         },
         "expected": "7",
         "unexpected": [
@@ -42,7 +42,7 @@
     },
     {
         "input": {
-            "lst": "[0; 0; 0; 0]"
+            "lst": "[0%nat; 0%nat; 0%nat; 0%nat]"
         },
         "expected": "0",
         "unexpected": [

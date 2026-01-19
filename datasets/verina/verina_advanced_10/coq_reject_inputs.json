@@ -2,7 +2,7 @@
     {
         "input": {
             "n": "6",
-            "primes": "[6]"
+            "primes": "[6%nat]"
         }
     },
     {
@@ -14,7 +14,7 @@
     {
         "input": {
             "n": "0",
-            "primes": "[2; 3]"
+            "primes": "[2%nat; 3%nat]"
         }
     },
     {
@@ -26,7 +26,7 @@
     {
         "input": {
             "n": "12",
-            "primes": "[2; 2; 3]"
+            "primes": "[2%nat; 2%nat; 3%nat]"
         }
     }
 ]

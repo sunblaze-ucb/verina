@@ -1,76 +1,76 @@
 [
     {
         "input": {
-            "s": "[3; 1; 4; 1; 5; 9; 2; 6; 5; 3; 5]"
+            "s": "[3%nat; 1%nat; 4%nat; 1%nat; 5%nat; 9%nat; 2%nat; 6%nat; 5%nat; 3%nat; 5%nat]"
         },
-        "expected": "Some 1",
+        "expected": "Some 1%nat",
         "unexpected": [
-            "Some 2",
-            "Some 0",
+            "Some 2%nat",
+            "Some 0%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[0; 1; 2; 3; 4; 5]"
+            "s": "[0%nat; 1%nat; 2%nat; 3%nat; 4%nat; 5%nat]"
         },
-        "expected": "Some 0",
+        "expected": "Some 0%nat",
         "unexpected": [
-            "Some 1",
+            "Some 1%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[1]"
+            "s": "[1%nat]"
         },
-        "expected": "Some 1",
+        "expected": "Some 1%nat",
         "unexpected": [
-            "Some 0",
-            "Some 2",
+            "Some 0%nat",
+            "Some 2%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[10; 10; 10]"
+            "s": "[10%nat; 10%nat; 10%nat]"
         },
-        "expected": "Some 10",
+        "expected": "Some 10%nat",
         "unexpected": [
-            "Some 9",
-            "Some 0",
+            "Some 9%nat",
+            "Some 0%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[3; 2; 2; 2; 2; 2; 2; 1]"
+            "s": "[3%nat; 2%nat; 2%nat; 2%nat; 2%nat; 2%nat; 2%nat; 1%nat]"
         },
-        "expected": "Some 1",
+        "expected": "Some 1%nat",
         "unexpected": [
-            "Some 2",
-            "Some 0",
+            "Some 2%nat",
+            "Some 0%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[0]"
+            "s": "[0%nat]"
         },
-        "expected": "Some 0",
+        "expected": "Some 0%nat",
         "unexpected": [
-            "Some 1",
+            "Some 1%nat",
             "None"
         ]
     },
     {
         "input": {
-            "s": "[100; 99; 98]"
+            "s": "[100%nat; 99%nat; 98%nat]"
         },
-        "expected": "Some 98",
+        "expected": "Some 98%nat",
         "unexpected": [
-            "Some 99",
-            "Some 97",
+            "Some 99%nat",
+            "Some 97%nat",
             "None"
         ]
     },
@@ -80,7 +80,7 @@
         },
         "expected": "None",
         "unexpected": [
-            "Some 0"
+            "Some 0%nat"
         ]
     }
 ]

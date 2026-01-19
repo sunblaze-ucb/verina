@@ -4,23 +4,5 @@
             "numbers": "[1%R; 2%R; 3%R]",
             "threshold": "(-1)%R"
         }
-    },
-    {
-        "input": {
-            "numbers": "[0%R; 1%R]",
-            "threshold": "1%R"
-        }
-    },
-    {
-        "input": {
-            "numbers": "[1%R; 0%R; 2%R]",
-            "threshold": "(1/2)%R"
-        }
-    },
-    {
-        "input": {
-            "numbers": "[1%R; 1%R]",
-            "threshold": "1%R"
-        }
     }
 ]

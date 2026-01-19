@@ -2,31 +2,31 @@
     {
         "input": {
             "N": "3",
-            "chords": "[[1; 1]]"
+            "chords": "[[1%nat; 1%nat]]"
         }
     },
     {
         "input": {
             "N": "3",
-            "chords": "[[7; 1]]"
+            "chords": "[[7%nat; 1%nat]]"
         }
     },
     {
         "input": {
             "N": "3",
-            "chords": "[[0; 1]]"
+            "chords": "[[0%nat; 1%nat]]"
         }
     },
     {
         "input": {
             "N": "3",
-            "chords": "[[1; 0]]"
+            "chords": "[[1%nat; 0%nat]]"
         }
     },
     {
         "input": {
             "N": "3",
-            "chords": "[[1; 7]]"
+            "chords": "[[1%nat; 7%nat]]"
         }
     },
     {

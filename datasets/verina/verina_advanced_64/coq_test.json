@@ -1,38 +1,38 @@
 [
     {
         "input": {
-            "lst": "[1; 2; 3; 2; 4]",
+            "lst": "[1%nat; 2%nat; 3%nat; 2%nat; 4%nat]",
             "target": "2"
         },
-        "expected": "[1; 3; 4]",
+        "expected": "[1%nat; 3%nat; 4%nat]",
         "unexpected": [
-            "[1; 2; 3; 4]",
-            "[1; 2; 3]",
-            "[1; 4]"
+            "[1%nat; 2%nat; 3%nat; 4%nat]",
+            "[1%nat; 2%nat; 3%nat]",
+            "[1%nat; 4%nat]"
         ]
     },
     {
         "input": {
-            "lst": "[5; 5; 5; 5]",
+            "lst": "[5%nat; 5%nat; 5%nat; 5%nat]",
             "target": "5"
         },
         "expected": "[]",
         "unexpected": [
-            "[5]",
-            "[0]",
-            "[5; 5]"
+            "[5%nat]",
+            "[0%nat]",
+            "[5%nat; 5%nat]"
         ]
     },
     {
         "input": {
-            "lst": "[7; 8; 9]",
+            "lst": "[7%nat; 8%nat; 9%nat]",
             "target": "4"
         },
-        "expected": "[7; 8; 9]",
+        "expected": "[7%nat; 8%nat; 9%nat]",
         "unexpected": [
             "[]",
-            "[7; 8]",
-            "[8; 9]"
+            "[7%nat; 8%nat]",
+            "[8%nat; 9%nat]"
         ]
     },
     {
@@ -42,21 +42,21 @@
         },
         "expected": "[]",
         "unexpected": [
-            "[3]",
-            "[0]",
-            "[1; 2; 3]"
+            "[3%nat]",
+            "[0%nat]",
+            "[1%nat; 2%nat; 3%nat]"
         ]
     },
     {
         "input": {
-            "lst": "[0; 1; 0; 2; 0]",
+            "lst": "[0%nat; 1%nat; 0%nat; 2%nat; 0%nat]",
             "target": "0"
         },
-        "expected": "[1; 2]",
+        "expected": "[1%nat; 2%nat]",
         "unexpected": [
-            "[0; 1; 2]",
-            "[1]",
-            "[1; 0; 2]"
+            "[0%nat; 1%nat; 2%nat]",
+            "[1%nat]",
+            "[1%nat; 0%nat; 2%nat]"
         ]
     }
 ]
