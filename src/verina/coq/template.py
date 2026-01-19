@@ -518,7 +518,7 @@ Ltac verina_auto :=
         return rendered
 
     def render_postcond_unit_test_complete_decidable(
-        self, test_case: TestCase, *, test_idx: int, postcond_name: str = ""
+        self, test_case: TestCase, *, test_idx: int, precond_name: str = "", postcond_name: str = ""
     ) -> str:
         """Render decidable postcondition completeness test with bidirectional testing.
 
@@ -530,9 +530,11 @@ Ltac verina_auto :=
         - Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
 
         Uses try/first/solve pattern with Abort to avoid axiom leakage.
+        Uses forall intro pattern to handle non-trivial preconditions.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
+        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
         # Build argument string once
         args_str = ""
@@ -541,10 +543,14 @@ Ltac verina_auto :=
             args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
         expected_str = self.render_unit_test_value(coq_return_type, test_case.expected)
 
+        # Build precond type for the forall
+        precond_applied = f"{full_precond_name}{args_str}"
+
         # Primary: prove postcond holds for expected output
         marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal {full_postcond_name}{args_str} {expected_str} I.\n"
+        rendered += f"Goal forall (H : {precond_applied}), {full_postcond_name}{args_str} {expected_str} H.\n"
+        rendered += f"  intro H.\n"
         rendered += f"  unfold {full_postcond_name}.\n"
         rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
         rendered += "Abort.\n\n"
@@ -552,7 +558,8 @@ Ltac verina_auto :=
         # Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
         marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
         rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal ~({full_postcond_name}{args_str} {expected_str} I).\n"
+        rendered += f"Goal forall (H : {precond_applied}), ~({full_postcond_name}{args_str} {expected_str} H).\n"
+        rendered += f"  intro H.\n"
         rendered += f"  unfold {full_postcond_name}.\n"
         rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
         rendered += "Abort."
@@ -565,21 +572,24 @@ Ltac verina_auto :=
         *,
         test_idx: int,
         unexpected_idx: int,
+        precond_name: str = "",
         postcond_name: str = "",
     ) -> str:
         """Render decidable postcondition soundness test with bidirectional testing.
 
         Tests that postcond rejects unexpected output by proving the negation.
-        Uses automation tactics to prove ~(postcond args unexpected I).
+        Uses automation tactics to prove ~(postcond args unexpected H).
 
         Generates both primary and inverse goals for bidirectional testing:
         - Primary: prove ~postcond for unexpected output (expected: should reject)
         - Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
 
         Uses try/first/solve pattern with Abort to avoid axiom leakage.
+        Uses forall intro pattern to handle non-trivial preconditions.
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
+        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
         # Build argument string once
         args_str = ""
@@ -588,10 +598,14 @@ Ltac verina_auto :=
             args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
         unexpected_str = self.render_unit_test_value(coq_return_type, test_case.unexpected[unexpected_idx])
 
+        # Build precond type for the forall
+        precond_applied = f"{full_precond_name}{args_str}"
+
         # Primary: prove ~postcond for unexpected output (expected behavior - should reject)
         marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal ~({full_postcond_name}{args_str} {unexpected_str} I).\n"
+        rendered += f"Goal forall (H : {precond_applied}), ~({full_postcond_name}{args_str} {unexpected_str} H).\n"
+        rendered += f"  intro H.\n"
         rendered += f"  unfold {full_postcond_name}.\n"
         rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
         rendered += "Abort.\n\n"
@@ -599,7 +613,8 @@ Ltac verina_auto :=
         # Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
         marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}_inv"
         rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal {full_postcond_name}{args_str} {unexpected_str} I.\n"
+        rendered += f"Goal forall (H : {precond_applied}), {full_postcond_name}{args_str} {unexpected_str} H.\n"
+        rendered += f"  intro H.\n"
         rendered += f"  unfold {full_postcond_name}.\n"
         rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
         rendered += "Abort."
