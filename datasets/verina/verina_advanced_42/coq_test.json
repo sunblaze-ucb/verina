@@ -3,47 +3,47 @@
         "input": {
             "prices": "[7%nat; 1%nat; 5%nat; 3%nat; 6%nat; 4%nat]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "4",
-            "6"
+            "4%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
             "prices": "[7%nat; 6%nat; 4%nat; 3%nat; 1%nat]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2"
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "prices": "[2%nat; 4%nat; 1%nat]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "prices": "[1%nat; 2%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0"
+            "0%nat"
         ]
     },
     {
         "input": {
             "prices": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     }
 ]

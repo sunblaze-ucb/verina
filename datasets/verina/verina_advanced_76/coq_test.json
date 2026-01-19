@@ -2,7 +2,7 @@
     {
         "input": {
             "nums": "[(1)%Z; (1)%Z; (1)%Z; (2)%Z; (2)%Z; (3)%Z]",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "[(1)%Z; (2)%Z]",
         "unexpected": [
@@ -13,7 +13,7 @@
     {
         "input": {
             "nums": "[(4)%Z; (1)%Z; (-1)%Z; (2)%Z; (-1)%Z; (2)%Z; (3)%Z]",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "[(-1)%Z; (2)%Z]",
         "unexpected": [
@@ -24,7 +24,7 @@
     {
         "input": {
             "nums": "[(5)%Z]",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "[(5)%Z]",
         "unexpected": [
@@ -34,7 +34,7 @@
     {
         "input": {
             "nums": "[(7)%Z; (7)%Z; (7)%Z; (8)%Z; (8)%Z; (9)%Z]",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "[(7)%Z]",
         "unexpected": [
@@ -44,7 +44,7 @@
     {
         "input": {
             "nums": "[]",
-            "k": "0"
+            "k": "0%nat"
         },
         "expected": "[]",
         "unexpected": [

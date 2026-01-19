@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "n": "6",
+            "n": "6%nat",
             "primes": "[2%nat; 3%nat]"
         },
         "expected": "[(2%nat, 1%nat); (3%nat, 1%nat)]",
@@ -12,7 +12,7 @@
     },
     {
         "input": {
-            "n": "6285195213566005335561053533150026217291776",
+            "n": "6285195213566005335561053533150026217291776%nat",
             "primes": "[2%nat; 3%nat; 5%nat]"
         },
         "expected": "[(2%nat, 55%nat); (3%nat, 55%nat); (5%nat, 0%nat)]",
@@ -23,7 +23,7 @@
     },
     {
         "input": {
-            "n": "360",
+            "n": "360%nat",
             "primes": "[2%nat; 3%nat; 5%nat]"
         },
         "expected": "[(2%nat, 3%nat); (3%nat, 2%nat); (5%nat, 1%nat)]",
@@ -34,7 +34,7 @@
     },
     {
         "input": {
-            "n": "18903812908",
+            "n": "18903812908%nat",
             "primes": "[2%nat; 43%nat; 823%nat; 133543%nat]"
         },
         "expected": "[(2%nat, 2%nat); (43%nat, 1%nat); (823%nat, 1%nat); (133543%nat, 1%nat)]",
@@ -45,7 +45,7 @@
     },
     {
         "input": {
-            "n": "114514",
+            "n": "114514%nat",
             "primes": "[2%nat; 31%nat; 1847%nat]"
         },
         "expected": "[(2%nat, 1%nat); (31%nat, 1%nat); (1847%nat, 1%nat)]",
@@ -56,7 +56,7 @@
     },
     {
         "input": {
-            "n": "20241147794175",
+            "n": "20241147794175%nat",
             "primes": "[3%nat; 5%nat; 7%nat; 11%nat; 31%nat; 47%nat]"
         },
         "expected": "[(3%nat, 3%nat); (5%nat, 2%nat); (7%nat, 1%nat); (11%nat, 3%nat); (31%nat, 1%nat); (47%nat, 3%nat)]",

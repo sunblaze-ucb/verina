@@ -3,50 +3,50 @@
         "input": {
             "xs": "[3%nat; 3%nat; 4%nat; 2%nat; 3%nat; 3%nat; 3%nat]"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2",
-            "4"
+            "2%nat",
+            "4%nat"
         ]
     },
     {
         "input": {
             "xs": "[1%nat; 1%nat; 2%nat; 1%nat; 3%nat; 1%nat; 1%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "2",
-            "3"
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "xs": "[2%nat; 2%nat; 2%nat; 1%nat; 1%nat]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "xs": "[9%nat; 9%nat; 9%nat; 9%nat; 1%nat; 2%nat; 3%nat]"
         },
-        "expected": "9",
+        "expected": "9%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "xs": "[5%nat; 5%nat; 5%nat; 5%nat; 5%nat; 6%nat; 7%nat]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "6",
-            "7"
+            "6%nat",
+            "7%nat"
         ]
     }
 ]

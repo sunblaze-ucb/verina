@@ -3,59 +3,59 @@
         "input": {
             "digits": "[1%nat; 0%nat; 1%nat]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "3",
-            "4",
-            "6"
+            "3%nat",
+            "4%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
             "digits": "[1%nat; 1%nat; 1%nat; 1%nat]"
         },
-        "expected": "15",
+        "expected": "15%nat",
         "unexpected": [
-            "14",
-            "16"
+            "14%nat",
+            "16%nat"
         ]
     },
     {
         "input": {
             "digits": "[0%nat; 0%nat; 0%nat]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2"
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "digits": "[1%nat; 0%nat; 0%nat; 0%nat; 0%nat]"
         },
-        "expected": "16",
+        "expected": "16%nat",
         "unexpected": [
-            "8",
-            "0"
+            "8%nat",
+            "0%nat"
         ]
     },
     {
         "input": {
             "digits": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "digits": "[1%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0"
+            "0%nat"
         ]
     }
 ]

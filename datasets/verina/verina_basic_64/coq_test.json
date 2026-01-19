@@ -2,10 +2,10 @@
     {
         "input": {
             "oline": "[\"a\"%char; \"b\"%char; \"c\"%char; \"d\"%char; \"e\"%char]",
-            "l": "5",
+            "l": "5%nat",
             "nl": "[\"X\"%char; \"Y\"%char]",
-            "p": "2",
-            "atPos": "2"
+            "p": "2%nat",
+            "atPos": "2%nat"
         },
         "expected": "[\"a\"%char; \"b\"%char; \"X\"%char; \"Y\"%char; \"c\"%char; \"d\"%char; \"e\"%char]",
         "unexpected": [
@@ -17,10 +17,10 @@
     {
         "input": {
             "oline": "[\"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char]",
-            "l": "5",
+            "l": "5%nat",
             "nl": "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char]",
-            "p": "5",
-            "atPos": "0"
+            "p": "5%nat",
+            "atPos": "0%nat"
         },
         "expected": "[\"W\"%char; \"o\"%char; \"r\"%char; \"l\"%char; \"d\"%char; \"H\"%char; \"e\"%char; \"l\"%char; \"l\"%char; \"o\"%char]",
         "unexpected": [
@@ -32,10 +32,10 @@
     {
         "input": {
             "oline": "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char]",
-            "l": "4",
+            "l": "4%nat",
             "nl": "[\"4\"%char]",
-            "p": "1",
-            "atPos": "4"
+            "p": "1%nat",
+            "atPos": "4%nat"
         },
         "expected": "[\"L\"%char; \"e\"%char; \"a\"%char; \"n\"%char; \"4\"%char]",
         "unexpected": [
@@ -47,10 +47,10 @@
     {
         "input": {
             "oline": "[\"T\"%char; \"e\"%char; \"s\"%char; \"t\"%char]",
-            "l": "4",
+            "l": "4%nat",
             "nl": "[]",
-            "p": "0",
-            "atPos": "2"
+            "p": "0%nat",
+            "atPos": "2%nat"
         },
         "expected": "[\"T\"%char; \"e\"%char; \"s\"%char; \"t\"%char]",
         "unexpected": [
@@ -62,10 +62,10 @@
     {
         "input": {
             "oline": "[\"1\"%char; \"2\"%char; \"3\"%char; \"4\"%char; \"5\"%char; \"6\"%char]",
-            "l": "5",
+            "l": "5%nat",
             "nl": "[\"a\"%char; \"b\"%char; \"c\"%char]",
-            "p": "3",
-            "atPos": "3"
+            "p": "3%nat",
+            "atPos": "3%nat"
         },
         "expected": "[\"1\"%char; \"2\"%char; \"3\"%char; \"a\"%char; \"b\"%char; \"c\"%char; \"4\"%char; \"5\"%char]",
         "unexpected": [

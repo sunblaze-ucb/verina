@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "n": "0"
+            "n": "0%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -10,7 +10,7 @@
     },
     {
         "input": {
-            "n": "1"
+            "n": "1%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -19,7 +19,7 @@
     },
     {
         "input": {
-            "n": "2"
+            "n": "2%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -28,7 +28,7 @@
     },
     {
         "input": {
-            "n": "3"
+            "n": "3%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -37,7 +37,7 @@
     },
     {
         "input": {
-            "n": "4"
+            "n": "4%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -46,7 +46,7 @@
     },
     {
         "input": {
-            "n": "8"
+            "n": "8%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -55,7 +55,7 @@
     },
     {
         "input": {
-            "n": "16"
+            "n": "16%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -64,7 +64,7 @@
     },
     {
         "input": {
-            "n": "64"
+            "n": "64%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -73,7 +73,7 @@
     },
     {
         "input": {
-            "n": "95"
+            "n": "95%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -82,7 +82,7 @@
     },
     {
         "input": {
-            "n": "100"
+            "n": "100%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -91,7 +91,7 @@
     },
     {
         "input": {
-            "n": "256"
+            "n": "256%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -100,7 +100,7 @@
     },
     {
         "input": {
-            "n": "520"
+            "n": "520%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -109,7 +109,7 @@
     },
     {
         "input": {
-            "n": "1024"
+            "n": "1024%nat"
         },
         "expected": "true",
         "unexpected": [

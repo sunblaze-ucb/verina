@@ -1,55 +1,55 @@
 [
     {
         "input": {
-            "n": "0",
-            "d": "2"
+            "n": "0%nat",
+            "d": "2%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
-            "n": "1",
-            "d": "2"
+            "n": "1%nat",
+            "d": "2%nat"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0"
+            "0%nat"
         ]
     },
     {
         "input": {
-            "n": "10",
-            "d": "3"
+            "n": "10%nat",
+            "d": "3%nat"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "3",
-            "5"
+            "3%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
-            "n": "12",
-            "d": "2"
+            "n": "12%nat",
+            "d": "2%nat"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "3",
-            "5"
+            "3%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
-            "n": "20",
-            "d": "5"
+            "n": "20%nat",
+            "d": "5%nat"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "0",
-            "10"
+            "0%nat",
+            "10%nat"
         ]
     }
 ]

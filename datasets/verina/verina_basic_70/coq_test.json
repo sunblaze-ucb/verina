@@ -4,11 +4,11 @@
             "a": "[(4)%Z; (7)%Z; (2)%Z; (9)%Z]",
             "P": "fun x => (x >? 5)%Z"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2",
-            "3"
+            "0%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
@@ -16,11 +16,11 @@
             "a": "[(10)%Z; (8)%Z; (6)%Z; (4)%Z; (2)%Z]",
             "P": "fun x => (x <? 5)%Z"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "0",
-            "1",
-            "4"
+            "0%nat",
+            "1%nat",
+            "4%nat"
         ]
     },
     {
@@ -28,11 +28,11 @@
             "a": "[(5)%Z; (3)%Z; (1)%Z; (2)%Z]",
             "P": "fun x => (x =? 1)%Z"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "0",
-            "1",
-            "3"
+            "0%nat",
+            "1%nat",
+            "3%nat"
         ]
     },
     {
@@ -40,11 +40,11 @@
             "a": "[(0)%Z; (1)%Z; (2)%Z; (3)%Z]",
             "P": "fun x => (x =? 0)%Z"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
@@ -52,11 +52,11 @@
             "a": "[(9)%Z; (9)%Z; (9)%Z; (9)%Z]",
             "P": "fun x => (x =? 9)%Z"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     }
 ]

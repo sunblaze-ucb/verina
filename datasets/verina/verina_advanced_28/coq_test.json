@@ -3,46 +3,46 @@
         "input": {
             "nums": "[(100)%Z; (4)%Z; (200)%Z; (1)%Z; (3)%Z; (2)%Z]"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "3",
-            "5"
+            "3%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
             "nums": "[(0)%Z; (3)%Z; (7)%Z; (2)%Z; (5)%Z; (8)%Z; (4)%Z; (6)%Z; (1)%Z]"
         },
-        "expected": "9",
+        "expected": "9%nat",
         "unexpected": [
-            "8"
+            "8%nat"
         ]
     },
     {
         "input": {
             "nums": "[(1)%Z; (2)%Z; (0)%Z]"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2"
+            "2%nat"
         ]
     },
     {
         "input": {
             "nums": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "nums": "[(10)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0"
+            "0%nat"
         ]
     }
 ]

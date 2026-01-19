@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[1%nat; 3%nat]; [4%nat; 2%nat]; [5%nat; 6%nat]]"
         },
         "expected": "true",
@@ -11,7 +11,7 @@
     },
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[6%nat; 1%nat]; [4%nat; 3%nat]; [2%nat; 5%nat]]"
         },
         "expected": "false",
@@ -21,7 +21,7 @@
     },
     {
         "input": {
-            "N": "4",
+            "N": "4%nat",
             "chords": "[[2%nat; 4%nat]; [3%nat; 7%nat]; [8%nat; 6%nat]; [5%nat; 1%nat]]"
         },
         "expected": "true",
@@ -31,7 +31,7 @@
     },
     {
         "input": {
-            "N": "2",
+            "N": "2%nat",
             "chords": "[[1%nat; 2%nat]; [3%nat; 4%nat]]"
         },
         "expected": "false",

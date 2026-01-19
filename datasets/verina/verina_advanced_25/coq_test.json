@@ -3,94 +3,94 @@
         "input": {
             "nums": "[(10)%Z; (9)%Z; (2)%Z; (5)%Z; (3)%Z; (7)%Z; (101)%Z; (18)%Z]"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "3",
-            "5",
-            "8"
+            "3%nat",
+            "5%nat",
+            "8%nat"
         ]
     },
     {
         "input": {
             "nums": "[(0)%Z; (1)%Z; (0)%Z; (3)%Z; (2)%Z; (3)%Z]"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "3",
-            "5"
+            "3%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
             "nums": "[(7)%Z; (7)%Z; (7)%Z; (7)%Z; (7)%Z; (7)%Z; (7)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "7"
+            "0%nat",
+            "7%nat"
         ]
     },
     {
         "input": {
             "nums": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "nums": "[(4)%Z; (10)%Z; (4)%Z; (3)%Z; (8)%Z; (9)%Z]"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2",
-            "4",
-            "6"
+            "2%nat",
+            "4%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
             "nums": "[(1)%Z; (3)%Z; (6)%Z; (7)%Z; (9)%Z; (4)%Z; (10)%Z; (5)%Z; (6)%Z]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7",
-            "9"
+            "5%nat",
+            "7%nat",
+            "9%nat"
         ]
     },
     {
         "input": {
             "nums": "[(10)%Z; (22)%Z; (9)%Z; (33)%Z; (21)%Z; (50)%Z; (41)%Z; (60)%Z; (80)%Z]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7",
-            "9"
+            "5%nat",
+            "7%nat",
+            "9%nat"
         ]
     },
     {
         "input": {
             "nums": "[(0)%Z; (8)%Z; (4)%Z; (12)%Z; (2)%Z; (10)%Z; (6)%Z; (14)%Z; (1)%Z; (9)%Z; (5)%Z; (13)%Z; (3)%Z; (11)%Z; (7)%Z; (15)%Z]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7",
-            "16"
+            "5%nat",
+            "7%nat",
+            "16%nat"
         ]
     },
     {
         "input": {
             "nums": "[(-2)%Z; (-1)%Z]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "1",
-            "0"
+            "1%nat",
+            "0%nat"
         ]
     }
 ]

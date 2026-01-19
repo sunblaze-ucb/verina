@@ -1,79 +1,79 @@
 [
     {
         "input": {
-            "n": "0"
+            "n": "0%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
-            "n": "98"
+            "n": "98%nat"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "7",
-            "8",
-            "9"
+            "7%nat",
+            "8%nat",
+            "9%nat"
         ]
     },
     {
         "input": {
-            "n": "9"
+            "n": "9%nat"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "4",
-            "5",
-            "6"
+            "4%nat",
+            "5%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
-            "n": "73"
+            "n": "73%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
-            "n": "529"
+            "n": "529%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "7",
-            "8",
-            "9"
+            "7%nat",
+            "8%nat",
+            "9%nat"
         ]
     },
     {
         "input": {
-            "n": "161"
+            "n": "161%nat"
         },
-        "expected": "7",
+        "expected": "7%nat",
         "unexpected": [
-            "0",
-            "1",
-            "2"
+            "0%nat",
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
-            "n": "0"
+            "n": "0%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     }
 ]

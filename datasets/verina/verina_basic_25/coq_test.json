@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "n": "5"
+            "n": "5%nat"
         },
         "expected": "((15)%Z, 3.0%R)",
         "unexpected": [
@@ -11,7 +11,7 @@
     },
     {
         "input": {
-            "n": "1"
+            "n": "1%nat"
         },
         "expected": "((1)%Z, 1.0%R)",
         "unexpected": [
@@ -21,7 +21,7 @@
     },
     {
         "input": {
-            "n": "10"
+            "n": "10%nat"
         },
         "expected": "((55)%Z, 5.5%R)",
         "unexpected": [
@@ -31,7 +31,7 @@
     },
     {
         "input": {
-            "n": "2"
+            "n": "2%nat"
         },
         "expected": "((3)%Z, 1.5%R)",
         "unexpected": [

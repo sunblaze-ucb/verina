@@ -377,22 +377,33 @@ Ltac verina_auto :=
         else:
             return CoqGenerationTaskTemplate._wrap_parens(str(value))
 
-    def render_code_unit_test(self, test_case: TestCase, *, test_idx: int) -> str:
+    def render_code_unit_test(self, test_case: TestCase, *, test_idx: int, precond_name: str = "") -> str:
         """Render a Compute-based unit test for code.
 
         Uses type-specific equality functions (e.g., Z.eqb for integers).
-        Output format: Compute (Z.eqb (fn args I) expected).
+        Generates an axiom for the precondition since Compute needs an actual
+        proof term (not tactics).
+
+        Output format:
+            Axiom _test_0_precond : precond args.
+            Compute (Z.eqb (fn args _test_0_precond) expected).
         Expected result: = true : bool
         """
         coq_return_type = self._get_type(self.signature.return_type)
         equality_fn = self._get_equality_fn(coq_return_type)
+        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
-        rendered = f'(* <{self.CODE_TEST_MSG_MARKER}>{test_idx}</{self.CODE_TEST_MSG_MARKER}> *)\n'
-        rendered += f"Compute ({equality_fn} ({self.signature.name}"
+        # Build argument string
+        args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
-            rendered += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-        rendered += " I)"  # I is the proof of True
+            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
+
+        # Generate axiom for precondition
+        axiom_name = f"_test_{test_idx}_precond"
+        rendered = f'(* <{self.CODE_TEST_MSG_MARKER}>{test_idx}</{self.CODE_TEST_MSG_MARKER}> *)\n'
+        rendered += f"Axiom {axiom_name} : {full_precond_name}{args_str}.\n"
+        rendered += f"Compute ({equality_fn} ({self.signature.name}{args_str} {axiom_name})"
         expected = self.render_unit_test_value(coq_return_type, test_case.expected)
         rendered += f" {expected})."
         return rendered

@@ -1,78 +1,78 @@
 [
     {
         "input": {
-            "n": "0"
+            "n": "0%nat"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2"
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
-            "n": "1"
+            "n": "1%nat"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2",
-            "3"
+            "0%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
-            "n": "2"
+            "n": "2%nat"
         },
-        "expected": "10",
+        "expected": "10%nat",
         "unexpected": [
-            "9",
-            "11",
-            "12"
+            "9%nat",
+            "11%nat",
+            "12%nat"
         ]
     },
     {
         "input": {
-            "n": "3"
+            "n": "3%nat"
         },
-        "expected": "35",
+        "expected": "35%nat",
         "unexpected": [
-            "30",
-            "34",
-            "36"
+            "30%nat",
+            "34%nat",
+            "36%nat"
         ]
     },
     {
         "input": {
-            "n": "4"
+            "n": "4%nat"
         },
-        "expected": "84",
+        "expected": "84%nat",
         "unexpected": [
-            "80",
-            "85",
-            "90"
+            "80%nat",
+            "85%nat",
+            "90%nat"
         ]
     },
     {
         "input": {
-            "n": "5"
+            "n": "5%nat"
         },
-        "expected": "165",
+        "expected": "165%nat",
         "unexpected": [
-            "160",
-            "166",
-            "170"
+            "160%nat",
+            "166%nat",
+            "170%nat"
         ]
     },
     {
         "input": {
-            "n": "10"
+            "n": "10%nat"
         },
-        "expected": "1330",
+        "expected": "1330%nat",
         "unexpected": [
-            "1320",
-            "1331",
-            "1340"
+            "1320%nat",
+            "1331%nat",
+            "1340%nat"
         ]
     }
 ]

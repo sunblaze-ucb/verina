@@ -3,77 +3,77 @@
         "input": {
             "s": "\"123abc456\"%string"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7",
-            "0"
+            "5%nat",
+            "7%nat",
+            "0%nat"
         ]
     },
     {
         "input": {
             "s": "\"no digits here!\"%string"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "s": "\"1234567890\"%string"
         },
-        "expected": "10",
+        "expected": "10%nat",
         "unexpected": [
-            "9",
-            "11",
-            "0"
+            "9%nat",
+            "11%nat",
+            "0%nat"
         ]
     },
     {
         "input": {
             "s": "\"\"%string"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "10"
+            "1%nat",
+            "2%nat",
+            "10%nat"
         ]
     },
     {
         "input": {
             "s": "\"a1b2c3\"%string"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2",
-            "4",
-            "5"
+            "2%nat",
+            "4%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
             "s": "\"0\"%string"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2",
-            "10"
+            "0%nat",
+            "2%nat",
+            "10%nat"
         ]
     },
     {
         "input": {
             "s": "\"abc\"%string"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "8",
-            "9"
+            "1%nat",
+            "8%nat",
+            "9%nat"
         ]
     }
 ]

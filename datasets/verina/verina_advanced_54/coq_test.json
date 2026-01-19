@@ -3,49 +3,49 @@
         "input": {
             "nums": "[3%nat; 0%nat; 1%nat]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "0",
-            "1",
-            "3"
+            "0%nat",
+            "1%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "nums": "[0%nat; 1%nat]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "0",
-            "1"
+            "0%nat",
+            "1%nat"
         ]
     },
     {
         "input": {
             "nums": "[9%nat; 6%nat; 4%nat; 2%nat; 3%nat; 5%nat; 7%nat; 0%nat; 1%nat]"
         },
-        "expected": "8",
+        "expected": "8%nat",
         "unexpected": [
-            "1",
-            "9"
+            "1%nat",
+            "9%nat"
         ]
     },
     {
         "input": {
             "nums": "[0%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0"
+            "0%nat"
         ]
     },
     {
         "input": {
             "nums": "[1%nat]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     }
 ]

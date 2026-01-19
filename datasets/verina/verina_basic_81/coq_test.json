@@ -1,8 +1,8 @@
 [
     {
         "input": {
-            "x": "10",
-            "y": "3"
+            "x": "10%nat",
+            "y": "3%nat"
         },
         "expected": "((1)%Z, (3)%Z)",
         "unexpected": [
@@ -13,8 +13,8 @@
     },
     {
         "input": {
-            "x": "15",
-            "y": "5"
+            "x": "15%nat",
+            "y": "5%nat"
         },
         "expected": "((0)%Z, (3)%Z)",
         "unexpected": [
@@ -25,8 +25,8 @@
     },
     {
         "input": {
-            "x": "7",
-            "y": "2"
+            "x": "7%nat",
+            "y": "2%nat"
         },
         "expected": "((1)%Z, (3)%Z)",
         "unexpected": [
@@ -37,8 +37,8 @@
     },
     {
         "input": {
-            "x": "0",
-            "y": "4"
+            "x": "0%nat",
+            "y": "4%nat"
         },
         "expected": "((0)%Z, (0)%Z)",
         "unexpected": [
@@ -49,8 +49,8 @@
     },
     {
         "input": {
-            "x": "10",
-            "y": "0"
+            "x": "10%nat",
+            "y": "0%nat"
         },
         "expected": "((10)%Z, (0)%Z)",
         "unexpected": [

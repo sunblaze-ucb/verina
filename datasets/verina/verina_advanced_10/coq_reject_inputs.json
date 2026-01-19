@@ -1,31 +1,31 @@
 [
     {
         "input": {
-            "n": "6",
+            "n": "6%nat",
             "primes": "[6%nat]"
         }
     },
     {
         "input": {
-            "n": "0",
+            "n": "0%nat",
             "primes": "[]"
         }
     },
     {
         "input": {
-            "n": "0",
+            "n": "0%nat",
             "primes": "[2%nat; 3%nat]"
         }
     },
     {
         "input": {
-            "n": "12",
+            "n": "12%nat",
             "primes": "[]"
         }
     },
     {
         "input": {
-            "n": "12",
+            "n": "12%nat",
             "primes": "[2%nat; 2%nat; 3%nat]"
         }
     }

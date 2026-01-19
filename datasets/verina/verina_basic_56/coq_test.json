@@ -2,10 +2,10 @@
     {
         "input": {
             "src": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
-            "sStart": "1",
+            "sStart": "1%nat",
             "dest": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z; (6)%Z]",
-            "dStart": "3",
-            "len": "2"
+            "dStart": "3%nat",
+            "len": "2%nat"
         },
         "expected": "[(1)%Z; (2)%Z; (3)%Z; (20)%Z; (30)%Z; (6)%Z]",
         "unexpected": [
@@ -17,10 +17,10 @@
     {
         "input": {
             "src": "[(5)%Z; (6)%Z; (7)%Z; (8)%Z]",
-            "sStart": "0",
+            "sStart": "0%nat",
             "dest": "[(9)%Z; (9)%Z; (9)%Z; (9)%Z; (9)%Z]",
-            "dStart": "1",
-            "len": "3"
+            "dStart": "1%nat",
+            "len": "3%nat"
         },
         "expected": "[(9)%Z; (5)%Z; (6)%Z; (7)%Z; (9)%Z]",
         "unexpected": [
@@ -32,10 +32,10 @@
     {
         "input": {
             "src": "[(100)%Z; (200)%Z]",
-            "sStart": "0",
+            "sStart": "0%nat",
             "dest": "[(1)%Z; (2)%Z; (3)%Z]",
-            "dStart": "1",
-            "len": "0"
+            "dStart": "1%nat",
+            "len": "0%nat"
         },
         "expected": "[(1)%Z; (2)%Z; (3)%Z]",
         "unexpected": [
@@ -47,10 +47,10 @@
     {
         "input": {
             "src": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
-            "sStart": "0",
+            "sStart": "0%nat",
             "dest": "[(0)%Z; (0)%Z; (0)%Z; (0)%Z; (0)%Z]",
-            "dStart": "0",
-            "len": "5"
+            "dStart": "0%nat",
+            "len": "5%nat"
         },
         "expected": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
         "unexpected": [
@@ -62,10 +62,10 @@
     {
         "input": {
             "src": "[(7)%Z; (8)%Z; (9)%Z; (10)%Z]",
-            "sStart": "2",
+            "sStart": "2%nat",
             "dest": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z; (6)%Z]",
-            "dStart": "4",
-            "len": "2"
+            "dStart": "4%nat",
+            "len": "2%nat"
         },
         "expected": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (9)%Z; (10)%Z]",
         "unexpected": [

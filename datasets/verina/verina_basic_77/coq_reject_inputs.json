@@ -2,9 +2,9 @@
     {
         "input": {
             "arr": "[[1%nat; 2%nat; 3%nat]; [4%nat; 5%nat; 6%nat]]",
-            "index1": "1",
-            "index2": "3",
-            "val": "99"
+            "index1": "1%nat",
+            "index2": "3%nat",
+            "val": "99%nat"
         }
     }
 ]

@@ -3,107 +3,107 @@
         "input": {
             "nums": "[(1)%Z; (1)%Z; (2)%Z]"
         },
-        "expected": "2",
+        "expected": "2%nat",
         "unexpected": [
-            "1",
-            "3"
+            "1%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "nums": "[(0)%Z; (0)%Z; (1)%Z; (1)%Z; (1)%Z; (2)%Z; (2)%Z; (3)%Z; (3)%Z; (4)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "4",
-            "10"
+            "4%nat",
+            "10%nat"
         ]
     },
     {
         "input": {
             "nums": "[(-1)%Z; (-1)%Z; (0)%Z; (1)%Z; (2)%Z; (2)%Z; (3)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "3"
+            "3%nat"
         ]
     },
     {
         "input": {
             "nums": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "4"
+            "4%nat"
         ]
     },
     {
         "input": {
             "nums": "[(1)%Z; (1)%Z; (1)%Z; (1)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "2",
-            "4"
+            "2%nat",
+            "4%nat"
         ]
     },
     {
         "input": {
             "nums": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "nums": "[(1)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2"
+            "0%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "nums": "[(-100)%Z; (-100)%Z; (-100)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "2",
-            "3"
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "nums": "[(-100)%Z; (-99)%Z; (-99)%Z; (-50)%Z; (0)%Z; (0)%Z; (100)%Z; (100)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "6",
-            "7"
+            "6%nat",
+            "7%nat"
         ]
     },
     {
         "input": {
             "nums": "[(-1)%Z; (0)%Z; (0)%Z; (0)%Z; (1)%Z; (2)%Z; (2)%Z; (3)%Z; (4)%Z; (4)%Z; (5)%Z]"
         },
-        "expected": "7",
+        "expected": "7%nat",
         "unexpected": [
-            "6",
-            "10"
+            "6%nat",
+            "10%nat"
         ]
     },
     {
         "input": {
             "nums": "[(100)%Z; (100)%Z; (100)%Z; (101)%Z; (102)%Z; (102)%Z; (103)%Z; (104)%Z; (105)%Z; (105)%Z]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7"
+            "5%nat",
+            "7%nat"
         ]
     }
 ]

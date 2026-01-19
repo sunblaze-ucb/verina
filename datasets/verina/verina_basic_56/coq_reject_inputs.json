@@ -2,10 +2,10 @@
     {
         "input": {
             "src": "[(10)%Z; (20)%Z; (30)%Z]",
-            "sStart": "1",
+            "sStart": "1%nat",
             "dest": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z]",
-            "dStart": "2",
-            "len": "3"
+            "dStart": "2%nat",
+            "len": "3%nat"
         }
     }
 ]

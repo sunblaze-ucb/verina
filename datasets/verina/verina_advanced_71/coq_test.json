@@ -2,7 +2,7 @@
     {
         "input": {
             "s": "\"100011001\"%string",
-            "k": "3"
+            "k": "3%nat"
         },
         "expected": "\"11001\"%string",
         "unexpected": [
@@ -14,7 +14,7 @@
     {
         "input": {
             "s": "\"1011\"%string",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "\"11\"%string",
         "unexpected": [
@@ -26,7 +26,7 @@
     {
         "input": {
             "s": "\"000\"%string",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "\"\"%string",
         "unexpected": [
@@ -38,7 +38,7 @@
     {
         "input": {
             "s": "\"11111\"%string",
-            "k": "3"
+            "k": "3%nat"
         },
         "expected": "\"111\"%string",
         "unexpected": [
@@ -50,7 +50,7 @@
     {
         "input": {
             "s": "\"10100101\"%string",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "\"101\"%string",
         "unexpected": [
@@ -62,7 +62,7 @@
     {
         "input": {
             "s": "\"1001001\"%string",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "\"1001\"%string",
         "unexpected": [
@@ -74,7 +74,7 @@
     {
         "input": {
             "s": "\"10010001\"%string",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "\"1\"%string",
         "unexpected": [
@@ -86,7 +86,7 @@
     {
         "input": {
             "s": "\"1001\"%string",
-            "k": "0"
+            "k": "0%nat"
         },
         "expected": "\"0\"%string",
         "unexpected": [

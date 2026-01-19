@@ -1,7 +1,7 @@
 [
     {
         "input": {
-            "n": "0"
+            "n": "0%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -10,7 +10,7 @@
     },
     {
         "input": {
-            "n": "1"
+            "n": "1%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -19,7 +19,7 @@
     },
     {
         "input": {
-            "n": "4"
+            "n": "4%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -28,7 +28,7 @@
     },
     {
         "input": {
-            "n": "9"
+            "n": "9%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -37,7 +37,7 @@
     },
     {
         "input": {
-            "n": "2"
+            "n": "2%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -46,7 +46,7 @@
     },
     {
         "input": {
-            "n": "3"
+            "n": "3%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -55,7 +55,7 @@
     },
     {
         "input": {
-            "n": "10"
+            "n": "10%nat"
         },
         "expected": "false",
         "unexpected": [
@@ -64,7 +64,7 @@
     },
     {
         "input": {
-            "n": "16"
+            "n": "16%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -73,7 +73,7 @@
     },
     {
         "input": {
-            "n": "25"
+            "n": "25%nat"
         },
         "expected": "true",
         "unexpected": [
@@ -82,7 +82,7 @@
     },
     {
         "input": {
-            "n": "26"
+            "n": "26%nat"
         },
         "expected": "false",
         "unexpected": [

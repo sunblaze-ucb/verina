@@ -2,7 +2,7 @@
     {
         "input": {
             "arr": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "(10)%Z",
         "unexpected": [
@@ -13,7 +13,7 @@
     {
         "input": {
             "arr": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
-            "k": "3"
+            "k": "3%nat"
         },
         "expected": "(30)%Z",
         "unexpected": [
@@ -25,7 +25,7 @@
     {
         "input": {
             "arr": "[(10)%Z; (20)%Z; (30)%Z; (40)%Z; (50)%Z]",
-            "k": "5"
+            "k": "5%nat"
         },
         "expected": "(50)%Z",
         "unexpected": [
@@ -36,7 +36,7 @@
     {
         "input": {
             "arr": "[(5)%Z]",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "(5)%Z",
         "unexpected": [
@@ -47,7 +47,7 @@
     {
         "input": {
             "arr": "[(1)%Z; (2)%Z; (3)%Z]",
-            "k": "3"
+            "k": "3%nat"
         },
         "expected": "(3)%Z",
         "unexpected": [
@@ -58,7 +58,7 @@
     {
         "input": {
             "arr": "[(1)%Z; (2)%Z; (3)%Z]",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "(2)%Z",
         "unexpected": [
@@ -70,7 +70,7 @@
     {
         "input": {
             "arr": "[(9)%Z; (9)%Z; (9)%Z]",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "(9)%Z",
         "unexpected": [
@@ -81,7 +81,7 @@
     {
         "input": {
             "arr": "[(0)%Z; (-1)%Z; (-2)%Z]",
-            "k": "1"
+            "k": "1%nat"
         },
         "expected": "(0)%Z",
         "unexpected": [
@@ -93,7 +93,7 @@
     {
         "input": {
             "arr": "[(0)%Z; (-1)%Z; (-2)%Z]",
-            "k": "2"
+            "k": "2%nat"
         },
         "expected": "(-1)%Z",
         "unexpected": [
@@ -104,7 +104,7 @@
     {
         "input": {
             "arr": "[(0)%Z; (-1)%Z; (-2)%Z]",
-            "k": "3"
+            "k": "3%nat"
         },
         "expected": "(-2)%Z",
         "unexpected": [

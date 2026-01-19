@@ -2,9 +2,9 @@
     {
         "input": {
             "arr": "[[1%nat; 2%nat; 3%nat]; [4%nat; 5%nat; 6%nat]]",
-            "index1": "0",
-            "index2": "1",
-            "val": "99"
+            "index1": "0%nat",
+            "index2": "1%nat",
+            "val": "99%nat"
         },
         "expected": "[[1%nat; 99%nat; 3%nat]; [4%nat; 5%nat; 6%nat]]",
         "unexpected": [
@@ -16,9 +16,9 @@
     {
         "input": {
             "arr": "[[7%nat; 8%nat]; [9%nat; 10%nat]]",
-            "index1": "1",
-            "index2": "0",
-            "val": "0"
+            "index1": "1%nat",
+            "index2": "0%nat",
+            "val": "0%nat"
         },
         "expected": "[[7%nat; 8%nat]; [0%nat; 10%nat]]",
         "unexpected": [
@@ -30,9 +30,9 @@
     {
         "input": {
             "arr": "[[0%nat; 0%nat; 0%nat]]",
-            "index1": "0",
-            "index2": "2",
-            "val": "5"
+            "index1": "0%nat",
+            "index2": "2%nat",
+            "val": "5%nat"
         },
         "expected": "[[0%nat; 0%nat; 5%nat]]",
         "unexpected": [
@@ -43,9 +43,9 @@
     {
         "input": {
             "arr": "[[3%nat; 4%nat; 5%nat]; [6%nat; 7%nat; 8%nat]; [9%nat; 10%nat; 11%nat]]",
-            "index1": "2",
-            "index2": "1",
-            "val": "100"
+            "index1": "2%nat",
+            "index2": "1%nat",
+            "val": "100%nat"
         },
         "expected": "[[3%nat; 4%nat; 5%nat]; [6%nat; 7%nat; 8%nat]; [9%nat; 100%nat; 11%nat]]",
         "unexpected": [
@@ -57,9 +57,9 @@
     {
         "input": {
             "arr": "[[1%nat]]",
-            "index1": "0",
-            "index2": "0",
-            "val": "42"
+            "index1": "0%nat",
+            "index2": "0%nat",
+            "val": "42%nat"
         },
         "expected": "[[42%nat]]",
         "unexpected": [

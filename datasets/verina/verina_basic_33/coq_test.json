@@ -3,52 +3,52 @@
         "input": {
             "s": "[0%nat; 1%nat; 2%nat; 6%nat; 9%nat]"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2",
-            "4",
-            "5"
+            "2%nat",
+            "4%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
             "s": "[4%nat; 5%nat; 10%nat; 11%nat]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2"
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "s": "[0%nat; 1%nat; 2%nat; 3%nat; 4%nat; 5%nat]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7"
+            "5%nat",
+            "7%nat"
         ]
     },
     {
         "input": {
             "s": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2"
+            "1%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "s": "[0%nat; 2%nat; 3%nat; 4%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2",
-            "3"
+            "0%nat",
+            "2%nat",
+            "3%nat"
         ]
     }
 ]

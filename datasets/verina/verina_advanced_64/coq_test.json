@@ -2,7 +2,7 @@
     {
         "input": {
             "lst": "[1%nat; 2%nat; 3%nat; 2%nat; 4%nat]",
-            "target": "2"
+            "target": "2%nat"
         },
         "expected": "[1%nat; 3%nat; 4%nat]",
         "unexpected": [
@@ -14,7 +14,7 @@
     {
         "input": {
             "lst": "[5%nat; 5%nat; 5%nat; 5%nat]",
-            "target": "5"
+            "target": "5%nat"
         },
         "expected": "[]",
         "unexpected": [
@@ -26,7 +26,7 @@
     {
         "input": {
             "lst": "[7%nat; 8%nat; 9%nat]",
-            "target": "4"
+            "target": "4%nat"
         },
         "expected": "[7%nat; 8%nat; 9%nat]",
         "unexpected": [
@@ -38,7 +38,7 @@
     {
         "input": {
             "lst": "[]",
-            "target": "3"
+            "target": "3%nat"
         },
         "expected": "[]",
         "unexpected": [
@@ -50,7 +50,7 @@
     {
         "input": {
             "lst": "[0%nat; 1%nat; 0%nat; 2%nat; 0%nat]",
-            "target": "0"
+            "target": "0%nat"
         },
         "expected": "[1%nat; 2%nat]",
         "unexpected": [

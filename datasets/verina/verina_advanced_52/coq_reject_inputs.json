@@ -2,7 +2,7 @@
     {
         "input": {
             "nums": "[5%nat; 6%nat; 7%nat; 8%nat; 9%nat]",
-            "k": "3"
+            "k": "3%nat"
         }
     }
 ]

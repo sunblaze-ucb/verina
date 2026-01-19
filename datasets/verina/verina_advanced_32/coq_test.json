@@ -3,86 +3,86 @@
         "input": {
             "numbers": "[(10)%Z; (22)%Z; (9)%Z; (33)%Z; (21)%Z; (50)%Z; (41)%Z; (60)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "4",
-            "6",
-            "8"
+            "4%nat",
+            "6%nat",
+            "8%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(3)%Z; (10)%Z; (2)%Z; (1)%Z; (20)%Z]"
         },
-        "expected": "3",
+        "expected": "3%nat",
         "unexpected": [
-            "2",
-            "4",
-            "5"
+            "2%nat",
+            "4%nat",
+            "5%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(50)%Z; (3)%Z; (10)%Z; (7)%Z; (40)%Z; (80)%Z]"
         },
-        "expected": "4",
+        "expected": "4%nat",
         "unexpected": [
-            "3",
-            "5",
-            "6"
+            "3%nat",
+            "5%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(10)%Z; (9)%Z; (8)%Z; (7)%Z; (6)%Z; (5)%Z; (4)%Z; (3)%Z; (2)%Z; (1)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2",
-            "10"
+            "0%nat",
+            "2%nat",
+            "10%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(1)%Z; (2)%Z; (3)%Z; (4)%Z; (5)%Z]"
         },
-        "expected": "5",
+        "expected": "5%nat",
         "unexpected": [
-            "1",
-            "4",
-            "6"
+            "1%nat",
+            "4%nat",
+            "6%nat"
         ]
     },
     {
         "input": {
             "numbers": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1",
-            "2",
-            "3"
+            "1%nat",
+            "2%nat",
+            "3%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(5)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2"
+            "0%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "numbers": "[(5)%Z; (5)%Z; (5)%Z; (5)%Z]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "4"
+            "0%nat",
+            "4%nat"
         ]
     }
 ]

@@ -1,37 +1,37 @@
 [
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[1%nat; 1%nat]]"
         }
     },
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[7%nat; 1%nat]]"
         }
     },
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[0%nat; 1%nat]]"
         }
     },
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[1%nat; 0%nat]]"
         }
     },
     {
         "input": {
-            "N": "3",
+            "N": "3%nat",
             "chords": "[[1%nat; 7%nat]]"
         }
     },
     {
         "input": {
-            "N": "0",
+            "N": "0%nat",
             "chords": "[]"
         }
     }

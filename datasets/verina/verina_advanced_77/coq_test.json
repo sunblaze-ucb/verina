@@ -3,56 +3,56 @@
         "input": {
             "height": "[0%nat; 1%nat; 0%nat; 2%nat; 1%nat; 0%nat; 1%nat; 3%nat; 2%nat; 1%nat; 2%nat; 1%nat]"
         },
-        "expected": "6",
+        "expected": "6%nat",
         "unexpected": [
-            "5",
-            "7"
+            "5%nat",
+            "7%nat"
         ]
     },
     {
         "input": {
             "height": "[4%nat; 2%nat; 0%nat; 3%nat; 2%nat; 5%nat]"
         },
-        "expected": "9",
+        "expected": "9%nat",
         "unexpected": [
-            "8"
+            "8%nat"
         ]
     },
     {
         "input": {
             "height": "[1%nat; 0%nat; 2%nat]"
         },
-        "expected": "1",
+        "expected": "1%nat",
         "unexpected": [
-            "0",
-            "2"
+            "0%nat",
+            "2%nat"
         ]
     },
     {
         "input": {
             "height": "[3%nat; 0%nat; 1%nat; 3%nat; 0%nat; 5%nat]"
         },
-        "expected": "8",
+        "expected": "8%nat",
         "unexpected": [
-            "6"
+            "6%nat"
         ]
     },
     {
         "input": {
             "height": "[0%nat; 1%nat; 2%nat; 3%nat; 4%nat; 5%nat]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     },
     {
         "input": {
             "height": "[]"
         },
-        "expected": "0",
+        "expected": "0%nat",
         "unexpected": [
-            "1"
+            "1%nat"
         ]
     }
 ]
