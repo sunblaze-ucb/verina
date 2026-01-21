@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "datasets>=3.4.0",
-    "dspy>=2.6.23",
+    "dspy==3.1.2",
     "google-cloud-aiplatform>=1.92.0",
     "ipykernel>=6.29.5",
     "jinja2>=3.1.6",
