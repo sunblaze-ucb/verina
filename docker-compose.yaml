@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   prefect-postgres:
-    image: postgres:latest
+    image: postgres:17
     container_name: prefect-postgres
     environment:
       - POSTGRES_USER=postgres
