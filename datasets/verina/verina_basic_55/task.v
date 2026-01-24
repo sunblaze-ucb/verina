@@ -1,57 +1,54 @@
 (* !benchmark @start import type=task *)
-Require Import Bool.
 Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions needed *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution auxiliary definitions needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition Compare_precond_dec (a : Z) (b : Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition Compare_precond (a : Z) (b : Z) : Prop :=
+Definition Compare_precond (a : Z) (b : Z) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No code auxiliary definitions needed *)
+
 (* !benchmark @end code_aux *)
 
-Definition Compare (a : Z) (b : Z) (h_precond : Compare_precond a b) : bool :=
+Definition Compare (a : Z) (b : Z) : bool :=
   (* !benchmark @start code *)
   if (a =? b)%Z then true else false
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition Compare_postcond_dec (a : Z) (b : Z) (result : bool) : bool :=
-  ((a =? b)%Z && Bool.eqb result true) || (negb (a =? b)%Z && Bool.eqb result false).
+
 (* !benchmark @end postcond_aux *)
 
-Definition Compare_postcond (a : Z) (b : Z) (result : bool) (h_precond : Compare_precond a b) : Prop :=
+Definition Compare_postcond (a : Z) (b : Z) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  (a = b -> result = true) /\ (a <> b -> result = false)
+  implb (a =? b)%Z (Bool.eqb result true) && implb (negb (a =? b)%Z) (Bool.eqb result false)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem Compare_postcond_satisfied (a : Z) (b : Z) (h_precond : Compare_precond a b) :
-    Compare_postcond a b (Compare a b h_precond) h_precond.
+Theorem Compare_postcond_satisfied (a : Z) (b : Z) :
+    Compare_precond a b = true ->
+    Compare_postcond a b (Compare a b) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

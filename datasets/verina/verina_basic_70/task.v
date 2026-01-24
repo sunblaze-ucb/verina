@@ -1,94 +1,80 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-
-Fixpoint exists_index_satisfying (a : list Z) (P : Z -> bool) (i : nat) : bool :=
-  match a with
+Fixpoint existsb_with_index {A : Type} (f : nat -> A -> bool) (l : list A) (start : nat) : bool :=
+  match l with
   | [] => false
-  | x :: xs =>
-    if Nat.ltb i (length (x :: xs)) then
-      if P x then true
-      else exists_index_satisfying xs P (S i)
-    else false
+  | h :: t => if f start h then true else existsb_with_index f t (S start)
   end.
-
-Definition LinearSearch3_precond_dec (a : list Z) (P : Z -> bool) : bool :=
-  exists_index_satisfying a P 0%nat.
 (* !benchmark @end precond_aux *)
 
-Definition LinearSearch3_precond (a : (list Z)) (P : (Z -> bool)) : Prop :=
+Definition LinearSearch3_precond (a : (list Z)) (P : (Z -> bool)) : bool :=
   (* !benchmark @start precond *)
-  exists i, (i < length a)%nat /\ P (nth i a 0%Z) = true
+  existsb_with_index (fun i x => P x) a O
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* complete helper function definitions *)
-
-Fixpoint LinearSearch3_loop (a : list Z) (P : Z -> bool) (n : nat) (fuel : nat) : nat :=
+Fixpoint loop (a : list Z) (P : Z -> bool) (n : nat) (fuel : nat) : nat :=
   match fuel with
-  | O => 0%nat
+  | O => O
   | S fuel' =>
-    if Nat.ltb n (length a) then
-      if P (nth n a 0%Z) then n
-      else LinearSearch3_loop a P (n + 1)%nat fuel'
-    else 0%nat
+    if (n <? length a)%nat then
+      match nth_error a n with
+      | Some v => if P v then n else loop a P (S n) fuel'
+      | None => O
+      end
+    else O
   end.
 (* !benchmark @end code_aux *)
 
-Definition LinearSearch3 (a : (list Z)) (P : (Z -> bool)) (h_precond : LinearSearch3_precond a P) : nat :=
+Definition LinearSearch3 (a : (list Z)) (P : (Z -> bool)) : nat :=
   (* !benchmark @start code *)
-  LinearSearch3_loop a P 0%nat (length a)
+  loop a P O (length a)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* postcondition helpers including _dec version, complete definitions *)
-
-Fixpoint all_before_fail (a : list Z) (P : Z -> bool) (result : nat) (k : nat) : bool :=
-  match k with
-  | O => true
-  | S k' =>
-    if Nat.ltb k' result then
-      if P (nth k' a 0%Z) then false
-      else all_before_fail a P result k'
-    else all_before_fail a P result k'
+Definition nth_default (l : list Z) (n : nat) (d : Z) : Z :=
+  match nth_error l n with
+  | Some v => v
+  | None => d
   end.
 
-Definition LinearSearch3_postcond_dec (a : list Z) (P : Z -> bool) (result : nat) : bool :=
-  andb (andb (Nat.ltb result (length a)) (P (nth result a 0%Z)))
-       (all_before_fail a P result result).
+Fixpoint forallb_below (P : Z -> bool) (a : list Z) (k : nat) : bool :=
+  match k with
+  | O => true
+  | S k' => forallb_below P a k' && negb (P (nth_default a k' 0%Z))
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition LinearSearch3_postcond (a : (list Z)) (P : (Z -> bool)) (result : nat) (h_precond : LinearSearch3_precond a P) : Prop :=
+Definition LinearSearch3_postcond (a : (list Z)) (P : (Z -> bool)) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  (result < length a)%nat /\ P (nth result a 0%Z) = true /\ (forall k, (k < result)%nat -> P (nth k a 0%Z) = false)
+  (result <? length a)%nat && P (nth_default a result 0%Z) && forallb_below P a result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem LinearSearch3_postcond_satisfied (a : (list Z)) (P : (Z -> bool)) (h_precond : LinearSearch3_precond a P) :
-    LinearSearch3_postcond a P (LinearSearch3 a P h_precond) h_precond.
+Theorem LinearSearch3_postcond_satisfied (a : (list Z)) (P : (Z -> bool)) :
+    LinearSearch3_precond a P = true ->
+    LinearSearch3_postcond a P (LinearSearch3 a P) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,129 +1,128 @@
 (* !benchmark @start import type=task *)
 Require Import List.
+Require Import Nat.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.Arith.Arith.
-Require Import Coq.Arith.PeanoNat.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper to get element at index with default *)
-Fixpoint nth_default {A : Type} (l : list A) (n : nat) (default : A) : A :=
-  match n, l with
-  | O, x :: _ => x
-  | S n', _ :: tl => nth_default tl n' default
-  | _, [] => default
+Fixpoint nth_nat (l : list nat) (n : nat) (default : nat) : nat :=
+  match l with
+  | [] => default
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_nat t n' default
+              end
   end.
 
-(* Helper to generate range [0..n) *)
-Fixpoint range_helper (n : nat) (acc : list nat) : list nat :=
-  match n with
-  | O => acc
-  | S n' => range_helper n' (n' :: acc)
-  end.
-
-Definition range (n : nat) : list nat :=
-  range_helper n [].
-
-(* Helper to take first n elements *)
-Fixpoint take {A : Type} (n : nat) (l : list A) : list A :=
-  match n, l with
-  | O, _ => []
-  | _, [] => []
-  | S n', x :: xs => x :: take n' xs
-  end.
-
-(* Helper to drop first n elements *)
-Fixpoint drop {A : Type} (n : nat) (l : list A) : list A :=
-  match n, l with
-  | O, l => l
-  | _, [] => []
-  | S n', _ :: xs => drop n' xs
-  end.
-
-(* Fold left for nat *)
-Fixpoint fold_left_nat (f : nat -> nat -> nat) (l : list nat) (acc : nat) : nat :=
+Fixpoint foldl_max (l : list nat) (acc : nat) : nat :=
   match l with
   | [] => acc
-  | x :: xs => fold_left_nat f xs (f acc x)
+  | h :: t => foldl_max t (max acc h)
+  end.
+
+Fixpoint take (n : nat) (l : list nat) : list nat :=
+  match n with
+  | O => []
+  | S n' => match l with
+            | [] => []
+            | h :: t => h :: take n' t
+            end
+  end.
+
+Fixpoint drop (n : nat) (l : list nat) : list nat :=
+  match n with
+  | O => l
+  | S n' => match l with
+            | [] => []
+            | _ :: t => drop n' t
+            end
   end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition trapRainWater_precond_dec (height : list nat) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition trapRainWater_precond (height : (list nat)) : Prop :=
+Definition trapRainWater_precond (height : (list nat)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Imperative-style loop translation using fixpoint *)
 Fixpoint trapRainWater_loop (height : list nat) (left right leftMax rightMax water : nat) (fuel : nat) : nat :=
   match fuel with
   | O => water
   | S fuel' =>
-      if Nat.ltb left right then
-        let hLeft := nth_default height left 0%nat in
-        let hRight := nth_default height right 0%nat in
-        if Nat.ltb hLeft hRight then
-          let newLeftMax := if Nat.leb leftMax hLeft then hLeft else leftMax in
-          let newWater := if Nat.leb leftMax hLeft then water else water + (leftMax - hLeft) in
-          trapRainWater_loop height (left + 1) right newLeftMax rightMax newWater fuel'
+    if left <? right then
+      let hLeft := nth_nat height left 0 in
+      let hRight := nth_nat height right 0 in
+      if hLeft <? hRight then
+        if leftMax <=? hLeft then
+          trapRainWater_loop height (S left) right hLeft rightMax water fuel'
         else
-          let newRightMax := if Nat.leb rightMax hRight then hRight else rightMax in
-          let newWater := if Nat.leb rightMax hRight then water else water + (rightMax - hRight) in
-          trapRainWater_loop height left (right - 1) leftMax newRightMax newWater fuel'
+          trapRainWater_loop height (S left) right leftMax rightMax (water + (leftMax - hLeft)) fuel'
       else
-        water
+        if rightMax <=? hRight then
+          trapRainWater_loop height left (right - 1) leftMax hRight water fuel'
+        else
+          trapRainWater_loop height left (right - 1) leftMax rightMax (water + (rightMax - hRight)) fuel'
+    else
+      water
   end.
 (* !benchmark @end code_aux *)
 
-Definition trapRainWater (height : (list nat)) (h_precond : trapRainWater_precond height) : nat :=
+Definition trapRainWater (height : (list nat)) : nat :=
   (* !benchmark @start code *)
-  match length height with
-| O => 0%nat
-| S _ =>
-    let right := length height - 1 in
-    trapRainWater_loop height 0%nat right 0%nat 0%nat 0%nat (length height)
-end
+  let n := length height in
+  match n with
+  | O => 0
+  | S _ => trapRainWater_loop height 0 (n - 1) 0 0 0 n
+  end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition waterAt (height : list nat) : list nat :=
-  map (fun i =>
-    let lmax := fold_left_nat Nat.max (take (i + 1) height) 0%nat in
-    let rmax := fold_left_nat Nat.max (drop i height) 0%nat in
-    Nat.min lmax rmax - nth_default height i 0%nat)
-    (range (length height)).
+Fixpoint range (n : nat) : list nat :=
+  match n with
+  | O => []
+  | S n' => range n' ++ [n']
+  end.
 
-Definition trapRainWater_postcond_dec (height : list nat) (result : nat) : bool :=
-  let expected := fold_left_nat Nat.add (waterAt height) 0%nat in
-  Nat.eqb (result - expected) 0%nat && Nat.leb expected result.
+Definition waterAt_fun (height : list nat) (i : nat) : nat :=
+  let lmax := foldl_max (take (S i) height) 0 in
+  let rmax := foldl_max (drop i height) 0 in
+  min lmax rmax - nth_nat height i 0.
+
+Fixpoint sum_list (l : list nat) : nat :=
+  match l with
+  | [] => 0
+  | h :: t => (h + sum_list t)%nat
+  end.
+
+Definition waterAt_total (height : list nat) : nat :=
+  sum_list (map (waterAt_fun height) (range (length height))).
 (* !benchmark @end postcond_aux *)
 
-Definition trapRainWater_postcond (height : (list nat)) (result : nat) (h_precond : trapRainWater_precond height) : Prop :=
+Definition trapRainWater_postcond (height : (list nat)) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  let expected := fold_left_nat Nat.add (waterAt height) 0%nat in
-  result - expected = 0%nat /\ expected <= result
+  let expected := waterAt_total height in
+  ((result - expected =? 0)%nat && (expected <=? result)%nat)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem trapRainWater_postcond_satisfied (height : (list nat)) (h_precond : trapRainWater_precond height) :
-    trapRainWater_postcond height (trapRainWater height h_precond) h_precond.
+Theorem trapRainWater_postcond_satisfied (height : (list nat)) :
+    trapRainWater_precond height = true ->
+    trapRainWater_postcond height (trapRainWater height) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

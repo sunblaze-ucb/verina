@@ -1,84 +1,95 @@
 (* !benchmark @start import type=task *)
 Require Import Bool.
 Require Import String.
-(* !benchmark @end import *)
-
-(* !benchmark @start import type=solution *)
 Require Import Ascii.
-Require Import String.
 Require Import List.
 Import ListNotations.
 (* !benchmark @end import *)
 
+(* !benchmark @start import type=solution *)
+
+(* !benchmark @end import *)
+
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition allCharactersSame_precond_dec (s : string) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition allCharactersSame_precond (s : string) : Prop :=
+Definition allCharactersSame_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint all_chars_equal (c : ascii) (cs : list ascii) : bool :=
+Fixpoint all_same_char (c : ascii) (cs : list ascii) : bool :=
   match cs with
   | [] => true
-  | x :: xs => if ascii_dec x c then all_chars_equal c xs else false
+  | x :: xs => (Ascii.eqb x c) && all_same_char c xs
   end.
 
-Definition string_to_list (s : string) : list ascii :=
-  list_ascii_of_string s.
+Definition allCharactersSameHelper (cs : list ascii) : bool :=
+  match cs with
+  | [] => true
+  | c :: rest => all_same_char c rest
+  end.
 (* !benchmark @end code_aux *)
 
-Definition allCharactersSame (s : string) (h_precond : allCharactersSame_precond s) : bool :=
+Definition allCharactersSame (s : string) : bool :=
   (* !benchmark @start code *)
-  match string_to_list s with
-| [] => true
-| c :: cs => all_chars_equal c cs
-end
+  allCharactersSameHelper (list_ascii_of_string s)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint list_pairwise_equal (cs : list ascii) : Prop :=
+Fixpoint list_pairwise_eq (cs : list ascii) : bool :=
   match cs with
-  | [] => True
-  | c :: cs' => (forall x, In x cs' -> x = c) /\ list_pairwise_equal cs'
+  | [] => true
+  | x :: xs =>
+    match xs with
+    | [] => true
+    | y :: _ => Ascii.eqb x y && list_pairwise_eq xs
+    end
   end.
 
-Fixpoint list_any_ne (c : ascii) (cs : list ascii) : Prop :=
+Fixpoint any_different_from_first (first : ascii) (cs : list ascii) : bool :=
   match cs with
-  | [] => False
-  | x :: xs => x <> c \/ list_any_ne c xs
+  | [] => false
+  | x :: xs => negb (Ascii.eqb x first) || any_different_from_first first xs
   end.
 
-Definition allCharactersSame_postcond_dec (s : string) (result : bool) : bool :=
-  true.
+Definition get_first_char (cs : list ascii) : ascii :=
+  match cs with
+  | [] => "000"%char
+  | c :: _ => c
+  end.
+
+Definition list_ascii_nonempty (cs : list ascii) : bool :=
+  match cs with
+  | [] => false
+  | _ :: _ => true
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition allCharactersSame_postcond (s : string) (result : bool) (h_precond : allCharactersSame_precond s) : Prop :=
+Definition allCharactersSame_postcond (s : string) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
-  (result = true -> list_pairwise_equal cs) /\
-  (result = false -> (cs <> [] /\ match cs with
-                                   | [] => False
-                                   | c :: _ => list_any_ne c cs
-                                   end))
+  let cs := list_ascii_of_string s in
+  implb result (list_pairwise_eq cs) &&
+  implb (negb result) (list_ascii_nonempty cs && any_different_from_first (get_first_char cs) cs)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem allCharactersSame_postcond_satisfied (s : string) (h_precond : allCharactersSame_precond s) :
-    allCharactersSame_postcond s (allCharactersSame s h_precond) h_precond.
+Theorem allCharactersSame_postcond_satisfied (s : string) :
+    allCharactersSame_precond s = true ->
+    allCharactersSame_postcond s (allCharactersSame s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

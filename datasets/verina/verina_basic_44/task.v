@@ -1,86 +1,85 @@
 (* !benchmark @start import type=task *)
-Require Import Bool.
-Require Import List.
-Import ListNotations.
 Require Import ZArith.
+Require Import List.
+Require Import Bool.
+Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Require Import List.
-Require Import Bool.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-Definition isOdd (n : Z) : bool :=
-  (n mod 2 =? 1)%Z.
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition isOddAtIndexOdd_precond_dec (a : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition isOddAtIndexOdd_precond (a : (list Z)) : Prop :=
+Definition isOddAtIndexOdd_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint indexedList_aux {A : Type} (l : list A) (idx : nat) : list (nat * A) :=
-  match l with
-  | [] => []
-  | x :: xs => (idx, x) :: indexedList_aux xs (S idx)
-  end.
+Definition isOdd (n : Z) : bool :=
+  (n mod 2 =? 1)%Z.
 
-Definition indexedList {A : Type} (l : list A) : list (nat * A) :=
-  indexedList_aux l 0%nat.
-
-Fixpoint all_pairs (l : list (nat * Z)) : bool :=
+Fixpoint checkOddAtOddIdx (l : list Z) (idx : nat) : bool :=
   match l with
   | [] => true
-  | (i, x) :: xs => 
-      (negb (Nat.odd i) || isOdd x) && all_pairs xs
+  | x :: xs => 
+    let idxOdd := isOdd (Z.of_nat idx) in
+    let xOdd := isOdd x in
+    (implb idxOdd xOdd) && checkOddAtOddIdx xs (S idx)
   end.
 (* !benchmark @end code_aux *)
 
-Definition isOddAtIndexOdd (a : (list Z)) (h_precond : isOddAtIndexOdd_precond a) : bool :=
+Definition isOddAtIndexOdd (a : (list Z)) : bool :=
   (* !benchmark @start code *)
-  let indexedArray := indexedList a in
-  all_pairs indexedArray
+  checkOddAtOddIdx a 0%nat
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint isOddAtIndexOdd_postcond_dec (a : list Z) (result : bool) : bool :=
-  let fix check_indices (idx : nat) (l : list Z) : bool :=
-    match l with
-    | [] => true
-    | x :: xs =>
-        if Nat.odd idx
-        then (isOdd x && check_indices (S idx) xs)%bool
-        else check_indices (S idx) xs
-    end
-  in Bool.eqb result (check_indices 0%nat a).
+Definition isOdd_post (n : Z) : bool :=
+  (n mod 2 =? 1)%Z.
+
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0%Z
+  | x :: _, O => x
+  | _ :: xs, S n' => nth_Z xs n'
+  end.
+
+Fixpoint check_all_odd_indices (a : list Z) (i : nat) : bool :=
+  match i with
+  | O => true
+  | S i' => 
+    let check_i' := 
+      implb ((i' <? length a)%nat && isOdd_post (Z.of_nat i'))
+            (isOdd_post (nth_Z a i'))
+    in check_i' && check_all_odd_indices a i'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition isOddAtIndexOdd_postcond (a : (list Z)) (result : bool) (h_precond : isOddAtIndexOdd_precond a) : Prop :=
+Definition isOddAtIndexOdd_postcond (a : (list Z)) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  result = true <-> (forall i : nat, (i < length a)%nat -> Nat.odd i = true -> isOdd (nth i a 0%Z) = true)
+  Bool.eqb result (check_all_odd_indices a (length a))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem isOddAtIndexOdd_postcond_satisfied (a : (list Z)) (h_precond : isOddAtIndexOdd_precond a) :
-    isOddAtIndexOdd_postcond a (isOddAtIndexOdd a h_precond) h_precond.
+Theorem isOddAtIndexOdd_postcond_satisfied (a : (list Z)) :
+    isOddAtIndexOdd_precond a = true ->
+    isOddAtIndexOdd_postcond a (isOddAtIndexOdd a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

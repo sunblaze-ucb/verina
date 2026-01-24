@@ -1,35 +1,30 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Arith.Arith.
-Require Import Coq.Bool.Bool.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Nat.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition longestIncreasingSubseqLength_precond_dec (xs : list Z) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition longestIncreasingSubseqLength_precond (xs : (list Z)) : Prop :=
+Definition longestIncreasingSubseqLength_precond (xs : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
@@ -39,7 +34,7 @@ Fixpoint subsequences {A : Type} (xs : list A) : list (list A) :=
   | [] => [[]]
   | x :: xs' =>
     let subs := subsequences xs' in
-    subs ++ (map (fun s => x :: s) subs)
+    subs ++ map (fun s => x :: s) subs
   end.
 
 (* Check if a list is strictly increasing *)
@@ -47,79 +42,64 @@ Fixpoint isStrictlyIncreasing (xs : list Z) : bool :=
   match xs with
   | [] => true
   | [_] => true
-  | x :: xs' => 
-    match xs' with
-    | [] => true
-    | y :: rest => if (x <? y)%Z then isStrictlyIncreasing xs' else false
-    end
+  | x :: ((y :: rest) as tail) => if (x <? y)%Z then isStrictlyIncreasing tail else false
   end.
+
+(* Fold to find maximum length *)
+Definition maxLength (subs : list (list Z)) : nat :=
+  fold_left (fun acc s => Nat.max acc (length s)) subs 0%nat.
 (* !benchmark @end code_aux *)
 
-Definition longestIncreasingSubseqLength (xs : (list Z)) (h_precond : longestIncreasingSubseqLength_precond xs) : nat :=
+Definition longestIncreasingSubseqLength (xs : (list Z)) : nat :=
   (* !benchmark @start code *)
   let subs := subsequences xs in
-let increasing := filter isStrictlyIncreasing subs in
-fold_left (fun acc s => Nat.max acc (length s)) increasing 0%nat
+  let increasing := filter isStrictlyIncreasing subs in
+  maxLength increasing
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Helper to check Pairwise (< ·) for a list *)
-Fixpoint isPairwiseLess (l : list Z) : bool :=
-  match l with
+(* Generate all subsequences by folding *)
+Definition allSubseqFold (xs : list Z) : list (list Z) :=
+  map (@rev Z) (fold_left (fun acc x => acc ++ map (fun sub => x :: sub) acc) xs [[]]).
+
+(* Check if a list is pairwise strictly increasing *)
+Fixpoint pairwiseLt (xs : list Z) : bool :=
+  match xs with
   | [] => true
   | [_] => true
-  | x :: l' => 
-    match l' with
-    | [] => true
-    | y :: rest => if (x <? y)%Z then isPairwiseLess l' else false
-    end
+  | x :: ((y :: _) as tail) => (x <? y)%Z && pairwiseLt tail
   end.
 
-(* Generate all subsequences via fold_left *)
-Fixpoint allSubseqFold_helper (acc : list (list Z)) (x : Z) : list (list Z) :=
-  acc ++ map (fun sub => x :: sub) acc.
-
-Definition allSubseqFold (xs : list Z) : list (list Z) :=
-  map (@rev Z) (fold_left allSubseqFold_helper xs [[]]).
-
-(* Filter increasing subsequences and get their lengths *)
-Definition increasingSubseqLens (xs : list Z) : list nat :=
-  let allSubseq := allSubseqFold xs in
-  let increasing := filter isPairwiseLess allSubseq in
-  map (@length Z) increasing.
-
-(* Check if a list contains an element *)
-Fixpoint contains_nat (l : list nat) (n : nat) : bool :=
+(* Check if result is in a list of nats *)
+Fixpoint nat_in_list (n : nat) (l : list nat) : bool :=
   match l with
   | [] => false
-  | x :: xs => Nat.eqb x n || contains_nat xs n
+  | h :: t => (n =? h)%nat || nat_in_list n t
   end.
 
-(* Check if all elements satisfy a predicate *)
-Fixpoint all_nat (f : nat -> bool) (l : list nat) : bool :=
+(* Check if all elements in list are <= n *)
+Fixpoint all_le_nat (n : nat) (l : list nat) : bool :=
   match l with
   | [] => true
-  | x :: xs => f x && all_nat f xs
+  | h :: t => (h <=? n)%nat && all_le_nat n t
   end.
-
-Definition longestIncreasingSubseqLength_postcond_dec (xs : list Z) (result : nat) : bool :=
-  let lens := increasingSubseqLens xs in
-  contains_nat lens result && all_nat (fun n => Nat.leb n result) lens.
 (* !benchmark @end postcond_aux *)
 
-Definition longestIncreasingSubseqLength_postcond (xs : (list Z)) (result : nat) (h_precond : longestIncreasingSubseqLength_precond xs) : Prop :=
+Definition longestIncreasingSubseqLength_postcond (xs : (list Z)) (result : nat) : bool :=
   (* !benchmark @start postcond *)
   let allSubseq := allSubseqFold xs in
-let increasingSubseqLens := map (@length Z) (filter isPairwiseLess allSubseq) in
-In result increasingSubseqLens /\ Forall (fun n => (n <= result)%nat) increasingSubseqLens
+  let increasingSubseqs := filter pairwiseLt allSubseq in
+  let increasingSubseqLens := map (@length Z) increasingSubseqs in
+  nat_in_list result increasingSubseqLens && all_le_nat result increasingSubseqLens
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem longestIncreasingSubseqLength_postcond_satisfied (xs : (list Z)) (h_precond : longestIncreasingSubseqLength_precond xs) :
-    longestIncreasingSubseqLength_postcond xs (longestIncreasingSubseqLength xs h_precond) h_precond.
+Theorem longestIncreasingSubseqLength_postcond_satisfied (xs : (list Z)) :
+    longestIncreasingSubseqLength_precond xs = true ->
+    longestIncreasingSubseqLength_postcond xs (longestIncreasingSubseqLength xs) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

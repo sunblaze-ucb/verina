@@ -1,81 +1,120 @@
 (* !benchmark @start import type=task *)
-Require Import Bool.
-Require Import List.
-Import ListNotations.
 Require Import ZArith.
+Require Import List.
+Require Import Bool.
+Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import List.
-Import ListNotations.
-Open Scope Z.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution auxiliary definitions needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition containsConsecutiveNumbers_precond_dec (a : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition containsConsecutiveNumbers_precond (a : (list Z)) : Prop :=
+Definition containsConsecutiveNumbers_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint containsConsecutiveNumbersHelper (l : list Z) : bool :=
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z t n'
+  end.
+
+Fixpoint checkConsecutive (l : list Z) (i : nat) (len : nat) : bool :=
+  match len with
+  | O => false
+  | S O => false
+  | S (S _ as len') =>
+    match i with
+    | O => 
+      let x := nth_Z l 0 in
+      let y := nth_Z l 1 in
+      if (x + 1 =? y)%Z then true
+      else checkConsecutive l 1 len'
+    | S i' =>
+      if (i <? len')%nat then
+        let x := nth_Z l i in
+        let y := nth_Z l (S i) in
+        if (x + 1 =? y)%Z then true
+        else checkConsecutive l (S i) (len' - i')%nat
+      else false
+    end
+  end.
+
+Fixpoint hasConsecutivePair (l : list Z) : bool :=
   match l with
   | [] => false
   | [_] => false
-  | x :: xs => 
-      match xs with
-      | [] => false
-      | y :: _ => 
-          if Z.eqb (x + 1) y then true
-          else containsConsecutiveNumbersHelper xs
-      end
+  | x :: ((y :: _) as rest) =>
+    if (x + 1 =? y)%Z then true
+    else hasConsecutivePair rest
   end.
 (* !benchmark @end code_aux *)
 
-Definition containsConsecutiveNumbers (a : (list Z)) (h_precond : containsConsecutiveNumbers_precond a) : bool :=
+Definition containsConsecutiveNumbers (a : (list Z)) : bool :=
   (* !benchmark @start code *)
-  containsConsecutiveNumbersHelper a
+  hasConsecutivePair a
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint existsConsecutivePair (l : list Z) : Prop :=
+Fixpoint existsConsecutiveAt (l : list Z) (i : nat) : bool :=
   match l with
-  | [] => False
-  | [_] => False
-  | x :: (y :: _) as xs =>
-      ((x + 1)%Z = y) \/
-      existsConsecutivePair xs
+  | [] => false
+  | [_] => false
+  | x :: ((y :: _) as rest) =>
+    if (x + 1 =? y)%Z then true
+    else existsConsecutiveAt rest (S i)
   end.
 
-Definition containsConsecutiveNumbers_postcond_dec (a : list Z) (result : bool) : bool :=
-  Bool.eqb result (containsConsecutiveNumbersHelper a).
+Fixpoint nth_Z_post (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z_post t n'
+  end.
+
+Fixpoint checkExistsConsec (l : list Z) (fuel : nat) : bool :=
+  match fuel with
+  | O => false
+  | S fuel' =>
+    let i := (length l - S fuel')%nat in
+    if (S i <? length l)%nat then
+      if (nth_Z_post l i + 1 =? nth_Z_post l (S i))%Z then true
+      else checkExistsConsec l fuel'
+    else checkExistsConsec l fuel'
+  end.
+
+Definition existsConsecutive (l : list Z) : bool :=
+  checkExistsConsec l (length l).
 (* !benchmark @end postcond_aux *)
 
-Definition containsConsecutiveNumbers_postcond (a : (list Z)) (result : bool) (h_precond : containsConsecutiveNumbers_precond a) : Prop :=
+Definition containsConsecutiveNumbers_postcond (a : (list Z)) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  (exists i : nat, (i < length a - 1%nat)%nat /\ (nth i a 0%Z + 1)%Z = nth (i + 1%nat) a 0%Z) <-> result = true
+  Bool.eqb (existsConsecutive a) result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem containsConsecutiveNumbers_postcond_satisfied (a : (list Z)) (h_precond : containsConsecutiveNumbers_precond a) :
-    containsConsecutiveNumbers_postcond a (containsConsecutiveNumbers a h_precond) h_precond.
+Theorem containsConsecutiveNumbers_postcond_satisfied (a : (list Z)) :
+    containsConsecutiveNumbers_precond a = true ->
+    containsConsecutiveNumbers_postcond a (containsConsecutiveNumbers a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

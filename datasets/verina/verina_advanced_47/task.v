@@ -1,102 +1,88 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Require Import List.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition mergeIntervals_precond_dec (intervals : list (Z * Z)) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition mergeIntervals_precond (intervals : (list (Z * Z))) : Prop :=
+Definition mergeIntervals_precond (intervals : (list (Z * Z))) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Insertion sort based on the start of intervals *)
 Fixpoint insert (x : Z * Z) (sorted : list (Z * Z)) : list (Z * Z) :=
   match sorted with
   | [] => [x]
   | y :: ys => if (fst x <=? fst y)%Z then x :: sorted else y :: insert x ys
   end.
 
-Fixpoint sort (xs : list (Z * Z)) : list (Z * Z) :=
+Fixpoint sort_intervals (xs : list (Z * Z)) : list (Z * Z) :=
   match xs with
   | [] => []
-  | x :: xs' => insert x (sort xs')
+  | x :: xs' => insert x (sort_intervals xs')
   end.
 
-(* Merge sorted intervals *)
-Fixpoint merge (xs : list (Z * Z)) (acc : list (Z * Z)) : list (Z * Z) :=
+Fixpoint merge_helper (xs : list (Z * Z)) (acc : list (Z * Z)) : list (Z * Z) :=
   match xs, acc with
   | [], _ => rev acc
-  | (s, e) :: rest, [] => merge rest [(s, e)]
+  | (s, e) :: rest, [] => merge_helper rest [(s, e)]
   | (s, e) :: rest, (ps, pe) :: accTail =>
-      if (s <=? pe)%Z then
-        merge rest ((ps, Z.max pe e) :: accTail)
-      else
-        merge rest ((s, e) :: (ps, pe) :: accTail)
+    if (s <=? pe)%Z then
+      merge_helper rest ((ps, Z.max pe e) :: accTail)
+    else
+      merge_helper rest ((s, e) :: (ps, pe) :: accTail)
   end.
 (* !benchmark @end code_aux *)
 
-Definition mergeIntervals (intervals : (list (Z * Z))) (h_precond : mergeIntervals_precond intervals) : (list (Z * Z)) :=
+Definition mergeIntervals (intervals : (list (Z * Z))) : (list (Z * Z)) :=
   (* !benchmark @start code *)
-  let sorted := sort intervals in
-  merge sorted []
+  merge_helper (sort_intervals intervals) []
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Check that all original intervals are covered by some result interval *)
-Fixpoint covered_helper (intervals result : list (Z * Z)) : bool :=
-  forallb (fun '(s, e) =>
-    existsb (fun '(rs, re) => andb (rs <=? s)%Z (e <=? re)%Z) result
-  ) intervals.
+Definition interval_covers (interval : Z * Z) (rs re : Z) : bool :=
+  (rs <=? fst interval)%Z && (snd interval <=? re)%Z.
 
-(* Check that no intervals in the result overlap *)
+Definition is_covered (interval : Z * Z) (result : list (Z * Z)) : bool :=
+  existsb (fun r => interval_covers interval (fst r) (snd r)) result.
+
 Fixpoint noOverlap (l : list (Z * Z)) : bool :=
   match l with
   | [] => true
   | [_] => true
-  | (_, e1) :: ((s2, e2) :: _  as l0) => andb (e1 <? s2)%Z (noOverlap l0)
+  | (_, e1) :: ((s2, e2) :: rest) as tail => (e1 <? s2)%Z && noOverlap tail
   end.
-
-Definition mergeIntervals_postcond_dec (intervals result : list (Z * Z)) : bool :=
-  andb (covered_helper intervals result) (noOverlap result).
 (* !benchmark @end postcond_aux *)
 
-Definition mergeIntervals_postcond (intervals : (list (Z * Z))) (result : (list (Z * Z))) (h_precond : mergeIntervals_precond intervals) : Prop :=
+Definition mergeIntervals_postcond (intervals : (list (Z * Z))) (result : (list (Z * Z))) : bool :=
   (* !benchmark @start postcond *)
-  let covered := forallb (fun '(s, e) =>
-  existsb (fun '(rs, re) => andb (rs <=? s)%Z (e <=? re)%Z) result
-) intervals in
-covered = true /\ noOverlap result = true
+  forallb (fun interval => is_covered interval result) intervals && noOverlap result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem mergeIntervals_postcond_satisfied (intervals : (list (Z * Z))) (h_precond : mergeIntervals_precond intervals) :
-    mergeIntervals_postcond intervals (mergeIntervals intervals h_precond) h_precond.
+Theorem mergeIntervals_postcond_satisfied (intervals : (list (Z * Z))) :
+    mergeIntervals_precond intervals = true ->
+    mergeIntervals_postcond intervals (mergeIntervals intervals) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,45 +1,40 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Require Import List.
-Require Import Bool.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition below_zero_precond_dec (operations : list Z) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition below_zero_precond (operations : (list Z)) : Prop :=
+Definition below_zero_precond (operations : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint buildS_helper (operations : list Z) (acc : list Z) (last : Z) : list Z :=
+Fixpoint buildS_aux (operations : list Z) (acc : Z) : list Z :=
   match operations with
-  | [] => rev acc
-  | op :: ops => buildS_helper ops ((last + op)%Z :: acc) (last + op)%Z
+  | [] => []
+  | op :: ops => let new_acc := acc + op in new_acc :: buildS_aux ops new_acc
   end.
 
 Definition buildS (operations : list Z) : list Z :=
-  0 :: buildS_helper operations [] 0.
+  0 :: buildS_aux operations 0.
 
 Fixpoint check_negative (lst : list Z) : bool :=
   match lst with
@@ -48,7 +43,7 @@ Fixpoint check_negative (lst : list Z) : bool :=
   end.
 (* !benchmark @end code_aux *)
 
-Definition below_zero (operations : (list Z)) (h_precond : below_zero_precond operations) : (list Z * bool) :=
+Definition below_zero (operations : (list Z)) : (list Z * bool) :=
   (* !benchmark @start code *)
   let s := buildS operations in
   let result := check_negative (tl s) in
@@ -56,85 +51,54 @@ Definition below_zero (operations : (list Z)) (h_precond : below_zero_precond op
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint nth_Z (l : list Z) (n : nat) : option Z :=
-  match n, l with
-  | 0%nat, x :: _ => Some x
-  | S n', _ :: l' => nth_Z l' n'
-  | _, [] => None
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | x :: _, O => x
+  | _ :: xs, S n' => nth_Z xs n'
   end.
 
-Fixpoint nth_Z_default (l : list Z) (n : nat) (default : Z) : Z :=
-  match nth_Z l n with
-  | Some v => v
-  | None => default
+Fixpoint nth_Z_opt (l : list Z) (n : nat) : option Z :=
+  match l, n with
+  | [], _ => None
+  | x :: _, O => Some x
+  | _ :: xs, S n' => nth_Z_opt xs n'
   end.
 
-Fixpoint forallb_range (n : nat) (f : nat -> bool) : bool :=
+Fixpoint range (n : nat) : list nat :=
   match n with
-  | 0%nat => true
-  | S n' => forallb_range n' f && f n'
+  | O => []
+  | S n' => range n' ++ [n']
   end.
 
-Fixpoint existsb_range (n : nat) (f : nat -> bool) : bool :=
-  match n with
-  | 0%nat => false
-  | S n' => existsb_range n' f || f n'
+Definition option_Z_eqb (o1 o2 : option Z) : bool :=
+  match o1, o2 with
+  | None, None => true
+  | Some x, Some y => (x =? y)%Z
+  | _, _ => false
   end.
-
-Definition below_zero_postcond_dec (operations : list Z) (result : list Z * bool) : bool :=
-  let s := fst result in
-  let res := snd result in
-  let len_check := Nat.eqb (length s) (length operations + 1)%nat in
-  let first_check := match nth_Z s 0%nat with
-                     | Some v => (v =? 0)%Z
-                     | None => false
-                     end in
-  let range_check := 
-    if (Nat.ltb 0%nat (length s)) then
-      forallb_range (length s - 1)%nat (fun i =>
-        match nth_Z s (i + 1)%nat, nth_Z s i, nth_Z operations i with
-        | Some si1, Some si, Some opi => (si1 =? si + opi)%Z
-        | _, _, _ => false
-        end)
-    else true in
-  let result_true_check :=
-    if res then
-      existsb_range (length operations) (fun i =>
-        match nth_Z s (i + 1)%nat with
-        | Some v => (v <? 0)%Z
-        | None => false
-        end)
-    else true in
-  let result_false_check :=
-    if negb res then
-      forallb (fun x => (x >=? 0)%Z) s
-    else true in
-  len_check && first_check && range_check && result_true_check && result_false_check.
 (* !benchmark @end postcond_aux *)
 
-Definition below_zero_postcond (operations : (list Z)) (result : (list Z * bool)) (h_precond : below_zero_precond operations) : Prop :=
+Definition below_zero_postcond (operations : (list Z)) (result : (list Z * bool)) : bool :=
   (* !benchmark @start postcond *)
   let s := fst result in
   let res := snd result in
-  length s = (length operations + 1)%nat /\
-  nth_Z s 0%nat = Some 0 /\
-  (forall i, (i < length s - 1)%nat ->
-    exists si si1 opi,
-      nth_Z s i = Some si /\
-      nth_Z s (i + 1)%nat = Some si1 /\
-      nth_Z operations i = Some opi /\
-      si1 = (si + opi)%Z) /\
-  (res = true -> exists i, (i < length operations)%nat /\
-    exists v, nth_Z s (i + 1)%nat = Some v /\ (v < 0)%Z) /\
-  (res = false -> forall x, In x s -> (x >= 0)%Z)
+  let len_s := length s in
+  let len_ops := length operations in
+  (len_s =? len_ops + 1)%nat &&
+  option_Z_eqb (nth_Z_opt s 0) (Some 0) &&
+  forallb (fun i => option_Z_eqb (nth_Z_opt s (i + 1)%nat) (Some (nth_Z s i + nth (i)%nat operations 0))) (range len_ops) &&
+  implb res (existsb (fun i => (nth_Z s (i + 1)%nat <? 0)%Z) (range len_ops)) &&
+  implb (negb res) (forallb (fun x => (x >=? 0)%Z) s)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem below_zero_postcond_satisfied (operations : (list Z)) (h_precond : below_zero_precond operations) :
-    below_zero_postcond operations (below_zero operations h_precond) h_precond.
+Theorem below_zero_postcond_satisfied (operations : (list Z)) :
+    below_zero_precond operations = true ->
+    below_zero_postcond operations (below_zero operations) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

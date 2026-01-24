@@ -1,94 +1,94 @@
 (* !benchmark @start import type=task *)
-Require Import List.
-Import ListNotations.
 Require Import ZArith.
+Require Import List.
+Require Import Bool.
+Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.ZArith.Zdiv.
-Require Import Coq.Init.Nat.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition findMajorityElement_precond_dec (lst : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition findMajorityElement_precond (lst : (list Z)) : Prop :=
+Definition findMajorityElement_precond (lst : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Fixpoint countOccurrences (n : Z) (lst : list Z) : nat :=
   match lst with
-  | [] => 0%nat
+  | [] => O
   | x :: xs => if (x =? n)%Z then S (countOccurrences n xs) else countOccurrences n xs
   end.
 
-Fixpoint find_majority_aux (candidates : list Z) (lst : list Z) (n : nat) : option Z :=
+Fixpoint findMajorityHelper (candidates : list Z) (lst : list Z) (halfLen : nat) : option Z :=
   match candidates with
   | [] => None
   | x :: xs => 
-      let count := countOccurrences x lst in
-      if Nat.ltb (n / 2)%nat count then Some x
-      else find_majority_aux xs lst n
+    if (halfLen <? countOccurrences x lst)%nat 
+    then Some x 
+    else findMajorityHelper xs lst halfLen
   end.
 (* !benchmark @end code_aux *)
 
-Definition findMajorityElement (lst : (list Z)) (h_precond : findMajorityElement_precond lst) : Z :=
+Definition findMajorityElement (lst : (list Z)) : Z :=
   (* !benchmark @start code *)
   let n := length lst in
-  match find_majority_aux lst lst n with
+  let halfLen := Nat.div n 2 in
+  match findMajorityHelper lst lst halfLen with
   | Some x => x
-  | None => (-1)%Z
+  | None => -1
   end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition count_occurrences (x : Z) (lst : list Z) : nat :=
-  length (filter (fun y => (y =? x)%Z) lst).
+Fixpoint countZ (x : Z) (lst : list Z) : nat :=
+  match lst with
+  | [] => O
+  | y :: ys => if (y =? x)%Z then S (countZ x ys) else countZ x ys
+  end.
 
-Definition findMajorityElement_postcond_dec (lst : list Z) (result : Z) : bool :=
-  let count := fun x => count_occurrences x lst in
+Definition majorityCheck (result : Z) (lst : list Z) : bool :=
   let n := length lst in
-  let majority := (andb (Nat.ltb (n / 2)%nat (count result))
-                   (forallb (fun x => (orb (Nat.leb (count x) (n / 2)%nat) (x =? result)%Z)) lst)) in
-  let all_minority := forallb (fun x => Nat.leb (count x) (n / 2)%nat) lst in
-  if (result =? (-1))%Z then
-    (orb all_minority majority)
-  else
-    majority.
+  let halfLen := Nat.div n 2 in
+  andb (halfLen <? countZ result lst)%nat 
+       (forallb (fun x => orb (countZ x lst <=? halfLen)%nat (x =? result)%Z) lst).
+
+Definition noMajorityExists (lst : list Z) : bool :=
+  let n := length lst in
+  let halfLen := Nat.div n 2 in
+  forallb (fun x => (countZ x lst <=? halfLen)%nat) lst.
 (* !benchmark @end postcond_aux *)
 
-Definition findMajorityElement_postcond (lst : (list Z)) (result : Z) (h_precond : findMajorityElement_precond lst) : Prop :=
+Definition findMajorityElement_postcond (lst : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let count := fun x => count_occurrences x lst in
-  let n := length lst in
-  let majority := (count result > (n / 2))%nat /\ Forall (fun x => (count x <= (n / 2))%nat \/ x = result) lst in
-  (result = (-1)%Z -> Forall (fun x => (count x <= (n / 2))%nat) lst \/ majority) /\
-  (result <> (-1)%Z -> majority)
+  let count := fun x => countZ x lst in
+    let n := length lst in
+    let halfLen := Nat.div n 2 in
+    andb (implb (result =? -1)%Z (orb (noMajorityExists lst) (majorityCheck result lst)))
+         (implb (negb (result =? -1)%Z) (majorityCheck result lst))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem findMajorityElement_postcond_satisfied (lst : (list Z)) (h_precond : findMajorityElement_precond lst) :
-    findMajorityElement_postcond lst (findMajorityElement lst h_precond) h_precond.
+Theorem findMajorityElement_postcond_satisfied (lst : (list Z)) :
+    findMajorityElement_precond lst = true ->
+    findMajorityElement_postcond lst (findMajorityElement lst) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

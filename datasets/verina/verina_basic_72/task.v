@@ -1,89 +1,75 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition append_precond_dec (a : list Z) (b : Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition append_precond (a : (list Z)) (b : Z) : Prop :=
+Definition append_precond (a : (list Z)) (b : Z) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint copy_helper (a : list Z) (n : nat) : list Z :=
-  match n with
-  | O => []
-  | S n' =>
-      match a with
-      | [] => []
-      | x :: xs => x :: copy_helper xs n'
-      end
+Fixpoint copy (a : list Z) (i : nat) (acc : list Z) : list Z :=
+  match a with
+  | [] => acc
+  | h :: t => 
+    if (i <? length a)%nat then
+      copy t (i + 1)%nat (acc ++ [nth i a 0%Z])
+    else
+      acc
   end.
-
-Definition copy (a : list Z) : list Z :=
-  copy_helper a (length a).
 (* !benchmark @end code_aux *)
 
-Definition append (a : (list Z)) (b : Z) (h_precond : append_precond a b) : (list Z) :=
+Definition append (a : (list Z)) (b : Z) : (list Z) :=
   (* !benchmark @start code *)
-  let c_initial := copy a in
+  let c_initial := a in
   let c_full := c_initial ++ [b] in
   c_full
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint all_indices_match (result : list Z) (a : list Z) (size : nat) : bool :=
-  match size with
-  | O => true
-  | S n =>
-      match nth_error result n, nth_error a n with
-      | Some r, Some av => if (r =? av)%Z then all_indices_match result a n else false
-      | _, _ => false
-      end
+Fixpoint range_nat (start : nat) (len : nat) : list nat :=
+  match len with
+  | O => []
+  | S len' => start :: range_nat (S start) len'
   end.
 
-Definition append_postcond_dec (a : list Z) (b : Z) (result : list Z) : bool :=
-  match nth_error result (length a) with
-  | Some elem =>
-      (all_indices_match result a (length a)) &&
-      (elem =? b)%Z &&
-      (Nat.eqb (length result) (length a + 1%nat))
-  | None => false
-  end.
+Definition nth_Z (l : list Z) (i : nat) (default : Z) : Z :=
+  nth i l default.
 (* !benchmark @end postcond_aux *)
 
-Definition append_postcond (a : (list Z)) (b : Z) (result : (list Z)) (h_precond : append_precond a b) : Prop :=
+Definition append_postcond (a : (list Z)) (b : Z) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  (forall i : nat, (i < length a)%nat -> 
-  exists r av, nth_error result i = Some r /\ nth_error a i = Some av /\ r = av) /\
-nth_error result (length a) = Some b /\
-(length result = length a + 1%nat)%nat
+  forallb (fun i => (nth_Z result i 0%Z =? nth_Z a i 0%Z)%Z) (range_nat 0 (length a)) &&
+  (nth_Z result (length a) 0%Z =? b)%Z &&
+  (length result =? (length a + 1)%nat)%nat
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem append_postcond_satisfied (a : (list Z)) (b : Z) (h_precond : append_precond a b) :
-    append_postcond a b (append a b h_precond) h_precond.
+Theorem append_postcond_satisfied (a : (list Z)) (b : Z) :
+    append_precond a b = true ->
+    append_postcond a b (append a b) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

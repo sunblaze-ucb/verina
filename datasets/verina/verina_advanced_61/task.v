@@ -1,128 +1,136 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Require Import List.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition productExceptSelf_precond_dec (nums : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition productExceptSelf_precond (nums : (list Z)) : Prop :=
+Definition productExceptSelf_precond (nums : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Helper: Compute prefix products. *)
-(* prefix[i] is the product of all elements in nums before index i. *)
-Fixpoint computepref_aux (nums : list Z) (acc : list Z) (last : Z) : list Z :=
-  match nums with
-  | [] => acc
-  | x :: xs => computepref_aux xs (acc ++ [last * x]) (last * x)
+Definition getLast (l : list Z) (default : Z) : Z :=
+  match l with
+  | [] => default
+  | _ => last l default
   end.
 
-Definition computepref (nums : list Z) : list Z :=
-  computepref_aux nums [1] 1.
-
-(* Helper: Compute suffix products. *)
-(* suffix[i] is the product of all elements in nums from index i (inclusive) to the end. *)
-Fixpoint computeSuffix_aux (nums : list Z) (acc : list Z) (last : Z) : list Z :=
+Fixpoint computePref (nums : list Z) (acc : list Z) : list Z :=
   match nums with
   | [] => acc
-  | x :: xs => computeSuffix_aux xs (acc ++ [last * x]) (last * x)
+  | x :: xs => computePref xs (acc ++ [getLast acc 1 * x])
   end.
 
-Definition computeSuffix (nums : list Z) : list Z :=
-  let revSuffix := computeSuffix_aux (rev nums) [1] 1 in
-  rev revSuffix.
+Definition computePrefixProducts (nums : list Z) : list Z :=
+  computePref nums [1].
 
-(* Helper to get nth element with default 0 *)
-Definition get_nth (l : list Z) (n : nat) : Z :=
-  nth n l 0.
+Fixpoint computeSuff (nums : list Z) (acc : list Z) : list Z :=
+  match nums with
+  | [] => acc
+  | x :: xs => computeSuff xs (acc ++ [getLast acc 1 * x])
+  end.
 
-(* Helper to generate range [0..n-1] *)
-Fixpoint range_helper (n : nat) (acc : list nat) : list nat :=
+Definition computeSuffixProducts (nums : list Z) : list Z :=
+  rev (computeSuff (rev nums) [1]).
+
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | x :: _, O => x
+  | _ :: xs, S n' => nth_Z xs n'
+  end.
+
+Fixpoint range (n : nat) : list nat :=
   match n with
-  | O => acc
-  | S n' => range_helper n' (n' :: acc)
+  | O => []
+  | S n' => range n' ++ [n']
   end.
-
-Definition range (n : nat) : list nat :=
-  range_helper n [].
 (* !benchmark @end code_aux *)
 
-Definition productExceptSelf (nums : (list Z)) (h_precond : productExceptSelf_precond nums) : (list Z) :=
+Definition productExceptSelf (nums : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
   let n := length nums in
-  if (n =? 0)%nat then []
-  else
-    let pref := computepref nums in
-    let suffix := computeSuffix nums in
-    map (fun i => (get_nth pref i) * (get_nth suffix (S i))) (range n)
+  match n with
+  | O => []
+  | _ =>
+    let pref := computePrefixProducts nums in
+    let suffix := computeSuffixProducts nums in
+    map (fun i => nth_Z pref i * nth_Z suffix (S i)) (range n)
+  end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Specification Helper: Product of a list of Ints *)
-Fixpoint list_myprod (l : list Z) : Z :=
+Fixpoint list_prod (l : list Z) : Z :=
   match l with
   | [] => 1
-  | x :: xs => x * (list_myprod xs)
+  | x :: xs => x * list_prod xs
   end.
 
-(* Helper to check if all elements in a list of bools are true *)
-Fixpoint all_true (l : list bool) : bool :=
-  match l with
-  | [] => true
-  | b :: bs => andb b (all_true bs)
+Fixpoint take (n : nat) (l : list Z) : list Z :=
+  match n, l with
+  | O, _ => []
+  | _, [] => []
+  | S n', x :: xs => x :: take n' xs
   end.
 
-(* Helper to get nth element as option *)
-Definition get_nth_opt (l : list Z) (n : nat) : option Z :=
-  nth_error l n.
+Fixpoint drop (n : nat) (l : list Z) : list Z :=
+  match n, l with
+  | O, l => l
+  | _, [] => []
+  | S n', _ :: xs => drop n' xs
+  end.
 
-Definition productExceptSelf_postcond_dec (nums : list Z) (result : list Z) : bool :=
-  (length nums =? length result)%nat &&
-  all_true (map (fun i =>
-    match get_nth_opt result i with
-    | Some r => (r =? (list_myprod (firstn i nums)) * (list_myprod (skipn (S i) nums)))%Z
-    | None => false
-    end) (range (length nums))).
+Fixpoint nth_Z_opt (l : list Z) (n : nat) : option Z :=
+  match l, n with
+  | [], _ => None
+  | x :: _, O => Some x
+  | _ :: xs, S n' => nth_Z_opt xs n'
+  end.
+
+Fixpoint range_nat (n : nat) : list nat :=
+  match n with
+  | O => []
+  | S n' => range_nat n' ++ [n']
+  end.
+
+Definition check_index (nums result : list Z) (i : nat) : bool :=
+  match nth_Z_opt result i with
+  | None => false
+  | Some r => (r =? (list_prod (take i nums) * list_prod (drop (S i) nums)))%Z
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition productExceptSelf_postcond (nums : (list Z)) (result : (list Z)) (h_precond : productExceptSelf_precond nums) : Prop :=
+Definition productExceptSelf_postcond (nums : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  (length nums = length result)%nat /\
-  (forall i : nat, (i < length nums)%nat ->
-    exists r : Z, nth_error result i = Some r /\
-    r = (list_myprod (firstn i nums)) * (list_myprod (skipn (S i) nums)))
+  (length nums =? length result)%nat &&
+  forallb (fun i => check_index nums result i) (range_nat (length nums))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem productExceptSelf_postcond_satisfied (nums : (list Z)) (h_precond : productExceptSelf_precond nums) :
-    productExceptSelf_postcond nums (productExceptSelf nums h_precond) h_precond.
+Theorem productExceptSelf_postcond_satisfied (nums : (list Z)) :
+    productExceptSelf_precond nums = true ->
+    productExceptSelf_postcond nums (productExceptSelf nums) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

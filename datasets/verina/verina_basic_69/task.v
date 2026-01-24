@@ -1,76 +1,78 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import List.
-Import ListNotations.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-Require Import Recdef.
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition LinearSearch_precond_dec (a : list Z) (e : Z) : bool :=
-  existsb (fun x => Z.eqb x e) a.
+Fixpoint existsb_with_index_aux (a : list Z) (e : Z) (i : nat) : bool :=
+  match a with
+  | [] => false
+  | h :: t => if (h =? e)%Z then true else existsb_with_index_aux t e (S i)
+  end.
 (* !benchmark @end precond_aux *)
 
-Definition LinearSearch_precond (a : (list Z)) (e : Z) : Prop :=
+Definition LinearSearch_precond (a : (list Z)) (e : Z) : bool :=
   (* !benchmark @start precond *)
-  exists i, (i < length a)%nat /\ nth i a 0%Z = e
+  existsb_with_index_aux a e O
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Require Import Recdef.
-
-Function linearSearchAux (a : list Z) (e : Z) (n : nat) {measure (fun n => length a - n)%nat n} : nat :=
-  match (n <? length a)%nat with
-  | true =>
-      match nth_error a n with
-      | Some x => if Z.eqb x e then n else linearSearchAux a e (n + 1)%nat
-      | None => 0%nat
-      end
-  | false => 0%nat
+Fixpoint linearSearchAux (a : list Z) (e : Z) (n : nat) (fuel : nat) : nat :=
+  match fuel with
+  | O => O
+  | S fuel' =>
+    match nth_error a n with
+    | Some v => if (v =? e)%Z then n else linearSearchAux a e (S n) fuel'
+    | None => O
+    end
   end.
-Proof.
-  intros. apply Nat.ltb_lt in teq. lia.
-Defined.
 (* !benchmark @end code_aux *)
 
-Definition LinearSearch (a : (list Z)) (e : Z) (h_precond : LinearSearch_precond a e) : nat :=
+Definition LinearSearch (a : (list Z)) (e : Z) : nat :=
   (* !benchmark @start code *)
-  linearSearchAux a e 0%nat
+  linearSearchAux a e O (length a)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition LinearSearch_postcond_dec (a : list Z) (e : Z) (result : nat) : bool :=
-  ((result <? length a)%nat) &&
-  (Z.eqb (nth result a 0%Z) e) &&
-  (forallb (fun k => negb (Z.eqb (nth k a 0%Z) e)) (seq 0 result)).
+Definition nth_Z (l : list Z) (n : nat) : Z :=
+  match nth_error l n with
+  | Some v => v
+  | None => 0%Z
+  end.
+
+Fixpoint all_before_neq (a : list Z) (e : Z) (k : nat) : bool :=
+  match k with
+  | O => true
+  | S k' => if (nth_Z a k' =? e)%Z then false else all_before_neq a e k'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition LinearSearch_postcond (a : (list Z)) (e : Z) (result : nat) (h_precond : LinearSearch_precond a e) : Prop :=
+Definition LinearSearch_postcond (a : (list Z)) (e : Z) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  (result < length a)%nat /\ 
-nth result a 0%Z = e /\ 
-(forall k : nat, (k < result)%nat -> nth k a 0%Z <> e)
+  (result <? length a)%nat && (nth_Z a result =? e)%Z && all_before_neq a e result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem LinearSearch_postcond_satisfied (a : (list Z)) (e : Z) (h_precond : LinearSearch_precond a e) :
-    LinearSearch_postcond a e (LinearSearch a e h_precond) h_precond.
+Theorem LinearSearch_postcond_satisfied (a : (list Z)) (e : Z) :
+    LinearSearch_precond a e = true ->
+    LinearSearch_postcond a e (LinearSearch a e) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

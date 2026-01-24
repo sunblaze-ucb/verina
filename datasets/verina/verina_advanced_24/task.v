@@ -1,51 +1,45 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution-level auxiliary definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition lengthOfLIS_precond_dec (nums : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition lengthOfLIS_precond (nums : (list Z)) : Prop :=
+Definition lengthOfLIS_precond (nums : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint replace (l : list Z) (acc : list Z) (x : Z) : list Z :=
+Fixpoint replace_in_dp (l : list Z) (acc : list Z) (x : Z) : list Z :=
   match l with
   | [] => rev acc ++ [x]
-  | y :: ys => if (x <=? y)%Z then rev acc ++ (x :: ys) else replace ys (y :: acc) x
+  | y :: ys => if (x <=? y)%Z then rev acc ++ (x :: ys) else replace_in_dp ys (y :: acc) x
   end.
 
 Definition lisHelper (dp : list Z) (x : Z) : list Z :=
-  replace dp [] x.
+  replace_in_dp dp [] x.
 (* !benchmark @end code_aux *)
 
-Definition lengthOfLIS (nums : (list Z)) (h_precond : lengthOfLIS_precond nums) : Z :=
+Definition lengthOfLIS (nums : (list Z)) : Z :=
   (* !benchmark @start code *)
-  let finalDP := fold_left lisHelper nums [] in
-  Z.of_nat (length finalDP)
+  Z.of_nat (length (fold_left lisHelper nums []))
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
@@ -53,49 +47,40 @@ Fixpoint isStrictlyIncreasing (l : list Z) : bool :=
   match l with
   | [] => true
   | [_] => true
-  | x :: ((y :: _) as tl) => (x <? y)%Z && isStrictlyIncreasing tl
+  | x :: ((y :: rest) as tail) => (x <? y)%Z && isStrictlyIncreasing tail
   end.
 
 Fixpoint subsequences (xs : list Z) : list (list Z) :=
   match xs with
   | [] => [[]]
   | x :: xs' =>
-      let rest := subsequences xs' in
-      rest ++ map (fun r => x :: r) rest
+    let rest := subsequences xs' in
+    rest ++ map (fun r => x :: r) rest
   end.
 
-Definition lengthOfLIS_postcond_dec (nums : list Z) (result : Z) : bool :=
-  let allIncreasing := filter (fun l => isStrictlyIncreasing l) (subsequences nums) in
-  existsb (fun l => (Z.of_nat (length l) =? result)%Z) allIncreasing &&
-  forallb (fun l => (Z.of_nat (length l) <=? result)%Z) allIncreasing.
+Definition allIncreasingSubseqs (nums : list Z) : list (list Z) :=
+  filter (fun l => isStrictlyIncreasing l) (subsequences nums).
+
+Definition anyHasLength (subs : list (list Z)) (n : Z) : bool :=
+  existsb (fun l => (Z.of_nat (length l) =? n)%Z) subs.
+
+Definition allHaveLengthLE (subs : list (list Z)) (n : Z) : bool :=
+  forallb (fun l => (Z.of_nat (length l) <=? n)%Z) subs.
 (* !benchmark @end postcond_aux *)
 
-Definition lengthOfLIS_postcond (nums : (list Z)) (result : Z) (h_precond : lengthOfLIS_precond nums) : Prop :=
+Definition lengthOfLIS_postcond (nums : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let isStrictlyIncreasing := fix isStrictlyIncreasing (l : list Z) : bool :=
-    match l with
-    | [] => true
-    | [_] => true
-    | x :: ((y :: _) as tl) => (x <? y)%Z && isStrictlyIncreasing tl
-    end in
-  let subsequences := fix subsequences (xs : list Z) : list (list Z) :=
-    match xs with
-    | [] => [[]]
-    | x :: xs' =>
-        let rest := subsequences xs' in
-        rest ++ map (fun r => x :: r) rest
-    end in
-  let allIncreasing := filter (fun l => isStrictlyIncreasing l) (subsequences nums) in
-  (exists l, In l allIncreasing /\ Z.of_nat (length l) = result) /\
-  (forall l, In l allIncreasing -> (Z.of_nat (length l) <= result)%Z)
+  let allIncreasing := allIncreasingSubseqs nums in
+  anyHasLength allIncreasing result && allHaveLengthLE allIncreasing result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem lengthOfLIS_postcond_satisfied (nums : (list Z)) (h_precond : lengthOfLIS_precond nums) :
-    lengthOfLIS_postcond nums (lengthOfLIS nums h_precond) h_precond.
+Theorem lengthOfLIS_postcond_satisfied (nums : (list Z)) :
+    lengthOfLIS_precond nums = true ->
+    lengthOfLIS_postcond nums (lengthOfLIS nums) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

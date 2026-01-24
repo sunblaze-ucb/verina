@@ -1,36 +1,35 @@
 (* !benchmark @start import type=task *)
 Require Import List.
+Require Import Nat.
+Require Import Bool.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import List.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition maxProfit_precond_dec (prices : list nat) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition maxProfit_precond (prices : (list nat)) : Prop :=
+Definition maxProfit_precond (prices : (list nat)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Definition updateMinAndProfit (price : nat) (minSoFar : nat) (maxProfit : nat) : (nat * nat) :=
   let newMin := Nat.min minSoFar price in
-  let profit := if Nat.ltb minSoFar price then price - minSoFar else 0%nat in
+  let profit := if (minSoFar <? price)%nat then price - minSoFar else 0%nat in
   let newMaxProfit := Nat.max maxProfit profit in
   (newMin, newMaxProfit).
 
@@ -43,7 +42,7 @@ Fixpoint maxProfitAux (prices : list nat) (minSoFar : nat) (maxProfit : nat) : n
   end.
 (* !benchmark @end code_aux *)
 
-Definition maxProfit (prices : (list nat)) (h_precond : maxProfit_precond prices) : nat :=
+Definition maxProfit (prices : (list nat)) : nat :=
   (* !benchmark @start code *)
   match prices with
   | [] => 0%nat
@@ -52,51 +51,57 @@ Definition maxProfit (prices : (list nat)) (h_precond : maxProfit_precond prices
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint zipIdx_aux {A : Type} (l : list A) (idx : nat) : list (A * nat) :=
-  match l with
-  | [] => []
-  | x :: xs => (x, idx) :: zipIdx_aux xs (S idx)
-  end.
-
 Definition zipIdx {A : Type} (l : list A) : list (A * nat) :=
-  zipIdx_aux l 0%nat.
+  let fix aux (l : list A) (idx : nat) : list (A * nat) :=
+    match l with
+    | [] => []
+    | x :: xs => (x, idx) :: aux xs (S idx)
+    end
+  in aux l 0%nat.
 
-Fixpoint list_all {A : Type} (f : A -> bool) (l : list A) : bool :=
-  match l with
-  | [] => true
-  | x :: xs => f x && list_all f xs
-  end.
+Definition pairwise_profit_le (pairs : list (nat * nat)) (res : nat) : bool :=
+  forallb (fun pi_i =>
+    let '(pi, i) := pi_i in
+    forallb (fun pj_j =>
+      let '(pj, j) := pj_j in
+      implb (i <? j)%nat ((pj - pi) <=? res)%nat
+    ) pairs
+  ) pairs.
 
-Fixpoint list_any {A : Type} (f : A -> bool) (l : list A) : bool :=
-  match l with
-  | [] => false
-  | x :: xs => f x || list_any f xs
-  end.
+Definition no_profitable_transaction (pairs : list (nat * nat)) : bool :=
+  forallb (fun pi_i =>
+    let '(pi, i) := pi_i in
+    forallb (fun pj_j =>
+      let '(pj, j) := pj_j in
+      orb (j <=? i)%nat (pj <=? pi)%nat
+    ) pairs
+  ) pairs.
 
-Definition maxProfit_postcond_dec (prices : list nat) (result : nat) : bool :=
-  true.
+Definition exists_transaction_with_profit (pairs : list (nat * nat)) (res : nat) : bool :=
+  existsb (fun pi_i =>
+    let '(pi, i) := pi_i in
+    existsb (fun pj_j =>
+      let '(pj, j) := pj_j in
+      andb (i <? j)%nat ((pj - pi) =? res)%nat
+    ) pairs
+  ) pairs.
 (* !benchmark @end postcond_aux *)
 
-Definition maxProfit_postcond (prices : (list nat)) (result : nat) (h_precond : maxProfit_precond prices) : Prop :=
+Definition maxProfit_postcond (prices : (list nat)) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  let indexed := zipIdx prices in
-  (* All valid transactions have profit ≤ result *)
-  (forall pi i pj j, In (pi, i) indexed -> In (pj, j) indexed -> (i < j)%nat -> (pj - pi <= result)%nat) /\
-  (* result = 0 when no profitable transaction exists *)
-  ((result = 0%nat) <->
-    ((length prices <= 1)%nat \/
-     (forall pi i, In (pi, i) indexed ->
-       forall pj j, In (pj, j) indexed -> (i >= j)%nat \/ (pj <= pi)%nat))) /\
-  (* If result > 0, there exists a transaction achieving it *)
-  ((result > 0)%nat -> exists pi i pj j, In (pi, i) indexed /\ In (pj, j) indexed /\ (i < j)%nat /\ pj - pi = result)
+  let pairs := zipIdx prices in
+    andb (andb (pairwise_profit_le pairs result)
+               (implb (result =? 0)%nat (orb ((length prices <=? 1)%nat) (no_profitable_transaction pairs))))
+         (implb (1 <=? result)%nat (exists_transaction_with_profit pairs result))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem maxProfit_postcond_satisfied (prices : (list nat)) (h_precond : maxProfit_precond prices) :
-    maxProfit_postcond prices (maxProfit prices h_precond) h_precond.
+Theorem maxProfit_postcond_satisfied (prices : (list nat)) :
+    maxProfit_precond prices = true ->
+    maxProfit_postcond prices (maxProfit prices) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

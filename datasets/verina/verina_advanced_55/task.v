@@ -1,148 +1,122 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Require Import List.
 Require Import Bool.
-Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No additional solution-level helpers *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition mostFrequent_precond_dec (xs : list Z) : bool :=
-  match xs with
-  | [] => false
-  | _ => true
-  end.
+
 (* !benchmark @end precond_aux *)
 
-Definition mostFrequent_precond (xs : (list Z)) : Prop :=
+Definition mostFrequent_precond (xs : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  xs <> []
+  negb (match xs with [] => true | _ => false end)
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Helper to count occurrences of x in xs *)
-Fixpoint count (xs : list Z) (x : Z) : nat :=
-  match xs with
-  | [] => 0%nat
-  | (h :: t) => if (h =? x)%Z then S (count t x) else count t x
+(* Count occurrences of x in list *)
+Fixpoint countZ (x : Z) (l : list Z) : nat :=
+  match l with
+  | [] => O
+  | h :: t => if (h =? x)%Z then S (countZ x t) else countZ x t
   end.
 
-(* Get frequency for each element in the list *)
-Fixpoint getFrequencies (xs : list Z) : list (Z * nat) :=
-  match xs with
-  | [] => []
-  | (h :: t) => (h, count xs h) :: getFrequencies t
+(* Find the maximum count among all elements *)
+Fixpoint maxCountAux (l : list Z) (original : list Z) (currentMax : nat) : nat :=
+  match l with
+  | [] => currentMax
+  | h :: t => 
+    let c := countZ h original in
+    if (currentMax <? c)%nat then maxCountAux t original c
+    else maxCountAux t original currentMax
   end.
 
-(* Get maximum frequency from frequency list *)
-Fixpoint maxFreq (freqs : list (Z * nat)) : nat :=
-  match freqs with
-  | [] => 0%nat
-  | ((_, f) :: t) => Nat.max f (maxFreq t)
-  end.
+Definition maxCount (l : list Z) : nat := maxCountAux l l O.
 
-(* Find first element with given frequency *)
-Fixpoint findFirstWithFreq (xs : list Z) (freqs : list (Z * nat)) (target : nat) : Z :=
-  match xs with
-  | [] => 0
-  | (h :: t) => 
-      match freqs with
-      | [] => 0
-      | ((x, f) :: ft) =>
-          if (h =? x)%Z then
-            if Nat.eqb f target then h
-            else findFirstWithFreq t ft target
-          else findFirstWithFreq xs ft target
-      end
-  end.
-
-(* Simplified version: find first element in xs with maximum frequency *)
-Fixpoint findMostFrequent (xs original : list Z) (maxF : nat) : Z :=
-  match xs with
-  | [] => 0
-  | (h :: t) => if Nat.eqb (count original h) maxF then h else findMostFrequent t original maxF
+(* Find first element with the maximum count *)
+Fixpoint firstWithMaxCount (l : list Z) (original : list Z) (maxC : nat) : Z :=
+  match l with
+  | [] => 0%Z
+  | h :: t => 
+    if (countZ h original =? maxC)%nat then h
+    else firstWithMaxCount t original maxC
   end.
 (* !benchmark @end code_aux *)
 
-Definition mostFrequent (xs : (list Z)) (h_precond : mostFrequent_precond xs) : Z :=
+Definition mostFrequent (xs : (list Z)) : Z :=
   (* !benchmark @start code *)
-  let freqs := getFrequencies xs in
-let maxF := maxFreq freqs in
-findMostFrequent xs xs maxF
+  let maxC := maxCount xs in
+  firstWithMaxCount xs xs maxC
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Helper to check if x is in list *)
-Fixpoint inList (x : Z) (xs : list Z) : bool :=
-  match xs with
+(* Count occurrences of x in list - for postcond *)
+Fixpoint countZ_post (x : Z) (l : list Z) : nat :=
+  match l with
+  | [] => O
+  | h :: t => if (h =? x)%Z then S (countZ_post x t) else countZ_post x t
+  end.
+
+(* Check if result is in list *)
+Fixpoint inListZ (x : Z) (l : list Z) : bool :=
+  match l with
   | [] => false
-  | (h :: t) => if (h =? x)%Z then true else inList x t
+  | h :: t => if (h =? x)%Z then true else inListZ x t
   end.
 
-(* Helper to check if all elements satisfy property *)
-Fixpoint allSatisfy (xs : list Z) (original : list Z) (maxCount : nat) : bool :=
-  match xs with
+(* Check all elements have count <= result's count *)
+Fixpoint allCountsLe (l : list Z) (original : list Z) (maxC : nat) : bool :=
+  match l with
   | [] => true
-  | (h :: t) => (count original h <=? maxCount)%nat && allSatisfy t original maxCount
+  | h :: t => (countZ_post h original <=? maxC)%nat && allCountsLe t original maxC
   end.
 
-(* Helper to filter elements with target count *)
-Fixpoint filterByCount (xs original : list Z) (target : nat) : list Z :=
-  match xs with
+(* Filter elements with specific count *)
+Fixpoint filterByCount (l : list Z) (original : list Z) (c : nat) : list Z :=
+  match l with
   | [] => []
-  | (h :: t) => if Nat.eqb (count original h) target 
-                then h :: filterByCount t original target
-                else filterByCount t original target
+  | h :: t => 
+    if (countZ_post h original =? c)%nat then h :: filterByCount t original c
+    else filterByCount t original c
   end.
 
-(* Helper to get head of filtered list *)
-Definition headOption (xs : list Z) : option Z :=
-  match xs with
-  | [] => None
-  | (h :: _) => Some h
-  end.
-
-Definition mostFrequent_postcond_dec (xs : list Z) (result : Z) : bool :=
-  let resultCount := count xs result in
-  inList result xs &&
-  allSatisfy xs xs resultCount &&
-  match headOption (filterByCount xs xs resultCount) with
-  | Some x => (x =? result)%Z
-  | None => false
+(* Get head of list with default *)
+Definition headZ (l : list Z) (default : Z) : Z :=
+  match l with
+  | [] => default
+  | h :: _ => h
   end.
 (* !benchmark @end postcond_aux *)
 
-Definition mostFrequent_postcond (xs : (list Z)) (result : Z) (h_precond : mostFrequent_precond xs) : Prop :=
+Definition mostFrequent_postcond (xs : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let countFn := fun x => count xs x in
-In result xs /\
-Forall (fun x => (countFn x <= countFn result)%nat) xs /\
-match headOption (filterByCount xs xs (countFn result)) with
-| Some x => x = result
-| None => False
-end
+  let count := fun x => countZ_post x xs in
+  let resultCount := count result in
+  inListZ result xs &&
+  allCountsLe xs xs resultCount &&
+  (headZ (filterByCount xs xs resultCount) 0 =? result)%Z
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem mostFrequent_postcond_satisfied (xs : (list Z)) (h_precond : mostFrequent_precond xs) :
-    mostFrequent_postcond xs (mostFrequent xs h_precond) h_precond.
+Theorem mostFrequent_postcond_satisfied (xs : (list Z)) :
+    mostFrequent_precond xs = true ->
+    mostFrequent_postcond xs (mostFrequent xs) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

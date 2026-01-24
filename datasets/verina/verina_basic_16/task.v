@@ -1,93 +1,93 @@
 (* !benchmark @start import type=task *)
-Require Import Ascii.
 Require Import String.
+Require Import Ascii.
+Require Import List.
+Import ListNotations.
+Require Import Nat.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Ascii.
-Require Import String.
-Require Import List.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition replaceChars_precond_dec (s : string) (oldChar : ascii) (newChar : ascii) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition replaceChars_precond (s : string) (oldChar : ascii) (newChar : ascii) : Prop :=
+Definition replaceChars_precond (s : string) (oldChar : ascii) (newChar : ascii) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint map_chars (cs : list ascii) (oldChar : ascii) (newChar : ascii) : list ascii :=
+Fixpoint replaceChars_list (cs : list ascii) (oldChar : ascii) (newChar : ascii) : list ascii :=
   match cs with
   | [] => []
-  | c :: tl => (if ascii_dec c oldChar then newChar else c) :: map_chars tl oldChar newChar
+  | c :: rest =>
+    let c' := if Ascii.eqb c oldChar then newChar else c in
+    c' :: replaceChars_list rest oldChar newChar
   end.
 
-Fixpoint string_to_list (s : string) : list ascii :=
-  match s with
-  | EmptyString => []
-  | String c s' => c :: string_to_list s'
-  end.
+Definition list_ascii_of_string (s : string) : list ascii :=
+  list_ascii_of_string s.
 
-Fixpoint list_to_string (cs : list ascii) : string :=
-  match cs with
-  | [] => EmptyString
-  | c :: cs' => String c (list_to_string cs')
-  end.
+Definition string_of_list_ascii (l : list ascii) : string :=
+  string_of_list_ascii l.
 (* !benchmark @end code_aux *)
 
-Definition replaceChars (s : string) (oldChar : ascii) (newChar : ascii) (h_precond : replaceChars_precond s oldChar newChar) : string :=
+Definition replaceChars (s : string) (oldChar : ascii) (newChar : ascii) : string :=
   (* !benchmark @start code *)
-  let cs := string_to_list s in
-  let cs' := map_chars cs oldChar newChar in
-  list_to_string cs'
+  let cs := list_ascii_of_string s in
+  let cs' := replaceChars_list cs oldChar newChar in
+  string_of_list_ascii cs'
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint nth_ascii (cs : list ascii) (n : nat) : option ascii :=
-  match cs with
-  | [] => None
-  | c :: tl => match n with
-               | O => Some c
-               | S n' => nth_ascii tl n'
-               end
+Definition ascii_eqb (a b : ascii) : bool := Ascii.eqb a b.
+
+Fixpoint nth_ascii (n : nat) (l : list ascii) (default : ascii) : ascii :=
+  match l with
+  | [] => default
+  | x :: xs => if (n =? O)%nat then x else nth_ascii (n - 1)%nat xs default
   end.
 
-Definition replaceChars_postcond_dec (s : string) (oldChar : ascii) (newChar : ascii) (result : string) : bool :=
-  let cs := string_to_list s in
-  let cs' := string_to_list result in
-  Nat.eqb (length cs') (length cs).
+Definition default_ascii : ascii := "000"%char.
+
+Fixpoint check_all_indices (cs cs' : list ascii) (oldChar newChar : ascii) (i : nat) (len : nat) : bool :=
+  match len with
+  | O => true
+  | S len' =>
+    let ci := nth_ascii i cs default_ascii in
+    let ci' := nth_ascii i cs' default_ascii in
+    let check_old := implb (ascii_eqb ci oldChar) (ascii_eqb ci' newChar) in
+    let check_other := implb (negb (ascii_eqb ci oldChar)) (ascii_eqb ci' ci) in
+    check_old && check_other && check_all_indices cs cs' oldChar newChar (S i) len'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition replaceChars_postcond (s : string) (oldChar : ascii) (newChar : ascii) (result : string) (h_precond : replaceChars_precond s oldChar newChar) : Prop :=
+Definition replaceChars_postcond (s : string) (oldChar : ascii) (newChar : ascii) (result : string) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
-  let cs' := string_to_list result in
-  (length cs' = length cs)%nat /\
-  (forall i, (i < length cs)%nat ->
-    (nth_ascii cs i = Some oldChar -> nth_ascii cs' i = Some newChar) /\
-    (nth_ascii cs i <> Some oldChar -> nth_ascii cs' i = nth_ascii cs i))
+  let cs := list_ascii_of_string s in
+  let cs' := list_ascii_of_string result in
+  (length cs' =? length cs)%nat && check_all_indices cs cs' oldChar newChar O (length cs)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem replaceChars_postcond_satisfied (s : string) (oldChar : ascii) (newChar : ascii) (h_precond : replaceChars_precond s oldChar newChar) :
-    replaceChars_postcond s oldChar newChar (replaceChars s oldChar newChar h_precond) h_precond.
+Theorem replaceChars_postcond_satisfied (s : string) (oldChar : ascii) (newChar : ascii) :
+    replaceChars_precond s oldChar newChar = true ->
+    replaceChars_postcond s oldChar newChar (replaceChars s oldChar newChar) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

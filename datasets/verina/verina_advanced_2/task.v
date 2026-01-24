@@ -1,172 +1,147 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Require Import Lia.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper to compute maximum of two integers *)
-Definition intMax (x y : Z) : Z :=
-  if (x <? y)%Z then y else x.
 
-(* Helper to get element at index with default *)
-Fixpoint nth_default {A : Type} (l : list A) (n : nat) (default : A) : A :=
-  match n, l with
-  | O, x :: _ => x
-  | S m, _ :: t => nth_default t m default
-  | _, [] => default
-  end.
-
-(* Helper to set element at index *)
-Fixpoint set_nth {A : Type} (l : list A) (n : nat) (v : A) : list A :=
-  match n, l with
-  | O, _ :: t => v :: t
-  | S m, h :: t => h :: set_nth t m v
-  | _, [] => []
-  end.
-
-(* Initialize a list with given length and value *)
-Fixpoint repeat_list {A : Type} (n : nat) (v : A) : list A :=
-  match n with
-  | O => []
-  | S m => v :: repeat_list m v
-  end.
-
-(* Nested loop computation for DP table *)
-Fixpoint compute_dp_inner (a b : list Z) (dp : list (list Z)) (i j : nat) (n : nat) : list (list Z) :=
-  match n with
-  | O => dp
-  | S n' =>
-      let dp' :=
-        if (Nat.eqb i 0%nat) || (Nat.eqb j 0%nat) then dp
-        else if (nth_default a (i - 1) 0 =? nth_default b (j - 1) 0)%Z then
-          let oldRow := nth_default dp i [] in
-          let newVal := (nth_default (nth_default dp (i - 1) []) (j - 1) 0 + 1)%Z in
-          let newRow := set_nth oldRow j newVal in
-          set_nth dp i newRow
-        else
-          let oldRow := nth_default dp i [] in
-          let newVal := intMax (nth_default (nth_default dp (i - 1) []) j 0)
-                                (nth_default oldRow (j - 1) 0) in
-          let newRow := set_nth oldRow j newVal in
-          set_nth dp i newRow
-      in
-      compute_dp_inner a b dp' i (j + 1) n'
-  end.
-
-Fixpoint compute_dp_outer (a b : list Z) (dp : list (list Z)) (i m n : nat) (fuel : nat) : list (list Z) :=
-  match fuel with
-  | O => dp
-  | S fuel' =>
-      let dp' := compute_dp_inner a b dp i 0%nat (n + 1) in
-      compute_dp_outer a b dp' (i + 1) m n fuel'
-  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition LongestCommonSubsequence_precond_dec (a : list Z) (b : list Z) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition LongestCommonSubsequence_precond (a : (list Z)) (b : (list Z)) : Prop :=
+Definition LongestCommonSubsequence_precond (a : (list Z)) (b : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* All subsequences of a list *)
-Fixpoint allSubseq_aux {A : Type} (l : list A) (fuel : nat) : list (list A) :=
-  match fuel with
-  | O => [[]]
-  | S fuel' =>
-      match l with
-      | [] => [[]]
-      | x :: xs =>
-          let rest := allSubseq_aux xs fuel' in
-          rest ++ (map (fun sub => x :: sub) rest)
-      end
+Definition intMax (x y : Z) : Z :=
+  if x <? y then y else x.
+
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z t n'
   end.
 
-Definition allSubseq {A : Type} (l : list A) : list (list A) :=
-  allSubseq_aux l (length l).
+Fixpoint update_list {A : Type} (l : list A) (idx : nat) (v : A) : list A :=
+  match l, idx with
+  | [], _ => []
+  | _ :: t, O => v :: t
+  | h :: t, S n' => h :: update_list t n' v
+  end.
+
+Definition get_dp (dp : list (list Z)) (i j : nat) : Z :=
+  nth_Z (nth i dp []) j.
+
+Definition set_dp (dp : list (list Z)) (i j : nat) (v : Z) : list (list Z) :=
+  let row := nth i dp [] in
+  let new_row := update_list row j v in
+  update_list dp i new_row.
+
+Fixpoint inner_loop (a b : list Z) (dp : list (list Z)) (i j : nat) (n : nat) : list (list Z) :=
+  match n with
+  | O => dp
+  | S n' =>
+    if (j =? 0)%nat then
+      inner_loop a b dp i (j + 1)%nat n'
+    else if (i =? 0)%nat then
+      inner_loop a b dp i (j + 1)%nat n'
+    else
+      let ai := nth_Z a (i - 1)%nat in
+      let bj := nth_Z b (j - 1)%nat in
+      let new_dp :=
+        if ai =? bj then
+          let newVal := (get_dp dp (i - 1)%nat (j - 1)%nat) + 1 in
+          set_dp dp i j newVal
+        else
+          let newVal := intMax (get_dp dp (i - 1)%nat j) (get_dp dp i (j - 1)%nat) in
+          set_dp dp i j newVal
+      in
+      inner_loop a b new_dp i (j + 1)%nat n'
+  end.
+
+Fixpoint outer_loop (a b : list Z) (dp : list (list Z)) (i : nat) (m n : nat) : list (list Z) :=
+  match m with
+  | O => dp
+  | S m' =>
+    let dp' := inner_loop a b dp i 0%nat (n + 1)%nat in
+    outer_loop a b dp' (i + 1)%nat m' n
+  end.
+
+Definition make_dp (m n : nat) : list (list Z) :=
+  let row := repeat 0 (n + 1)%nat in
+  repeat row (m + 1)%nat.
 (* !benchmark @end code_aux *)
 
-Definition LongestCommonSubsequence (a : (list Z)) (b : (list Z)) (h_precond : LongestCommonSubsequence_precond a b) : Z :=
+Definition LongestCommonSubsequence (a : (list Z)) (b : (list Z)) : Z :=
   (* !benchmark @start code *)
   let m := length a in
   let n := length b in
-  let init_row := repeat_list (n + 1) 0%Z in
-  let init_dp := repeat_list (m + 1) init_row in
-  let dp := compute_dp_outer a b init_dp 0%nat m n (m + 1) in
-  nth_default (nth_default dp m []) n 0%Z
+  let dp := make_dp m n in
+  let dp' := outer_loop a b dp 0%nat (m + 1)%nat n in
+  get_dp dp' m n
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Helper to check if list contains element (for Z lists) *)
-Fixpoint contains_Z (l : list Z) (x : Z) : bool :=
+Fixpoint all_subseq_aux (l : list Z) : list (list Z) :=
   match l with
-  | [] => false
-  | h :: t => if (h =? x)%Z then true else contains_Z t x
+  | [] => [[]]
+  | x :: xs =>
+    let subs := all_subseq_aux xs in
+    subs ++ map (fun sub => x :: sub) subs
   end.
 
-(* Helper to check if two lists are equal *)
-Fixpoint list_eqb {A : Type} (eq_dec : A -> A -> bool) (l1 l2 : list A) : bool :=
+Definition all_subseq (l : list Z) : list (list Z) :=
+  all_subseq_aux l.
+
+Fixpoint list_Z_eqb (l1 l2 : list Z) : bool :=
   match l1, l2 with
   | [], [] => true
-  | x :: xs, y :: ys => if eq_dec x y then list_eqb eq_dec xs ys else false
+  | h1 :: t1, h2 :: t2 => (h1 =? h2) && list_Z_eqb t1 t2
   | _, _ => false
   end.
 
-(* Helper to check if list contains sublist (generic) *)
-Fixpoint contains_list {A : Type} (eq_dec : A -> A -> bool) (ll : list (list A)) (l : list A) : bool :=
-  match ll with
-  | [] => false
-  | h :: t => if list_eqb eq_dec h l then true else contains_list eq_dec t l
-  end.
+Definition list_contains (ls : list (list Z)) (l : list Z) : bool :=
+  existsb (fun x => list_Z_eqb x l) ls.
 
-(* Helper to check if all elements in list satisfy predicate *)
-Fixpoint all_Z (f : Z -> bool) (l : list Z) : bool :=
-  match l with
-  | [] => true
-  | h :: t => if f h then all_Z f t else false
-  end.
+Definition common_subseq_lens (a b : list Z) : list nat :=
+  let subseqA := all_subseq a in
+  let subseqB := all_subseq b in
+  let common := filter (fun l => list_contains subseqB l) subseqA in
+  map (fun l => length l) common.
 
-Definition LongestCommonSubsequence_postcond_dec (a b : list Z) (result : Z) : bool :=
-  let subseqA := allSubseq a in
-  let subseqB := allSubseq b in
-  let commonSubseq := filter (fun l => contains_list Z.eqb subseqB l) subseqA in
-  let commonSubseqLens := map (fun l => Z.of_nat (length l)) commonSubseq in
-  (contains_Z commonSubseqLens result) && (all_Z (fun x => (x <=? result)%Z) commonSubseqLens).
+Definition nat_list_contains (l : list nat) (n : nat) : bool :=
+  existsb (fun x => (x =? n)%nat) l.
 (* !benchmark @end postcond_aux *)
 
-Definition LongestCommonSubsequence_postcond (a : (list Z)) (b : (list Z)) (result : Z) (h_precond : LongestCommonSubsequence_precond a b) : Prop :=
+Definition LongestCommonSubsequence_postcond (a : (list Z)) (b : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let subseqA := allSubseq a in
-  let subseqB := allSubseq b in
-  let commonSubseq := filter (fun l => contains_list Z.eqb subseqB l) subseqA in
-  let commonSubseqLens := map (fun l => Z.of_nat (length l)) commonSubseq in
-  In result commonSubseqLens /\ Forall (fun x => (x <= result)%Z) commonSubseqLens
+  let lens := common_subseq_lens a b in
+  let result_nat := Z.to_nat result in
+  nat_list_contains lens result_nat && forallb (fun x => (x <=? result_nat)%nat) lens
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem LongestCommonSubsequence_postcond_satisfied (a : (list Z)) (b : (list Z)) (h_precond : LongestCommonSubsequence_precond a b) :
-    LongestCommonSubsequence_postcond a b (LongestCommonSubsequence a b h_precond) h_precond.
+Theorem LongestCommonSubsequence_postcond_satisfied (a : (list Z)) (b : (list Z)) :
+    LongestCommonSubsequence_precond a b = true ->
+    LongestCommonSubsequence_postcond a b (LongestCommonSubsequence a b) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

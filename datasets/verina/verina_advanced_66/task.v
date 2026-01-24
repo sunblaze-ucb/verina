@@ -1,96 +1,110 @@
 (* !benchmark @start import type=task *)
 Require Import String.
+Require Import List.
+Require Import Ascii.
+Require Import Bool.
+Import ListNotations.
+Open Scope string_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import String.
-Require Import List.
-Require Import Ascii.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper to split string on spaces *)
-Fixpoint split_on_space (s : string) : list string :=
+Fixpoint string_eqb (s1 s2 : string) : bool :=
+  match s1, s2 with
+  | EmptyString, EmptyString => true
+  | String c1 t1, String c2 t2 => (Ascii.eqb c1 c2) && string_eqb t1 t2
+  | _, _ => false
+  end.
+
+Fixpoint splitOnSpace_aux (s : string) (acc : string) : list string :=
   match s with
-  | EmptyString => [EmptyString]
+  | EmptyString => [acc]
   | String c rest =>
-    if (c =? " ")%char then
-      EmptyString :: split_on_space rest
+    if Ascii.eqb c " "%char then
+      acc :: splitOnSpace_aux rest EmptyString
     else
-      match split_on_space rest with
-      | [] => [String c EmptyString]
-      | hd :: tl => String c hd :: tl
-      end
+      splitOnSpace_aux rest (acc ++ String c EmptyString)
   end.
 
-(* Helper to filter non-empty strings *)
-Fixpoint filter_non_empty (words : list string) : list string :=
-  match words with
-  | [] => []
-  | h :: t =>
-    if (h =? "")%string then
-      filter_non_empty t
-    else
-      h :: filter_non_empty t
-  end.
-
-(* Helper to join strings with spaces *)
-Fixpoint join_with_space (words : list string) : string :=
-  match words with
-  | [] => EmptyString
-  | [w] => w
-  | h :: t => (h ++ " " ++ join_with_space t)%string
-  end.
+Definition splitOnSpace (s : string) : list string :=
+  splitOnSpace_aux s EmptyString.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition reverseWords_precond_dec (words_str : string) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition reverseWords_precond (words_str : string) : Prop :=
+Definition reverseWords_precond (words_str : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No additional code auxiliaries needed *)
+Fixpoint filterNonEmpty (words : list string) : list string :=
+  match words with
+  | [] => []
+  | h :: t =>
+    if string_eqb h EmptyString then
+      filterNonEmpty t
+    else
+      h :: filterNonEmpty t
+  end.
+
+Fixpoint joinWithSpace (words : list string) : string :=
+  match words with
+  | [] => EmptyString
+  | [w] => w
+  | h :: t => h ++ " " ++ joinWithSpace t
+  end.
 (* !benchmark @end code_aux *)
 
-Definition reverseWords (words_str : string) (h_precond : reverseWords_precond words_str) : string :=
+Definition reverseWords (words_str : string) : string :=
   (* !benchmark @start code *)
-  let rawWords := split_on_space words_str in
-let filteredWords := filter_non_empty rawWords in
-let revWords := rev filteredWords in
-let result := join_with_space revWords in
-result
+  let rawWords := splitOnSpace words_str in
+  let filteredWords := filterNonEmpty rawWords in
+  let revWords := rev filteredWords in
+  joinWithSpace revWords
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* For decidable version, we'd need decidable equality on strings and lists *)
-Definition reverseWords_postcond_dec (words_str : string) (result : string) : bool :=
-  (* This is a placeholder - actual implementation would need proper string/list equality *)
-  true.
+Fixpoint list_string_eqb (l1 l2 : list string) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1::t1, h2::t2 => string_eqb h1 h2 && list_string_eqb t1 t2
+  | _, _ => false
+  end.
+
+Definition filterWords (words : list string) : list string :=
+  filter (fun w => negb (string_eqb w EmptyString)) words.
+
+Fixpoint intercalate_space (words : list string) : string :=
+  match words with
+  | [] => EmptyString
+  | [w] => w
+  | h :: t => h ++ " " ++ intercalate_space t
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition reverseWords_postcond (words_str : string) (result : string) (h_precond : reverseWords_precond words_str) : Prop :=
+Definition reverseWords_postcond (words_str : string) (result : string) : bool :=
   (* !benchmark @start postcond *)
-  exists words : list string,
-  words = filter_non_empty (split_on_space words_str) /\
-  result = join_with_space (rev words)
+  let words := filterWords (splitOnSpace words_str) in
+  string_eqb result (intercalate_space (rev words))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem reverseWords_postcond_satisfied (words_str : string) (h_precond : reverseWords_precond words_str) :
-    reverseWords_postcond words_str (reverseWords words_str h_precond) h_precond.
+Theorem reverseWords_postcond_satisfied (words_str : string) :
+    reverseWords_precond words_str = true ->
+    reverseWords_postcond words_str (reverseWords words_str) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

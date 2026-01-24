@@ -179,6 +179,14 @@ async def metric_generated_code_unit_tests(
 
     scores: Dict[int, LeanTestScore] = {}
 
+    # For Coq with Compute-based tests, we need to check the output even if compilation succeeds
+    # because Compute (eq result expected) returns true/false without failing compilation
+    if itp_type == ITPType.COQ:
+        return _parse_coq_code_test_results(
+            compile_msg, template_engine.CODE_TEST_MSG_MARKER, len(test_cases), can_compile
+        )
+
+    # For Lean, compilation failure means test failure (native_decide fails on wrong result)
     if can_compile:
         for idx in range(len(test_cases)):
             scores[idx] = LeanTestScore.PASS
@@ -208,6 +216,75 @@ async def metric_generated_code_unit_tests(
             scores[idx] = LeanTestScore.UNKNOWN
         else:
             scores[idx] = LeanTestScore.PASS
+
+    return scores
+
+
+def _parse_coq_code_test_results(
+    compile_msg: str,
+    marker_base: str,
+    num_tests: int,
+    can_compile: bool,
+) -> Dict[int, LeanTestScore]:
+    """Parse Coq Compute output for code unit tests.
+
+    The output format is:
+        _m_code_test_0 = tt
+             : unit
+             = true
+             : bool
+        _m_code_test_1 = tt
+             : unit
+             = false
+             : bool
+
+    We look for each marker and check if the following Compute result is "= true".
+    """
+    scores: Dict[int, LeanTestScore] = {}
+
+    # If compilation failed entirely, all tests fail
+    # Note: Only check COMPERROR when can_compile is False - don't check "Error:"
+    # in compile_msg because successful compilation can have "Error" in paths or
+    # other non-error contexts
+    if not can_compile or "COMPERROR" in compile_msg:
+        for idx in range(num_tests):
+            scores[idx] = LeanTestScore.FAIL
+        return scores
+
+    # Split by marker pattern "_m_code_test_N = tt"
+    import re
+    marker_pattern = rf"_m_{marker_base}_(\d+)\s*=\s*tt"
+
+    # Find all markers and their positions
+    markers = list(re.finditer(marker_pattern, compile_msg))
+
+    for i, match in enumerate(markers):
+        test_idx = int(match.group(1))
+        start_pos = match.end()
+
+        # Find the end position (next marker or end of string)
+        if i + 1 < len(markers):
+            end_pos = markers[i + 1].start()
+        else:
+            end_pos = len(compile_msg)
+
+        # Extract the section after this marker
+        section = compile_msg[start_pos:end_pos]
+
+        # Check if this section contains "= true" (the Compute result)
+        # The pattern should be "= true" followed by ": bool"
+        if re.search(r"=\s*true\s*:\s*bool", section):
+            scores[test_idx] = LeanTestScore.PASS
+        elif re.search(r"=\s*false\s*:\s*bool", section):
+            scores[test_idx] = LeanTestScore.FAIL
+        else:
+            # Unexpected output - mark as unknown
+            scores[test_idx] = LeanTestScore.UNKNOWN
+
+    # Any tests without markers are failures (didn't reach that test)
+    for idx in range(num_tests):
+        if idx not in scores:
+            scores[idx] = LeanTestScore.FAIL
 
     return scores
 
@@ -382,55 +459,61 @@ def _parse_coq_decidable_markers(
     section_msg: str,
     marker_base: str,
     evaluate_type: Literal["precond", "postcond"],
-    inverse: bool = False,
+    is_complete: bool = False,
 ) -> Dict[int | Tuple[int, int], str]:
-    """Parse Coq Print-based decidable test markers.
+    """Parse Coq Print-based decidable test markers for Compute output.
 
-    The Print output looks like:
-        _m_precond_test_decidable_0 = tt
+    With bool-based specs, the Compute output looks like:
+        _m_precond_test_decidable_0 = tt       (sound test)
              : unit
-        Goal...Qed. (or Error:...)
-        _m_precond_test_decidable_0_inv = tt
+        = true
+             : bool
+        _m_precond_test_decidable_0_c = tt     (complete test, with _c suffix)
              : unit
-        Goal ~(...)...
-        _m_precond_test_decidable_1 = tt
-             : unit
-        Goal...
+        = false
+             : bool
 
     For postcond sound tests (tuple index):
         _m_postcond_test_decidable_0_1 = tt
              : unit
-        _m_postcond_test_decidable_0_1_inv = tt
+        = false
+             : bool
+
+    For postcond complete tests:
+        _m_postcond_test_decidable_0_c = tt
              : unit
+        = true
+             : bool
+
+    The result of Compute is "= true : bool" or "= false : bool".
 
     Args:
         section_msg: The output section to parse (sound or complete)
         marker_base: The base marker name (e.g., "precond_test_decidable")
         evaluate_type: "precond" or "postcond"
-        inverse: If True, parse only _inv markers; if False, parse only non-_inv markers
+        is_complete: If True, parse complete test markers (with _c suffix)
     """
     import re
 
     result: Dict[int | Tuple[int, int], str] = {}
 
-    # Pattern to match Print marker output: _m_{marker_base}_{idx}[_inv] = tt
-    # For postcond sound tests, idx can be "0_1" format (test_idx_unexpected_idx)
-    # Capture group 1: the index (e.g., "0" or "0_1")
-    # Capture group 2: optional "_inv" suffix
     safe_marker = marker_base.replace("-", "_")
-    pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?)((?:_inv)?)\s*="
+
+    if is_complete:
+        # Complete tests have _c suffix: _m_{marker_base}_{idx}_c
+        # For postcond complete: _m_postcond_test_decidable_0_c
+        pattern = rf"_m_{safe_marker}_(\d+)_c\s*="
+    else:
+        # Sound tests: _m_{marker_base}_{idx} or _m_{marker_base}_{idx}_{idx2}
+        # For postcond sound: _m_postcond_test_decidable_0_1 (tuple index)
+        # Make sure we don't match _c suffix
+        pattern = rf"_m_{safe_marker}_(\d+(?:_\d+)?)(?!_c)\s*="
 
     # Find all marker positions
     matches = list(re.finditer(pattern, section_msg))
 
     for i, match in enumerate(matches):
         idx_str = match.group(1)
-        inv_suffix = match.group(2)
-        is_inverse_marker = inv_suffix == "_inv"
-
-        # Skip markers that don't match our inverse flag
-        if is_inverse_marker != inverse:
-            continue
 
         start_pos = match.end()
         # End position is either the next marker or end of string
@@ -439,8 +522,8 @@ def _parse_coq_decidable_markers(
         msg_content = section_msg[start_pos:end_pos]
 
         # Parse the index
-        if "_" in idx_str:
-            # Tuple index (e.g., "0_1" -> (0, 1))
+        if "_" in idx_str and not is_complete:
+            # Tuple index (e.g., "0_1" -> (0, 1)) - only for sound tests
             parts = idx_str.split("_")
             idx = (int(parts[0]), int(parts[1]))
         else:
@@ -450,6 +533,27 @@ def _parse_coq_decidable_markers(
         result[idx] = msg_content
 
     return result
+
+
+def _parse_coq_compute_result(msg: str) -> str:
+    """Parse Coq Compute output to determine if result is true or false.
+
+    Compute output looks like:
+        = true
+             : bool
+    or:
+        = false
+             : bool
+
+    Returns: "true", "false", or "unknown"
+    """
+    # Look for "= true" or "= false" in the output
+    if "= true" in msg:
+        return "true"
+    elif "= false" in msg:
+        return "false"
+    else:
+        return "unknown"
 
 
 def update_spec_decidable_scores(
@@ -497,69 +601,75 @@ def update_spec_decidable_scores(
     else:
         marker = template_engine.POSTCOND_TEST_DECIDABLE_MSG_MARKER
 
-    # Use different parsing logic for Coq (Print-based markers) vs Lean (XML-like markers)
+    # Use different parsing logic for Coq (Compute-based) vs Lean (XML-like markers)
     if itp_type == ITPType.COQ:
-        # Parse Coq Print-based markers - both primary and inverse for bidirectional testing
+        # Parse Coq Compute-based markers - check for "= true" or "= false"
+        # Sound tests don't have _c suffix, complete tests have _c suffix
         sound_decidable_msg_map = _parse_coq_decidable_markers(
-            sound_decidable_msg, marker, evaluate_type, inverse=False
-        )
-        sound_decidable_inv_msg_map = _parse_coq_decidable_markers(
-            sound_decidable_msg, marker, evaluate_type, inverse=True
+            sound_decidable_msg, marker, evaluate_type, is_complete=False
         )
         complete_decidable_msg_map = _parse_coq_decidable_markers(
-            complete_decidable_msg, marker, evaluate_type, inverse=False
-        )
-        complete_decidable_inv_msg_map = _parse_coq_decidable_markers(
-            complete_decidable_msg, marker, evaluate_type, inverse=True
+            complete_decidable_msg, marker, evaluate_type, is_complete=True
         )
 
-        print(f"[DEBUG] Parsing Coq decidable markers for {evaluate_type}")
-        print(f"[DEBUG] Sound primary results: {list(sound_decidable_msg_map.keys())}")
-        print(f"[DEBUG] Sound inverse results: {list(sound_decidable_inv_msg_map.keys())}")
-        print(f"[DEBUG] Complete primary results: {list(complete_decidable_msg_map.keys())}")
-        print(f"[DEBUG] Complete inverse results: {list(complete_decidable_inv_msg_map.keys())}")
+        print(f"[DEBUG] Parsing Coq Compute markers for {evaluate_type}")
+        print(f"[DEBUG] Sound results: {list(sound_decidable_msg_map.keys())}")
+        print(f"[DEBUG] Complete results: {list(complete_decidable_msg_map.keys())}")
 
-        # Bidirectional scoring for sound tests using SOLVED/UNSOLVED markers
-        # Note: Check UNSOLVED first since "UNSOLVED" contains "SOLVED" as substring
+        # For precond sound tests: expect "= true" for valid inputs
+        # For postcond sound tests: expect "= false" for unexpected outputs
         for idx, msg in sound_decidable_msg_map.items():
             if idx not in score.sound_tests:
                 continue
-            # Check for UNSOLVED first (since UNSOLVED contains SOLVED as substring)
-            primary_solved = template_engine.UNSOLVED_MARKER not in msg and template_engine.SOLVED_MARKER in msg
-            inv_msg = sound_decidable_inv_msg_map.get(idx, "")
-            inverse_solved = template_engine.UNSOLVED_MARKER not in inv_msg and template_engine.SOLVED_MARKER in inv_msg
 
-            if primary_solved:
-                decide_score = LeanTestScore.PASS
-            elif inverse_solved:
-                # Primary failed but inverse succeeded -> spec is wrong
-                decide_score = LeanTestScore.FAIL
+            compute_result = _parse_coq_compute_result(msg)
+
+            if evaluate_type == "precond":
+                # Precond sound: valid input should make precond = true
+                if compute_result == "true":
+                    decide_score = LeanTestScore.PASS
+                elif compute_result == "false":
+                    decide_score = LeanTestScore.FAIL
+                else:
+                    decide_score = LeanTestScore.UNKNOWN
             else:
-                # Both failed -> unknown
-                decide_score = LeanTestScore.UNKNOWN
+                # Postcond sound: unexpected output should make postcond = false
+                if compute_result == "false":
+                    decide_score = LeanTestScore.PASS
+                elif compute_result == "true":
+                    decide_score = LeanTestScore.FAIL
+                else:
+                    decide_score = LeanTestScore.UNKNOWN
 
-            print(f"[DEBUG] Sound test {idx}: primary_solved={primary_solved}, inverse_solved={inverse_solved} -> {decide_score}")
+            print(f"[DEBUG] Sound test {idx}: compute_result={compute_result} -> {decide_score}")
             score.sound_tests[idx].score_detail.decide = decide_score
 
-        # Bidirectional scoring for complete tests using SOLVED/UNSOLVED markers
+        # For precond complete tests: expect "= false" for rejected inputs
+        # For postcond complete tests: expect "= true" for expected outputs
         for idx, msg in complete_decidable_msg_map.items():
             if idx not in score.complete_tests:
                 continue
-            # Check for UNSOLVED first (since UNSOLVED contains SOLVED as substring)
-            primary_solved = template_engine.UNSOLVED_MARKER not in msg and template_engine.SOLVED_MARKER in msg
-            inv_msg = complete_decidable_inv_msg_map.get(idx, "")
-            inverse_solved = template_engine.UNSOLVED_MARKER not in inv_msg and template_engine.SOLVED_MARKER in inv_msg
 
-            if primary_solved:
-                decide_score = LeanTestScore.PASS
-            elif inverse_solved:
-                # Primary failed but inverse succeeded -> spec is wrong
-                decide_score = LeanTestScore.FAIL
+            compute_result = _parse_coq_compute_result(msg)
+
+            if evaluate_type == "precond":
+                # Precond complete: rejected input should make precond = false
+                if compute_result == "false":
+                    decide_score = LeanTestScore.PASS
+                elif compute_result == "true":
+                    decide_score = LeanTestScore.FAIL
+                else:
+                    decide_score = LeanTestScore.UNKNOWN
             else:
-                # Both failed -> unknown
-                decide_score = LeanTestScore.UNKNOWN
+                # Postcond complete: expected output should make postcond = true
+                if compute_result == "true":
+                    decide_score = LeanTestScore.PASS
+                elif compute_result == "false":
+                    decide_score = LeanTestScore.FAIL
+                else:
+                    decide_score = LeanTestScore.UNKNOWN
 
-            print(f"[DEBUG] Complete test {idx}: primary_solved={primary_solved}, inverse_solved={inverse_solved} -> {decide_score}")
+            print(f"[DEBUG] Complete test {idx}: compute_result={compute_result} -> {decide_score}")
             score.complete_tests[idx].score_detail.decide = decide_score
 
     else:

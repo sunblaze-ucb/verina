@@ -1,55 +1,60 @@
 (* !benchmark @start import type=task *)
 Require Import Bool.
 Require Import String.
-(* !benchmark @end import *)
-
-(* !benchmark @start import type=solution *)
 Require Import Ascii.
-Require Import String.
 Require Import List.
-Require Import Bool.
 Import ListNotations.
 (* !benchmark @end import *)
 
+(* !benchmark @start import type=solution *)
+Require Import Nat.
+(* !benchmark @end import *)
+
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution auxiliary definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition isPalindrome_precond_dec (s : string) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition isPalindrome_precond (s : string) : Prop :=
+Definition isPalindrome_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint list_get {A : Type} (l : list A) (n : nat) : option A :=
-  match l, n with
-  | [], _ => None
-  | h :: _, 0 => Some h
-  | _ :: t, S n' => list_get t n'
+Fixpoint list_ascii_eqb (l1 l2 : list ascii) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1::t1, h2::t2 => (Ascii.eqb h1 h2) && list_ascii_eqb t1 t2
+  | _, _ => false
   end.
 
-Fixpoint checkIndices_fuel (fuel left right : nat) (chars : list ascii) : bool :=
+Fixpoint nth_ascii (n : nat) (l : list ascii) : option ascii :=
+  match l with
+  | [] => None
+  | h :: t => match n with
+              | O => Some h
+              | S n' => nth_ascii n' t
+              end
+  end.
+
+Fixpoint checkIndices (left right : nat) (chars : list ascii) (fuel : nat) : bool :=
   match fuel with
-  | 0 => true
+  | O => true
   | S fuel' =>
-    if Nat.leb right left then
-      true
+    if (right <=? left)%nat then true
     else
-      match list_get chars left, list_get chars right with
+      match nth_ascii left chars, nth_ascii right chars with
       | Some cLeft, Some cRight =>
         if Ascii.eqb cLeft cRight then
-          checkIndices_fuel fuel' (left + 1) (right - 1) chars
-        else
-          false
+          checkIndices (left + 1)%nat (right - 1)%nat chars fuel'
+        else false
       | _, _ => false
       end
   end.
@@ -60,49 +65,59 @@ Fixpoint reverseList (acc : list ascii) (xs : list ascii) : list ascii :=
   | h :: t => reverseList (h :: acc) t
   end.
 
-Fixpoint list_eqb_ascii (l1 l2 : list ascii) : bool :=
-  match l1, l2 with
-  | [], [] => true
-  | h1 :: t1, h2 :: t2 => Ascii.eqb h1 h2 && list_eqb_ascii t1 t2
-  | _, _ => false
-  end.
+Definition list_ascii_of_string (s : string) : list ascii :=
+  let fix aux s :=
+    match s with
+    | EmptyString => []
+    | String c rest => c :: aux rest
+    end
+  in aux s.
 (* !benchmark @end code_aux *)
 
-Definition isPalindrome (s : string) (h_precond : isPalindrome_precond s) : bool :=
+Definition isPalindrome (s : string) : bool :=
   (* !benchmark @start code *)
   let arr := list_ascii_of_string s in
-  let length := length arr in
-  if Nat.leb length 1%nat then
-    true
+  let len := length arr in
+  if (len <=? 1)%nat then true
   else
-    let approach1 := checkIndices_fuel length 0 (length - 1) arr in
+    let approach1 := checkIndices 0%nat (len - 1)%nat arr len in
     let reversed := reverseList [] arr in
-    let approach2 := list_eqb_ascii arr reversed in
+    let approach2 := list_ascii_eqb arr reversed in
     approach1 && approach2
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition isPalindrome_postcond_dec (s : string) (result : bool) : bool :=
-  let arr := list_ascii_of_string s in
-  let rev_arr := rev arr in
-  if result then
-    list_eqb_ascii arr rev_arr
-  else
-    negb (list_eqb_ascii arr rev_arr) && negb (Nat.eqb (length arr) 0).
+Fixpoint list_ascii_eqb_post (l1 l2 : list ascii) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1::t1, h2::t2 => (Ascii.eqb h1 h2) && list_ascii_eqb_post t1 t2
+  | _, _ => false
+  end.
+
+Definition list_ascii_of_string_post (s : string) : list ascii :=
+  let fix aux s :=
+    match s with
+    | EmptyString => []
+    | String c rest => c :: aux rest
+    end
+  in aux s.
 (* !benchmark @end postcond_aux *)
 
-Definition isPalindrome_postcond (s : string) (result : bool) (h_precond : isPalindrome_precond s) : Prop :=
+Definition isPalindrome_postcond (s : string) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  (result = true -> list_ascii_of_string s = rev (list_ascii_of_string s)) /\
-  (result = false -> (list_ascii_of_string s <> [] /\ list_ascii_of_string s <> rev (list_ascii_of_string s)))
+  let chars := list_ascii_of_string_post s in
+  let revChars := rev chars in
+  implb result (list_ascii_eqb_post chars revChars) &&
+  implb (negb result) (negb (match chars with [] => true | _ => false end) && negb (list_ascii_eqb_post chars revChars))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem isPalindrome_postcond_satisfied (s : string) (h_precond : isPalindrome_precond s) :
-    isPalindrome_postcond s (isPalindrome s h_precond) h_precond.
+Theorem isPalindrome_postcond_satisfied (s : string) :
+    isPalindrome_precond s = true ->
+    isPalindrome_postcond s (isPalindrome s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

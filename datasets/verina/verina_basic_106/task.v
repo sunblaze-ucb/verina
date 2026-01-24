@@ -1,86 +1,76 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No auxiliary type definitions needed *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No auxiliary solution definitions needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition arraySum_precond_dec (a : list Z) (b : list Z) : bool :=
-  Nat.eqb (length a) (length b).
+
 (* !benchmark @end precond_aux *)
 
-Definition arraySum_precond (a : (list Z)) (b : (list Z)) : Prop :=
+Definition arraySum_precond (a : (list Z)) (b : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  length a = length b
+  (length a =? length b)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint arraySum_loop (a : list Z) (b : list Z) (c : list Z) (i : nat) (n : nat) : list Z :=
-  match n with
-  | O => c
-  | S n' =>
-    if (i <? length a)%nat then
-      match nth_error a i, nth_error b i with
-      | Some ai, Some bi =>
-        let c' := firstn i c ++ [(ai + bi)%Z] ++ skipn (S i) c in
-        arraySum_loop a b c' (S i) n'
-      | _, _ => c
-      end
-    else c
+Fixpoint arraySum_loop (a b : list Z) : list Z :=
+  match a, b with
+  | [], [] => []
+  | ha :: ta, hb :: tb => (ha + hb) :: arraySum_loop ta tb
+  | _, _ => []
   end.
 (* !benchmark @end code_aux *)
 
-Definition arraySum (a : (list Z)) (b : (list Z)) (h_precond : arraySum_precond a b) : (list Z) :=
+Definition arraySum (a : (list Z)) (b : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let n := length a in
-let c := repeat 0%Z n in
-arraySum_loop a b c 0%nat n
+  arraySum_loop a b
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition arraySum_postcond_dec (a : list Z) (b : list Z) (result : list Z) : bool :=
-  Nat.eqb (length result) (length a) &&
-  (fix check (i : nat) :=
-    match i with
-    | O => true
-    | S i' =>
-      if (i' <? length a)%nat then
-        match nth_error a i', nth_error b i', nth_error result i' with
-        | Some ai, Some bi, Some ri =>
-          (ri =? (ai + bi)%Z)%Z && check i'
-        | _, _, _ => false
-        end
-      else check i'
-    end) (length a).
+Fixpoint nth_Z (l : list Z) (n : nat) (default : Z) : Z :=
+  match l, n with
+  | [], _ => default
+  | h :: t, O => h
+  | h :: t, S n' => nth_Z t n' default
+  end.
+
+Fixpoint check_all_indices (a b result : list Z) (i n : nat) : bool :=
+  match n with
+  | O => true
+  | S n' => 
+    let ai := nth_Z a i 0 in
+    let bi := nth_Z b i 0 in
+    let ri := nth_Z result i 0 in
+    ((ai + bi =? ri) && check_all_indices a b result (S i) n')%bool
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition arraySum_postcond (a : (list Z)) (b : (list Z)) (result : (list Z)) (h_precond : arraySum_precond a b) : Prop :=
+Definition arraySum_postcond (a : (list Z)) (b : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  (length result = length a) /\ (forall i : nat, (i < length a)%nat -> exists ai bi ri, nth_error a i = Some ai /\ nth_error b i = Some bi /\ nth_error result i = Some ri /\ ri = (ai + bi)%Z)
+  ((length result =? length a)%nat && check_all_indices a b result O (length a))%bool
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem arraySum_postcond_satisfied (a : (list Z)) (b : (list Z)) (h_precond : arraySum_precond a b) :
-    arraySum_postcond a b (arraySum a b h_precond) h_precond.
+Theorem arraySum_postcond_satisfied (a : (list Z)) (b : (list Z)) :
+    arraySum_precond a b = true ->
+    arraySum_postcond a b (arraySum a b) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -21,19 +21,9 @@
             "name": "dafny-synthesis",
             "link": "https://github.com/Mondego/dafny-synthesis",
             "task_id": "task_id_599"
-        }
+        },
+        "coq_disabled": "R (real) type has no decidable equality - Compute cannot reduce"
     },
     "test_file": "./test.json",
-    "reject_inputs_file": "./reject_inputs.json",
-    "coq_file": "./task.v",
-    "coq_signature": {
-        "name": "sumAndAverage",
-        "parameters": [
-            {
-                "param_name": "n",
-                "param_type": "nat"
-            }
-        ],
-        "return_type": "(Z  * R)"
-    }
+    "reject_inputs_file": "./reject_inputs.json"
 }

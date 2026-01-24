@@ -1,94 +1,82 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* empty *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* empty *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Fixpoint all_nonzero (b : list Z) : Prop :=
-  match b with
-  | [] => True
-  | hd :: tl => hd <> 0%Z /\ all_nonzero tl
-  end.
-
-Fixpoint all_nonzero_dec (b : list Z) : bool :=
-  match b with
+Fixpoint forallb_indexed {A : Type} (f : nat -> A -> bool) (l : list A) (i : nat) : bool :=
+  match l with
   | [] => true
-  | hd :: tl => (negb (Z.eqb hd 0%Z)) && all_nonzero_dec tl
+  | h :: t => f i h && forallb_indexed f t (S i)
   end.
-
-Definition elementWiseModulo_precond_dec (a : list Z) (b : list Z) : bool :=
-  (Nat.eqb (length a) (length b)) && (Nat.ltb 0 (length a)) && (all_nonzero_dec b).
 (* !benchmark @end precond_aux *)
 
-Definition elementWiseModulo_precond (a : (list Z)) (b : (list Z)) : Prop :=
+Definition elementWiseModulo_precond (a : (list Z)) (b : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  length a = length b /\ (length a > 0)%nat /\ all_nonzero b
+  (length a =? length b)%nat && (1 <=? length a)%nat &&
+    forallb_indexed (fun i x => negb (x =? 0)) b O
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint map2_with_index (f : nat -> Z -> Z -> Z) (n : nat) (a : list Z) (b : list Z) : list Z :=
+Fixpoint elementWiseModulo_aux (a : list Z) (b : list Z) : list Z :=
   match a, b with
-  | [], [] => []
-  | ha :: ta, hb :: tb => (f n ha hb) :: map2_with_index f (S n) ta tb
-  | _, _ => []
+  | [], _ => []
+  | _, [] => []
+  | ha :: ta, hb :: tb => (Z.rem ha hb) :: elementWiseModulo_aux ta tb
   end.
 (* !benchmark @end code_aux *)
 
-Definition elementWiseModulo (a : (list Z)) (b : (list Z)) (h_precond : elementWiseModulo_precond a b) : (list Z) :=
+Definition elementWiseModulo (a : (list Z)) (b : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  map2_with_index (fun i x y => Z.modulo x y) 0%nat a b
+  elementWiseModulo_aux a b
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint nth_Z (l : list Z) (n : nat) (default : Z) : Z :=
+Fixpoint nth_default_Z (l : list Z) (n : nat) (d : Z) : Z :=
   match l, n with
-  | [], _ => default
-  | hd :: _, 0%nat => hd
-  | _ :: tl, S n' => nth_Z tl n' default
+  | [], _ => d
+  | h :: _, O => h
+  | _ :: t, S n' => nth_default_Z t n' d
   end.
 
-Fixpoint forall_indices (P : nat -> Prop) (n : nat) : Prop :=
-  match n with
-  | 0%nat => True
-  | S n' => P n' /\ forall_indices P n'
+Fixpoint check_all_indices (result a b : list Z) (i : nat) (len : nat) : bool :=
+  match len with
+  | O => true
+  | S len' => 
+      let ri := nth_default_Z result i 0 in
+      let ai := nth_default_Z a i 0 in
+      let bi := nth_default_Z b i 0 in
+      (ri =? Z.rem ai bi) && check_all_indices result a b (S i) len'
   end.
-
-Fixpoint forall_indices_dec (P : nat -> bool) (n : nat) : bool :=
-  match n with
-  | 0%nat => true
-  | S n' => P n' && forall_indices_dec P n'
-  end.
-
-Definition elementWiseModulo_postcond_dec (a : list Z) (b : list Z) (result : list Z) : bool :=
-  (Nat.eqb (length result) (length a)) &&
-  (forall_indices_dec (fun i => Z.eqb (nth_Z result i 0%Z) (Z.modulo (nth_Z a i 0%Z) (nth_Z b i 0%Z))) (length result)).
 (* !benchmark @end postcond_aux *)
 
-Definition elementWiseModulo_postcond (a : (list Z)) (b : (list Z)) (result : (list Z)) (h_precond : elementWiseModulo_precond a b) : Prop :=
+Definition elementWiseModulo_postcond (a : (list Z)) (b : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  length result = length a /\ forall_indices (fun i => nth_Z result i 0%Z = Z.modulo (nth_Z a i 0%Z) (nth_Z b i 0%Z)) (length result)
+  (length result =? length a)%nat &&
+    check_all_indices result a b O (length result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem elementWiseModulo_postcond_satisfied (a : (list Z)) (b : (list Z)) (h_precond : elementWiseModulo_precond a b) :
-    elementWiseModulo_postcond a b (elementWiseModulo a b h_precond) h_precond.
+Theorem elementWiseModulo_postcond_satisfied (a : (list Z)) (b : (list Z)) :
+    elementWiseModulo_precond a b = true ->
+    elementWiseModulo_postcond a b (elementWiseModulo a b) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

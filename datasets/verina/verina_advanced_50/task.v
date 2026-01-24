@@ -1,112 +1,101 @@
 (* !benchmark @start import type=task *)
+Require Import Bool.
+Require Import Nat.
 Require Import List.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import List.
-Require Import Nat.
-Require Import Bool.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper function to check if a list is sorted *)
-Fixpoint is_sorted (l : list nat) : bool :=
-  match l with
-  | [] => true
-  | [_] => true
-  | x :: (y :: rest) as tail => (x <=? y) && is_sorted tail
-  end.
 
-(* Helper function to check if two lists are permutations *)
-Fixpoint count_occ (n : nat) (l : list nat) : nat :=
-  match l with
-  | [] => 0%nat
-  | x :: xs => if Nat.eqb x n then S (count_occ n xs) else count_occ n xs
-  end.
-
-Fixpoint all_elems (l : list nat) : list nat :=
-  match l with
-  | [] => []
-  | x :: xs => x :: all_elems xs
-  end.
-
-Fixpoint is_perm_helper (l1 l2 : list nat) (elems : list nat) : bool :=
-  match elems with
-  | [] => true
-  | x :: xs => Nat.eqb (count_occ x l1) (count_occ x l2) && is_perm_helper l1 l2 xs
-  end.
-
-Definition is_perm (l1 l2 : list nat) : bool :=
-  (length l1 =? length l2) && is_perm_helper l1 l2 (l1 ++ l2).
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* Sorted predicate in Prop *)
-Inductive Sorted : list nat -> Prop :=
-  | Sorted_nil : Sorted []
-  | Sorted_one : forall x, Sorted [x]
-  | Sorted_cons : forall x y l, x <= y -> Sorted (y :: l) -> Sorted (x :: y :: l).
-
-Definition mergeSorted_precond_dec (a1 a2 : list nat) : bool :=
-  is_sorted a1 && is_sorted a2.
+Fixpoint pairwise_le (l : list nat) : bool :=
+  match l with
+  | [] => true
+  | x :: xs =>
+    match xs with
+    | [] => true
+    | y :: _ => (x <=? y)%nat && pairwise_le xs
+    end
+  end.
 (* !benchmark @end precond_aux *)
 
-Definition mergeSorted_precond (a1 : (list nat)) (a2 : (list nat)) : Prop :=
+Definition mergeSorted_precond (a1 : (list nat)) (a2 : (list nat)) : bool :=
   (* !benchmark @start precond *)
-  Sorted a1 /\ Sorted a2
+  pairwise_le a1 && pairwise_le a2
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint mergeSorted_helper (a1 a2 : list nat) (fuel : nat) : list nat :=
+Fixpoint merge_aux (fuel : nat) (l1 l2 : list nat) (acc : list nat) : list nat :=
   match fuel with
-  | 0%nat => a1 ++ a2
+  | O => acc ++ l1 ++ l2
   | S fuel' =>
-      match a1, a2 with
-      | [], _ => a2
-      | _, [] => a1
-      | x :: xs, y :: ys =>
-          if x <=? y then
-            x :: mergeSorted_helper xs a2 fuel'
-          else
-            y :: mergeSorted_helper a1 ys fuel'
-      end
+    match l1, l2 with
+    | [], [] => acc
+    | [], y :: ys => merge_aux fuel' [] ys (acc ++ [y])
+    | x :: xs, [] => merge_aux fuel' xs [] (acc ++ [x])
+    | x :: xs, y :: ys =>
+      if (x <=? y)%nat then
+        merge_aux fuel' xs (y :: ys) (acc ++ [x])
+      else
+        merge_aux fuel' (x :: xs) ys (acc ++ [y])
+    end
   end.
 (* !benchmark @end code_aux *)
 
-Definition mergeSorted (a1 : (list nat)) (a2 : (list nat)) (h_precond : mergeSorted_precond a1 a2) : (list nat) :=
+Definition mergeSorted (a1 : (list nat)) (a2 : (list nat)) : (list nat) :=
   (* !benchmark @start code *)
-  mergeSorted_helper a1 a2 (length a1 + length a2)
+  merge_aux (length a1 + length a2) a1 a2 []
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Permutation predicate *)
-Fixpoint Permutation_count (l1 l2 : list nat) : Prop :=
-  forall x, count_occ x l1 = count_occ x l2.
+Fixpoint pairwise_le_post (l : list nat) : bool :=
+  match l with
+  | [] => true
+  | x :: xs =>
+    match xs with
+    | [] => true
+    | y :: _ => (x <=? y)%nat && pairwise_le_post xs
+    end
+  end.
 
-Definition isPerm (l1 l2 : list nat) : Prop :=
-  length l1 = length l2 /\ Permutation_count l1 l2.
+Fixpoint count_occ_nat (n : nat) (l : list nat) : nat :=
+  match l with
+  | [] => O
+  | x :: xs => if (x =? n)%nat then S (count_occ_nat n xs) else count_occ_nat n xs
+  end.
 
-Definition mergeSorted_postcond_dec (a1 a2 result : list nat) : bool :=
-  is_sorted result && is_perm result (a1 ++ a2).
+Fixpoint is_perm_aux (l1 l2 : list nat) (check : list nat) : bool :=
+  match check with
+  | [] => true
+  | x :: xs => ((count_occ_nat x l1) =? (count_occ_nat x l2))%nat && is_perm_aux l1 l2 xs
+  end.
+
+Definition is_perm (l1 l2 : list nat) : bool :=
+  is_perm_aux l1 l2 (l1 ++ l2).
 (* !benchmark @end postcond_aux *)
 
-Definition mergeSorted_postcond (a1 : (list nat)) (a2 : (list nat)) (result : (list nat)) (h_precond : mergeSorted_precond a1 a2) : Prop :=
+Definition mergeSorted_postcond (a1 : (list nat)) (a2 : (list nat)) (result : (list nat)) : bool :=
   (* !benchmark @start postcond *)
-  Sorted result /\ isPerm result (a1 ++ a2)
+  pairwise_le_post result && is_perm result (a1 ++ a2)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem mergeSorted_postcond_satisfied (a1 : (list nat)) (a2 : (list nat)) (h_precond : mergeSorted_precond a1 a2) :
-    mergeSorted_postcond a1 a2 (mergeSorted a1 a2 h_precond) h_precond.
+Theorem mergeSorted_postcond_satisfied (a1 : (list nat)) (a2 : (list nat)) :
+    mergeSorted_precond a1 a2 = true ->
+    mergeSorted_postcond a1 a2 (mergeSorted a1 a2) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

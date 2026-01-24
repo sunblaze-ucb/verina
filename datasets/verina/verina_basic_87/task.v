@@ -1,133 +1,126 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Arith.
-Require Import Lia.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper to generate range [0, n) *)
-Fixpoint range (n : nat) : list nat :=
-  match n with
-  | O => []
-  | S n' => range n' ++ [n']
-  end.
 
-(* Get element at index with default *)
-Fixpoint nth_default {A : Type} (default : A) (l : list A) (n : nat) : A :=
-  match l, n with
-  | [], _ => default
-  | x :: _, O => x
-  | _ :: xs, S n' => nth_default default xs n'
-  end.
-
-(* Set element at index *)
-Fixpoint set_nth {A : Type} (l : list A) (n : nat) (v : A) : list A :=
-  match l, n with
-  | [], _ => []
-  | _ :: xs, O => v :: xs
-  | x :: xs, S n' => x :: set_nth xs n' v
-  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition SelectionSort_precond_dec (a : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition SelectionSort_precond (a : (list Z)) : Prop :=
+Definition SelectionSort_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Find minimum index in range [start, finish) *)
-Fixpoint findMinIndexInRange (arr : list Z) (start finish : nat) : nat :=
-  let indices := range (finish - start) in
-  fold_left (fun minIdx i =>
-    let currIdx := (start + i)%nat in
-    if (nth_default 0%Z arr currIdx <? nth_default 0%Z arr minIdx)%Z 
-    then currIdx 
-    else minIdx
-  ) indices start.
+Fixpoint nth_default (l : list Z) (n : nat) (d : Z) : Z :=
+  match l with
+  | [] => d
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_default t n' d
+              end
+  end.
 
-(* Swap elements at positions i and j *)
+Fixpoint set_nth (l : list Z) (n : nat) (v : Z) : list Z :=
+  match l with
+  | [] => []
+  | h :: t => match n with
+              | O => v :: t
+              | S n' => h :: set_nth t n' v
+              end
+  end.
+
 Definition swap (a : list Z) (i j : nat) : list Z :=
-  if (Nat.ltb i (length a) && Nat.ltb j (length a) && negb (Nat.eqb i j))%bool then
-    let temp := nth_default 0%Z a i in
-    let a' := set_nth a i (nth_default 0%Z a j) in
-    set_nth a' j temp
+  if andb (Nat.ltb i (length a)) (andb (Nat.ltb j (length a)) (negb (Nat.eqb i j))) then
+    let vi := nth_default a i 0 in
+    let vj := nth_default a j 0 in
+    let a' := set_nth a i vj in
+    set_nth a' j vi
   else a.
+
+Fixpoint findMinIndexInRangeAux (arr : list Z) (start curr minIdx : nat) (fuel : nat) : nat :=
+  match fuel with
+  | O => minIdx
+  | S fuel' =>
+    if (length arr <=? curr)%nat then minIdx
+    else
+      let currVal := nth_default arr curr 0 in
+      let minVal := nth_default arr minIdx 0 in
+      let newMinIdx := if (currVal <? minVal) then curr else minIdx in
+      findMinIndexInRangeAux arr start (S curr) newMinIdx fuel'
+  end.
+
+Definition findMinIndexInRange (arr : list Z) (start finish : nat) : nat :=
+  findMinIndexInRangeAux arr start start start (finish - start)%nat.
+
+Fixpoint selectionSortAux (arr : list Z) (i : nat) (n : nat) (fuel : nat) : list Z :=
+  match fuel with
+  | O => arr
+  | S fuel' =>
+    if (n <=? i)%nat then arr
+    else
+      let minIdx := findMinIndexInRange arr i n in
+      let arr' := swap arr i minIdx in
+      selectionSortAux arr' (S i) n fuel'
+  end.
 (* !benchmark @end code_aux *)
 
-Definition SelectionSort (a : (list Z)) (h_precond : SelectionSort_precond a) : (list Z) :=
+Definition SelectionSort (a : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let indices := range (length a) in
-  fold_left (fun arr i =>
-    let minIdx := findMinIndexInRange arr i (length a) in
-    swap arr i minIdx
-  ) indices a
+  selectionSortAux a O (length a) (length a)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Check if list is sorted in non-decreasing order *)
-Fixpoint is_sorted (l : list Z) : Prop :=
-  match l with
-  | [] => True
-  | x :: xs => 
-      match xs with
-      | [] => True
-      | y :: _ => (x <= y)%Z /\ is_sorted xs
-      end
-  end.
-
-(* Check if two lists are permutations (same elements with same multiplicities) *)
-Definition is_perm (l1 l2 : list Z) : Prop :=
-  forall x, count_occ Z.eq_dec l1 x = count_occ Z.eq_dec l2 x.
-
-(* Decidable version of sorted check *)
-Fixpoint is_sorted_dec (l : list Z) : bool :=
+Fixpoint is_sorted (l : list Z) : bool :=
   match l with
   | [] => true
-  | x :: xs =>
-      match xs with
-      | [] => true
-      | y :: _ => (x <=? y)%Z && is_sorted_dec xs
-      end
+  | [_] => true
+  | h1 :: (h2 :: t) as tl => (h1 <=? h2) && is_sorted tl
   end.
 
-(* Decidable version of permutation check (limited) *)
-Fixpoint is_perm_dec (l1 l2 : list Z) : bool :=
-  (Nat.eqb (length l1) (length l2)) && 
-  (forallb (fun x => Nat.eqb (count_occ Z.eq_dec l1 x) (count_occ Z.eq_dec l2 x)) l1).
+Fixpoint count_occ_Z (l : list Z) (x : Z) : nat :=
+  match l with
+  | [] => O
+  | h :: t => if (h =? x) then S (count_occ_Z t x) else count_occ_Z t x
+  end.
 
-Definition SelectionSort_postcond_dec (a result : list Z) : bool :=
-  is_sorted_dec result && is_perm_dec a result.
+Fixpoint is_perm_aux (l1 l2 : list Z) (tocheck : list Z) : bool :=
+  match tocheck with
+  | [] => true
+  | h :: t => ((count_occ_Z l1 h =? count_occ_Z l2 h)%nat) && is_perm_aux l1 l2 t
+  end.
+
+Definition is_perm (l1 l2 : list Z) : bool :=
+  is_perm_aux l1 l2 (l1 ++ l2).
 (* !benchmark @end postcond_aux *)
 
-Definition SelectionSort_postcond (a : (list Z)) (result : (list Z)) (h_precond : SelectionSort_precond a) : Prop :=
+Definition SelectionSort_postcond (a : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  is_sorted result /\ is_perm a result
+  is_sorted result && is_perm a result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem SelectionSort_postcond_satisfied (a : (list Z)) (h_precond : SelectionSort_precond a) :
-    SelectionSort_postcond a (SelectionSort a h_precond) h_precond.
+Theorem SelectionSort_postcond_satisfied (a : (list Z)) :
+    SelectionSort_precond a = true ->
+    SelectionSort_postcond a (SelectionSort a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

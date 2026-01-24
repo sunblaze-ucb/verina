@@ -1,46 +1,33 @@
 (* !benchmark @start import type=task *)
-Require Import List.
-Import ListNotations.
-(* !benchmark @end import *)
-
-(* !benchmark @start import type=solution *)
+Require Import Bool.
 Require Import Nat.
 Require Import List.
 Import ListNotations.
 (* !benchmark @end import *)
 
+(* !benchmark @start import type=solution *)
+
+(* !benchmark @end import *)
+
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution-level auxiliary definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Fixpoint count_occurrences (target : nat) (lst : list nat) : nat :=
-  match lst with
-  | [] => 0%nat
-  | y :: ys =>
-    if Nat.eqb y target then S (count_occurrences target ys)
-    else count_occurrences target ys
-  end.
-
-Fixpoint existsb_count (xs : list nat) (threshold : nat) : bool :=
+Fixpoint count_elem (x : nat) (xs : list nat) : nat :=
   match xs with
-  | [] => false
-  | y :: ys =>
-    if Nat.ltb threshold (count_occurrences y xs) then true
-    else existsb_count ys threshold
+  | [] => O
+  | y :: ys => if (y =? x)%nat then S (count_elem x ys) else count_elem x ys
   end.
-
-Definition majorityElement_precond_dec (xs : list nat) : bool :=
-  andb (Nat.ltb 0%nat (length xs)) (existsb_count xs (Nat.div (length xs) 2%nat)).
 (* !benchmark @end precond_aux *)
 
-Definition majorityElement_precond (xs : (list nat)) : Prop :=
+Definition majorityElement_precond (xs : (list nat)) : bool :=
   (* !benchmark @start precond *)
-  (length xs > 0)%nat /\ exists x, In x xs /\ count_occurrences x xs > (length xs) / 2
+  (1 <=? length xs)%nat && existsb (fun x => (length xs / 2 <? count_elem x xs)%nat) xs
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
@@ -49,46 +36,48 @@ Fixpoint findCandidate (lst : list nat) (candidate : option nat) (count : nat) :
   | [] =>
     match candidate with
     | Some c => c
-    | None => 0%nat
+    | None => O
     end
-  | x :: xs =>
+  | x :: xs' =>
     match candidate with
     | Some c =>
-      if Nat.eqb x c then
-        findCandidate xs (Some c) (count + 1)%nat
-      else if Nat.eqb count 0%nat then
-        findCandidate xs (Some x) 1%nat
+      if (x =? c)%nat then
+        findCandidate xs' (Some c) (count + 1)%nat
+      else if (count =? O)%nat then
+        findCandidate xs' (Some x) 1%nat
       else
-        findCandidate xs (Some c) (count - 1)%nat
+        findCandidate xs' (Some c) (count - 1)%nat
     | None =>
-      findCandidate xs (Some x) 1%nat
+      findCandidate xs' (Some x) 1%nat
     end
   end.
 (* !benchmark @end code_aux *)
 
-Definition majorityElement (xs : (list nat)) (h_precond : majorityElement_precond xs) : nat :=
+Definition majorityElement (xs : (list nat)) : nat :=
   (* !benchmark @start code *)
-  let cand := findCandidate xs None 0%nat in cand
+  findCandidate xs None O
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition majorityElement_postcond_dec (xs : list nat) (result : nat) : bool :=
-  let count := count_occurrences result xs in
-  Nat.ltb (Nat.div (length xs) 2%nat) count.
+Fixpoint count_elem_post (x : nat) (xs : list nat) : nat :=
+  match xs with
+  | [] => O
+  | y :: ys => if (y =? x)%nat then S (count_elem_post x ys) else count_elem_post x ys
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition majorityElement_postcond (xs : (list nat)) (result : nat) (h_precond : majorityElement_precond xs) : Prop :=
+Definition majorityElement_postcond (xs : (list nat)) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  let count := count_occurrences result xs in
-count > (length xs) / 2
+  (length xs / 2 <? count_elem_post result xs)%nat
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem majorityElement_postcond_satisfied (xs : (list nat)) (h_precond : majorityElement_precond xs) :
-    majorityElement_postcond xs (majorityElement xs h_precond) h_precond.
+Theorem majorityElement_postcond_satisfied (xs : (list nat)) :
+    majorityElement_precond xs = true ->
+    majorityElement_postcond xs (majorityElement xs) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

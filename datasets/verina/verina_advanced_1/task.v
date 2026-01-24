@@ -1,60 +1,42 @@
 (* !benchmark @start import type=task *)
 Require Import ZArith.
-Open Scope Z_scope.
-(* !benchmark @end import *)
-
-(* !benchmark @start import type=solution *)
-Require Import ZArith List Lia.
+Require Import List.
+Require Import Bool.
 Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
+(* !benchmark @start import type=solution *)
+
+(* !benchmark @end import *)
+
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution-level auxiliary definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Fixpoint count_in_list (x : Z) (l : list Z) : nat :=
-  match l with
-  | [] => 0%nat
-  | y :: ys => if (y =? x)%Z then S (count_in_list x ys) else count_in_list x ys
+Fixpoint count_Z (x : Z) (nums : list Z) : nat :=
+  match nums with
+  | [] => O
+  | y :: ys => if (y =? x)%Z then S (count_Z x ys) else count_Z x ys
   end.
 
-Fixpoint map_count (l : list Z) (original : list Z) : list nat :=
+Fixpoint count_eq_nat (n : nat) (l : list nat) : nat :=
   match l with
-  | [] => []
-  | x :: xs => count_in_list x original :: map_count xs original
+  | [] => O
+  | h :: t => if (h =? n)%nat then S (count_eq_nat n t) else count_eq_nat n t
   end.
-
-Fixpoint all_pred_nat (f : nat -> bool) (l : list nat) : bool :=
-  match l with
-  | [] => true
-  | x :: xs => andb (f x) (all_pred_nat f xs)
-  end.
-
-Definition count_is_1_or_2 (n : nat) : bool :=
-  orb (Nat.eqb n 1%nat) (Nat.eqb n 2%nat).
-
-Fixpoint count_ones (l : list nat) : nat :=
-  match l with
-  | [] => 0%nat
-  | x :: xs => if Nat.eqb x 1%nat then S (count_ones xs) else count_ones xs
-  end.
-
-Definition FindSingleNumber_precond_dec (nums : list Z) : bool :=
-  let numsCount := map_count nums nums in
-  andb (all_pred_nat count_is_1_or_2 numsCount) (Nat.eqb (count_ones numsCount) 1%nat).
 (* !benchmark @end precond_aux *)
 
-Definition FindSingleNumber_precond (nums : list Z) : Prop :=
+Definition FindSingleNumber_precond (nums : list Z) : bool :=
   (* !benchmark @start precond *)
-  let numsCount := map_count nums nums in
-  (forall count, In count numsCount -> count = 1%nat \/ count = 2%nat) /\
-  count_ones numsCount = 1%nat
+  let numsCount := map (fun x => count_Z x nums) nums in
+    forallb (fun c => orb (c =? 1)%nat (c =? 2)%nat) numsCount &&
+    (count_eq_nat 1%nat numsCount =? 1)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
@@ -68,47 +50,45 @@ Fixpoint findUnique (remaining : list Z) (nums : list Z) : Z :=
   match remaining with
   | [] => 0
   | x :: xs =>
-      let filtered := filterlist x nums in
-      let count := length filtered in
-      if Nat.eqb count 1%nat then x
-      else findUnique xs nums
+    let filtered := filterlist x nums in
+    let cnt := length filtered in
+    if (cnt =? 1)%nat then x else findUnique xs nums
   end.
 (* !benchmark @end code_aux *)
 
-Definition FindSingleNumber (nums : list Z) (h_precond : FindSingleNumber_precond nums) : Z :=
+Definition FindSingleNumber (nums : list Z) : Z :=
   (* !benchmark @start code *)
   findUnique nums nums
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint length_nat {A : Type} (l : list A) : nat :=
-  match l with
-  | [] => 0%nat
-  | _ :: xs => S (length_nat xs)
+Fixpoint filterlist_post (x : Z) (nums : list Z) : list Z :=
+  match nums with
+  | [] => []
+  | y :: ys => if (y =? x)%Z then y :: filterlist_post x ys else filterlist_post x ys
   end.
 
-Definition FindSingleNumber_postcond_dec (nums : list Z) (result : Z) : bool :=
-  let len := length_nat nums in
-  let filtered_result := filterlist result nums in
-  let filtered_len := length_nat filtered_result in
-  andb (andb (Nat.ltb 0 len) (Nat.eqb filtered_len 1%nat))
-    (forallb (fun x => orb ((x =? result)%Z) (Nat.eqb (length_nat (filterlist x nums)) 2%nat)) nums).
+Fixpoint inb_Z (x : Z) (l : list Z) : bool :=
+  match l with
+  | [] => false
+  | h :: t => if (h =? x)%Z then true else inb_Z x t
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition FindSingleNumber_postcond (nums : list Z) (result : Z) (h_precond : FindSingleNumber_precond nums) : Prop :=
+Definition FindSingleNumber_postcond (nums : list Z) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  (length nums > 0)%nat /\
-  length (filterlist result nums) = 1%nat /\
-  (forall x : Z, In x nums ->
-    x = result \/ length (filterlist x nums) = 2%nat)
+  (1 <=? length nums)%nat &&
+    (length (filterlist_post result nums) =? 1)%nat &&
+    forallb (fun x => implb (inb_Z x nums) (orb (x =? result)%Z (length (filterlist_post x nums) =? 2)%nat)) nums
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem FindSingleNumber_postcond_satisfied (nums : list Z) (h_precond : FindSingleNumber_precond nums) :
-    FindSingleNumber_postcond nums (FindSingleNumber nums h_precond) h_precond.
+Theorem FindSingleNumber_postcond_satisfied (nums : list Z) :
+    FindSingleNumber_precond nums = true ->
+    FindSingleNumber_postcond nums (FindSingleNumber nums) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

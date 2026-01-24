@@ -1,77 +1,71 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-Fixpoint copyFrom (a : list Z) (i : nat) (fuel : nat) (acc : list Z) : list Z :=
-  match fuel with
-  | O => acc
-  | S fuel' =>
-      match nth_error a i with
-      | Some elem => copyFrom a (i + 1)%nat fuel' (acc ++ [elem])
-      | None => acc
-      end
-  end.
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition remove_front_precond_dec (a : list Z) : bool :=
-  (0 <? length a)%nat.
+
 (* !benchmark @end precond_aux *)
 
-Definition remove_front_precond (a : (list Z)) : Prop :=
+Definition remove_front_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  (length a > 0)%nat
+  (1 <=? length a)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No additional code helpers needed *)
+Definition remove_front_impl (a : list Z) : list Z :=
+  match a with
+  | [] => []
+  | _ :: tl => tl
+  end.
 (* !benchmark @end code_aux *)
 
-Definition remove_front (a : (list Z)) (h_precond : remove_front_precond a) : (list Z) :=
+Definition remove_front (a : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  match (0 <? length a)%nat with
-  | true => copyFrom a 1%nat (length a) []
-  | false => []
-  end
+  remove_front_impl a
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition remove_front_postcond_dec (a : list Z) (result : list Z) : bool :=
-  ((0 <? length a)%nat) &&
-  (Nat.eqb (length result) (length a - 1)%nat) &&
-  (forallb (fun i => 
-    match nth_error result i, nth_error a (i + 1)%nat with
-    | Some r, Some a_elem => Z.eqb r a_elem
-    | _, _ => false
-    end) (seq 0 (length result))).
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0%Z
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z t n'
+  end.
+
+Fixpoint check_elements (result a : list Z) (i : nat) : bool :=
+  match i with
+  | O => true
+  | S i' => ((nth_Z result i' =? nth_Z a (i' + 1)%nat)%Z) && check_elements result a i'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition remove_front_postcond (a : (list Z)) (result : (list Z)) (h_precond : remove_front_precond a) : Prop :=
+Definition remove_front_postcond (a : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  (length a > 0)%nat /\ 
-  length result = (length a - 1)%nat /\ 
-  (forall i : nat, (i < length result)%nat -> 
-    nth_error result i = nth_error a (i + 1)%nat)
+  (1 <=? length a)%nat && ((length result =? (length a - 1)%nat)%nat) && check_elements result a (length result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem remove_front_postcond_satisfied (a : (list Z)) (h_precond : remove_front_precond a) :
-    remove_front_postcond a (remove_front a h_precond) h_precond.
+Theorem remove_front_postcond_satisfied (a : (list Z)) :
+    remove_front_precond a = true ->
+    remove_front_postcond a (remove_front a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,122 +1,109 @@
 (* !benchmark @start import type=task *)
-Require Import Bool.
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import List.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution auxiliary definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition isPeakValley_precond_dec (lst : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition isPeakValley_precond (lst : (list Z)) : Prop :=
+Definition isPeakValley_precond (lst : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint isPeakValley_aux (l : list Z) (prev : option Z) (increasing : bool) (startedDecreasing : bool) : bool :=
+Fixpoint aux (l : list Z) (increasing : bool) (startedDecreasing : bool) : bool :=
   match l with
-  | [] => 
-      match prev with
-      | None => false
-      | Some _ => andb increasing startedDecreasing
-      end
-  | x :: rest =>
-      match prev with
-      | None => isPeakValley_aux rest (Some x) increasing startedDecreasing
-      | Some p =>
-          if (p <? x)%Z then
-            if startedDecreasing then false
-            else isPeakValley_aux rest (Some x) true startedDecreasing
-          else if (p >? x)%Z then
-            if increasing then isPeakValley_aux rest (Some x) increasing true
-            else false
-          else false
-      end
+  | [] => increasing && startedDecreasing
+  | [_] => increasing && startedDecreasing
+  | x :: ((y :: rest) as tail) =>
+    if (x <? y)%Z then
+      if startedDecreasing then false
+      else aux tail true startedDecreasing
+    else if (x >? y)%Z then
+      if increasing then aux tail increasing true
+      else false
+    else false
   end.
 (* !benchmark @end code_aux *)
 
-Definition isPeakValley (lst : (list Z)) (h_precond : isPeakValley_precond lst) : bool :=
+Definition isPeakValley (lst : (list Z)) : bool :=
   (* !benchmark @start code *)
-  isPeakValley_aux lst None false false
+  aux lst false false
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Require Import Arith.
+Fixpoint nth_default (d : Z) (l : list Z) (n : nat) : Z :=
+  match l with
+  | [] => d
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_default d t n'
+              end
+  end.
+
+Definition get_elem (l : list Z) (i : nat) : Z := nth_default 0 l i.
 
 Fixpoint range (n : nat) : list nat :=
   match n with
-  | 0%nat => []
-  | S m => range m ++ [m]
+  | O => []
+  | S n' => range n' ++ [n']
   end.
 
-Fixpoint nth_default_Z (l : list Z) (n : nat) (default : Z) : Z :=
-  match l, n with
-  | [], _ => default
-  | x :: _, 0%nat => x
-  | _ :: xs, S m => nth_default_Z xs m default
-  end.
-
-Fixpoint all_nat (f : nat -> bool) (l : list nat) : bool :=
+Fixpoint forallb_nat (f : nat -> bool) (l : list nat) : bool :=
   match l with
   | [] => true
-  | x :: xs => andb (f x) (all_nat f xs)
+  | h :: t => f h && forallb_nat f t
   end.
+
+Definition check_strictly_increasing (lst : list Z) (p : nat) : bool :=
+  forallb_nat (fun i => (get_elem lst i <? get_elem lst (i + 1)%nat)%Z) (range p).
+
+Definition check_strictly_decreasing (lst : list Z) (p : nat) (len : nat) : bool :=
+  forallb_nat (fun i => (get_elem lst (p + i)%nat >? get_elem lst (p + i + 1)%nat)%Z) (range (len - 1 - p)%nat).
+
+Definition is_valid_peak (lst : list Z) (len : nat) (p : nat) : bool :=
+  (1 <=? p)%nat && (p <? len - 1)%nat && check_strictly_increasing lst p && check_strictly_decreasing lst p len.
 
 Fixpoint filter_nat (f : nat -> bool) (l : list nat) : list nat :=
   match l with
   | [] => []
-  | x :: xs => if f x then x :: filter_nat f xs else filter_nat f xs
+  | h :: t => if f h then h :: filter_nat f t else filter_nat f t
   end.
 
-Definition check_peak (lst : list Z) (len : nat) (p : nat) : bool :=
-  andb (andb (1 <=? p)%nat (p <? len - 1)%nat)
-    (andb
-      (all_nat (fun i => (nth_default_Z lst i 0 <? nth_default_Z lst (i + 1) 0)%Z) (range p))
-      (all_nat (fun i => (nth_default_Z lst (p + i) 0 >? nth_default_Z lst (p + i + 1) 0)%Z) (range (len - 1 - p)))).
-
-Definition isPeakValley_postcond_dec (lst : list Z) (result : bool) : bool :=
+Definition valid_peaks (lst : list Z) : list nat :=
   let len := length lst in
-  let validPeaks := filter_nat (check_peak lst len) (range len) in
-  andb
-    (implb (negb (Nat.eqb (length validPeaks) 0%nat)) result)
-    (implb (Nat.eqb (length validPeaks) 0%nat) (negb result)).
+  filter_nat (is_valid_peak lst len) (range len).
 (* !benchmark @end postcond_aux *)
 
-Definition isPeakValley_postcond (lst : (list Z)) (result : bool) (h_precond : isPeakValley_precond lst) : Prop :=
+Definition isPeakValley_postcond (lst : (list Z)) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  let len := length lst in
-  let validPeaks :=
-    filter_nat (fun p => check_peak lst len p) (range len)
-  in
-  ((validPeaks <> []) -> result = true) /\
-  ((length validPeaks = 0%nat) -> result = false)
+  let validPeaks := valid_peaks lst in
+  implb (negb (length validPeaks =? 0)%nat) result && implb ((length validPeaks =? 0)%nat) (negb result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem isPeakValley_postcond_satisfied (lst : (list Z)) (h_precond : isPeakValley_precond lst) :
-    isPeakValley_postcond lst (isPeakValley lst h_precond) h_precond.
+Theorem isPeakValley_postcond_satisfied (lst : (list Z)) :
+    isPeakValley_precond lst = true ->
+    isPeakValley_postcond lst (isPeakValley lst) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,132 +1,121 @@
 (* !benchmark @start import type=task *)
-Require Import Ascii.
+Require Import Bool.
+Require Import List.
 Require Import String.
+Require Import Ascii.
+Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.Strings.String.
-Require Import Coq.Strings.Ascii.
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Arith.
-Require Import Coq.Sets.Ensembles.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper to convert string to list of ascii *)
-Fixpoint string_to_list (s : string) : list ascii :=
-  match s with
-  | EmptyString => nil
-  | String c s' => c :: string_to_list s'
+Fixpoint ascii_eqb (a b : ascii) : bool :=
+  match a, b with
+  | Ascii a1 a2 a3 a4 a5 a6 a7 a8, Ascii b1 b2 b3 b4 b5 b6 b7 b8 =>
+    Bool.eqb a1 b1 && Bool.eqb a2 b2 && Bool.eqb a3 b3 && Bool.eqb a4 b4 &&
+    Bool.eqb a5 b5 && Bool.eqb a6 b6 && Bool.eqb a7 b7 && Bool.eqb a8 b8
   end.
 
-(* Check if element is in list *)
-Fixpoint mem_ascii (c : ascii) (l : list ascii) : bool :=
-  match l with
-  | nil => false
-  | h :: t => if ascii_dec c h then true else mem_ascii c t
+Fixpoint mem_ascii (c : ascii) (seen : list ascii) : bool :=
+  match seen with
+  | [] => false
+  | h :: t => if ascii_eqb c h then true else mem_ascii c t
   end.
 
-(* Main loop helper *)
-Fixpoint findFirstRepeatedChar_loop (cs : list ascii) (i : nat) (seen : list ascii) : option ascii :=
-  match cs with
-  | nil => None
-  | c :: cs' =>
-      if i =? 0 then
-        if mem_ascii c seen then Some c
-        else findFirstRepeatedChar_loop cs' 0 (c :: seen)
-      else
-        findFirstRepeatedChar_loop cs' (i - 1)%nat seen
-  end.
-
-Fixpoint findFirstRepeatedChar_aux (cs : list ascii) (seen : list ascii) : option ascii :=
-  match cs with
-  | nil => None
-  | c :: cs' =>
-      if mem_ascii c seen then Some c
-      else findFirstRepeatedChar_aux cs' (c :: seen)
-  end.
+Definition list_ascii_of_string (s : string) : list ascii :=
+  let fix aux (s : string) (acc : list ascii) : list ascii :=
+    match s with
+    | EmptyString => rev acc
+    | String c rest => aux rest (c :: acc)
+    end
+  in aux s [].
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition findFirstRepeatedChar_precond_dec (s : string) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition findFirstRepeatedChar_precond (s : string) : Prop :=
+Definition findFirstRepeatedChar_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Helper to count occurrences of a character *)
-Fixpoint count_char (c : ascii) (l : list ascii) : nat :=
-  match l with
-  | nil => 0%nat
-  | h :: t => if ascii_dec c h then S (count_char c t) else count_char c t
-  end.
-
-(* Helper to find index of first occurrence *)
-Fixpoint indexOf_char (c : ascii) (l : list ascii) : nat :=
-  match l with
-  | nil => 0%nat
-  | h :: t => if ascii_dec c h then 0%nat else S (indexOf_char c t)
+Fixpoint findFirstRepeatedChar_loop (cs : list ascii) (seen : list ascii) : option ascii :=
+  match cs with
+  | [] => None
+  | c :: rest =>
+    if mem_ascii c seen then Some c
+    else findFirstRepeatedChar_loop rest (c :: seen)
   end.
 (* !benchmark @end code_aux *)
 
-Definition findFirstRepeatedChar (s : string) (h_precond : findFirstRepeatedChar_precond s) : (option ascii) :=
+Definition findFirstRepeatedChar (s : string) : (option ascii) :=
   (* !benchmark @start code *)
-  findFirstRepeatedChar_aux (string_to_list s) []
+  findFirstRepeatedChar_loop (list_ascii_of_string s) []
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Check if all elements in a list are pairwise different *)
-Fixpoint all_different (l : list ascii) : Prop :=
-  match l with
-  | nil => True
-  | h :: t => ~In h t /\ all_different t
+Fixpoint count_ascii (c : ascii) (cs : list ascii) : nat :=
+  match cs with
+  | [] => O
+  | h :: t => if ascii_eqb c h then S (count_ascii c t) else count_ascii c t
   end.
 
-(* Helper to get index of second occurrence *)
-Fixpoint findIdx_second (c : ascii) (l : list ascii) (firstIdx : nat) (currentIdx : nat) : nat :=
-  match l with
-  | nil => 0%nat
-  | h :: t =>
-      if ascii_dec h c then
-        if Nat.eqb currentIdx firstIdx then
-          findIdx_second c t firstIdx (S currentIdx)
-        else
-          currentIdx
-      else
-        findIdx_second c t firstIdx (S currentIdx)
+Fixpoint idxOf_ascii (c : ascii) (cs : list ascii) : nat :=
+  match cs with
+  | [] => O
+  | h :: t => if ascii_eqb c h then O else S (idxOf_ascii c t)
   end.
 
-(* Take first n elements *)
+Fixpoint findIdx_aux {A : Type} (p : A -> nat -> bool) (cs : list A) (idx : nat) : nat :=
+  match cs with
+  | [] => idx
+  | h :: t => if p h idx then idx else findIdx_aux p t (S idx)
+  end.
+
+Definition findIdx {A : Type} (p : A -> nat -> bool) (cs : list A) : nat :=
+  findIdx_aux p cs O.
+
 Fixpoint take {A : Type} (n : nat) (l : list A) : list A :=
-  match n, l with
-  | 0%nat, _ => nil
-  | S n', h :: t => h :: take n' t
-  | _, nil => nil
+  match n with
+  | O => []
+  | S n' => match l with
+            | [] => []
+            | h :: t => h :: take n' t
+            end
   end.
 
-Definition findFirstRepeatedChar_postcond_dec (s : string) (result : option ascii) : bool :=
-  true.
+Fixpoint pairwise_distinct (cs : list ascii) : bool :=
+  match cs with
+  | [] => true
+  | h :: t => negb (mem_ascii h t) && pairwise_distinct t
+  end.
+
+Definition list_ascii_of_string_post (s : string) : list ascii :=
+  let fix aux (s : string) (acc : list ascii) : list ascii :=
+    match s with
+    | EmptyString => rev acc
+    | String c rest => aux rest (c :: acc)
+    end
+  in aux s [].
 (* !benchmark @end postcond_aux *)
 
-Definition findFirstRepeatedChar_postcond (s : string) (result : (option ascii)) (h_precond : findFirstRepeatedChar_precond s) : Prop :=
+Definition findFirstRepeatedChar_postcond (s : string) (result : (option ascii)) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
+  let cs := list_ascii_of_string_post s in
   match result with
   | Some c =>
-      let firstIdx := indexOf_char c cs in
-      let secondIdx := findIdx_second c cs firstIdx 0%nat in
-      (count_char c cs >= 2)%nat /\
-      all_different (take secondIdx cs)
-  | None =>
-      all_different cs
+    let firstIdx := idxOf_ascii c cs in
+    let secondIdx := findIdx (fun x i => ascii_eqb x c && negb (i =? firstIdx)%nat) cs in
+    (2 <=? count_ascii c cs)%nat && pairwise_distinct (take secondIdx cs)
+  | None => pairwise_distinct cs
   end
   (* !benchmark @end postcond *).
 
@@ -134,8 +123,9 @@ Definition findFirstRepeatedChar_postcond (s : string) (result : (option ascii))
 
 (* !benchmark @end proof_aux *)
 
-Theorem findFirstRepeatedChar_postcond_satisfied (s : string) (h_precond : findFirstRepeatedChar_precond s) :
-    findFirstRepeatedChar_postcond s (findFirstRepeatedChar s h_precond) h_precond.
+Theorem findFirstRepeatedChar_postcond_satisfied (s : string) :
+    findFirstRepeatedChar_precond s = true ->
+    findFirstRepeatedChar_postcond s (findFirstRepeatedChar s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

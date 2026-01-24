@@ -4,54 +4,51 @@ Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No additional helper definitions needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition Triple_precond_dec (x : Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition Triple_precond (x : Z) : Prop :=
+Definition Triple_precond (x : Z) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No helper functions needed *)
+
 (* !benchmark @end code_aux *)
 
-Definition Triple (x : Z) (h_precond : Triple_precond x) : Z :=
+Definition Triple (x : Z) : Z :=
   (* !benchmark @start code *)
-  let y := x * 2 in
-y + x
+  let y := x * 2 in y + x
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition Triple_postcond_dec (x : Z) (result : Z) : bool :=
-  (result / 3 =? x) && (result / 3 * 3 =? result).
+
 (* !benchmark @end postcond_aux *)
 
-Definition Triple_postcond (x : Z) (result : Z) (h_precond : Triple_precond x) : Prop :=
+Definition Triple_postcond (x : Z) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  result / 3 = x /\ result / 3 * 3 = result
+  (result / 3 =? x) && (result / 3 * 3 =? result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem Triple_postcond_satisfied (x : Z) (h_precond : Triple_precond x) :
-    Triple_postcond x (Triple x h_precond) h_precond.
+Theorem Triple_postcond_satisfied (x : Z) :
+    Triple_precond x = true ->
+    Triple_postcond x (Triple x) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

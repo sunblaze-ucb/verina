@@ -141,12 +141,17 @@ CRITICAL RULES:
 - DO NOT define any _precond or _postcond definitions - they are defined elsewhere and will cause redefinition errors
 - ONLY fill in the placeholders (code_aux, code)
 - code_aux should ONLY contain helper functions for the algorithm, NOT precond/postcond definitions
+- The code function does NOT take a h_precond parameter - preconditions are now bool-based
 Hint:
 - Use Z for integers (from ZArith), nat for natural numbers
 - Use list for lists, option for optional values
 - Use Z.eqb for integer equality, Nat.eqb for nat equality
 - For recursive functions, use Fixpoint with a decreasing argument
-- The h_precond parameter references a precondition that exists elsewhere - do not define it
+- IMPORTANT: Z_scope is always open, so bare number literals are interpreted as Z.
+  When using nat literals, wrap them with %nat suffix (e.g., 0%nat, 1%nat, (n - 1)%nat).
+  For nat arithmetic, use (a + b)%nat, (a * b)%nat, (a - b)%nat.
+  For nat comparisons, use (x <=? y)%nat or (x <? y)%nat with the %nat scope.
+  In match patterns on nat: use `| O =>` NOT `| 0 =>` (O is the nat zero constructor, 0 is Z).
 """.strip()
 
 
@@ -236,22 +241,56 @@ You are an expert in Coq programming and theorem proving.
 Please generate a Coq specification that constrains the program implementation using the template provided in `task_template`.
 The `task_template` is a Coq code snippet that contains placeholders (wrapped with {{}}) for the spec to be generated.
 The precondition should be as permissive as possible, and the postcondition should model a sound and complete relationship between input and output of the program based on the `task_description`.
+
+CRITICAL - Both precond and postcond MUST return bool (not Prop):
 The generated specification should:
-- Be well-documented with comments if necessary
-- Follow Coq best practices and use appropriate Coq syntax and features
-- Express specifications as Prop types
+- Express BOTH preconditions AND postconditions as bool types (NOT Prop)
+- Use boolean operators: && (and), || (or), negb (not)
+- Use decidable comparisons: =? (Z.eqb), <=? (Z.leb), <? (Z.ltb), >=? (Z.geb), >? (Z.gtb)
 - Only use `precond_aux` or `postcond_aux` when you cannot express the precondition or postcondition in the main body
+
+Boolean operators (MUST use these, NOT Prop operators):
+- Use && instead of /\\ (Prop and)
+- Use || instead of \\/ (Prop or)
+- Use negb instead of ~ (Prop not)
+- Use forallb/existsb instead of forall/exists (for lists)
+- Use =? instead of = for equality checks
+- Use <=?, <?, >=?, >? instead of <=, <, >=, >
+
+Example precond patterns (bool):
+- Good: true                                      (* no constraints *)
+- Good: (n >=? 0)%Z                              (* Z bool comparison *)
+- Good: (length lst >=? 1)%nat                   (* nat bool comparison *)
+- Good: negb (length lst =? 0)%nat               (* non-empty list *)
+- Bad:  n >= 0                                   (* Prop comparison - WRONG *)
+- Bad:  True                                     (* Prop True - use 'true' *)
+- Bad:  forall x, In x lst -> x > 0             (* Prop quantifier - WRONG *)
+
+Example postcond patterns (bool):
+- Good: (result >=? 0)%Z && (result <=? bound)%Z    (* result in valid range *)
+- Good: forallb (fun x => (x <=? result)%Z) lst     (* result >= all elements *)
+- Good: existsb (fun x => (x =? result)%Z) lst      (* result is in the list *)
+- Good: (length result_list =? length input_list)%nat (* preserves length *)
+- Bad:  (result =? x + 1)%Z                         (* just restates the algorithm - WRONG *)
+- Bad:  result = expected                           (* Prop equality - WRONG *)
+
+CRITICAL - Spec is NOT another program:
+- DO NOT restate the algorithm in the spec (e.g., "result =? x + 1" for increment)
+- DO check meaningful properties (e.g., "result >? x" for increment)
+- The spec should describe WHAT the result should satisfy, not HOW to compute it
+- Think: "What properties must a correct result have?" not "What is the formula?"
+
 IMPORTANT:
 - DO NOT add extra imports - the template already has all necessary imports
 - DO NOT redefine any existing definitions in the template
 - ONLY fill in the placeholders (precond_aux, precond, postcond_aux, postcond)
 - Keep precond_aux and postcond_aux empty unless absolutely necessary
-Hint:
-- Use /\\ for conjunction, \\/ for disjunction
-- Use forall and exists for quantification
-- Use List.In for list membership, List.nth for indexing
-- Use Z.le, Z.lt, Z.ge, Z.gt for integer comparisons
-- The default precondition is True if there are no constraints on inputs
+- The default precondition is 'true' (lowercase bool) if there are no constraints
+- IMPORTANT: Z_scope is always open, so bare number literals are interpreted as Z.
+  When using nat literals, wrap them with %nat suffix (e.g., 0%nat, 1%nat, (length lst)%nat).
+  For nat arithmetic in specs, use (a + b)%nat, (a * b)%nat, (a - b)%nat.
+  For nat bool comparisons, use (x <=? y)%nat or (x <? y)%nat with the %nat scope.
+  In match patterns on nat: use `| O =>` NOT `| 0 =>` (O is the nat zero constructor, 0 is Z).
 """.strip()
 
 
@@ -270,11 +309,11 @@ class CoqBaselineGenSpecSig(DspySignature):
     precond_aux = OutputField(
         desc="Auxiliary definitions for `precond`. Keep it empty if not needed."
     )
-    precond = OutputField(desc="Generated Coq code specifying the precondition as a Prop.")
+    precond = OutputField(desc="Generated Coq code specifying the precondition as a bool. Use 'true' for no constraints, boolean operators (&&, ||, negb), and decidable comparisons (=?, <=?, <?, >=?, >?).")
     postcond_aux = OutputField(
         desc="Auxiliary definitions for `postcond`. Keep it empty if not needed."
     )
-    postcond = OutputField(desc="Generated Coq code specifying the postcondition as a Prop.")
+    postcond = OutputField(desc="Generated Coq code specifying the postcondition as a bool. Use boolean operators (&&, ||, negb, forallb, existsb) and decidable comparisons. Check PROPERTIES, not algorithm restatement.")
 
 
 CoqBaselineGenSpecSig.instructions = COQ_GEN_SPEC_PROMPT
@@ -358,11 +397,39 @@ COQ_GEN_PROOF_PROMPT = """
 You are an expert in Coq programming and theorem proving.
 Please generate a Coq proof that the program satisfies the specification using the template provided in `task_template`.
 The `task_template` is a Coq code snippet that contains placeholders (wrapped with {{}}) for the proof to be generated.
-The proof should:
-- Be well-documented with comments if necessary
-- Follow Coq best practices and use appropriate Coq tactics
-- DO NOT use Admitted or admit
+
+IMPORTANT for Bool specifications:
+- The goal format is: precond params = true -> postcond params (code params) = true
+- First, intro the precondition hypothesis: intro H_precond
+- Then use native_compute or vm_compute to evaluate the bool expression
+- Finish with reflexivity
+
+Common proof pattern for Bool specs:
+  intro H_precond.
+  native_compute. reflexivity.
+
+If native_compute doesn't work directly:
+  intro H_precond.
+  unfold postcond, precond. simpl.
+  (* may need destruct or case analysis on booleans *)
+  reflexivity.
+
+CRITICAL - Output format:
+- The template already includes "Proof." before and "Qed." after your proof
+- DO NOT include "Proof." or "Qed." in your output - only the tactics
+- DO NOT use Admitted, admit, or Abort - provide a complete proof
 - DO NOT use axioms or assume
+
+Example - what to output:
+  intro H_precond.
+  native_compute. reflexivity.
+
+Example - what NOT to output:
+  Proof.
+  intro H_precond.
+  native_compute. reflexivity.
+  Qed.
+
 IMPORTANT:
 - DO NOT add extra imports - the template already has all necessary imports
 - DO NOT redefine any existing definitions - use unfold to work with them
@@ -370,14 +437,13 @@ IMPORTANT:
 - Keep imports and proof_aux empty unless absolutely necessary
 - The proof should work with the EXACT definitions in the template
 Hint:
-- Use unfold to expand definitions
-- Use simpl, reflexivity for computation
-- Use induction for recursive proofs over lists
-- Use lia for linear integer arithmetic
-- Use destruct for case analysis
-- Use intros to introduce hypotheses
-- Use rewrite to substitute equalities
-- Use auto, trivial, easy for simple goals
+- Use intro H_precond to introduce the precondition
+- Use native_compute or vm_compute for fast bool evaluation
+- Use reflexivity after computation reduces to true = true
+- Use unfold to expand definitions if needed
+- Use simpl for simplification
+- Use destruct for case analysis on booleans
+- Use lia for linear integer arithmetic (may need conversion from bool to Prop)
 """.strip()
 
 
@@ -391,7 +457,7 @@ class CoqBaselineGenProofSig(DspySignature):
         desc="Auxiliary lemmas for `proof`. Keep it empty if not needed."
     )
     proof = OutputField(
-        desc="Generated Coq proof tactics that prove the theorem."
+        desc="Generated Coq proof tactics only. Do NOT include 'Proof.' or 'Qed.' - the template adds them. Do NOT use Admitted or admit."
     )
 
 
@@ -402,11 +468,39 @@ COQ_GEN_PROOF_WITH_REFINEMENT_PROMPT = """
 You are an expert in Coq programming and theorem proving.
 Please generate a Coq proof that the program satisfies the specification using the template provided in `task_template`.
 The `task_template` is a Coq code snippet that contains placeholders (wrapped with {{}}) for the proof to be generated.
-The proof should:
-- Be well-documented with comments if necessary
-- Follow Coq best practices and use appropriate Coq tactics
-- DO NOT use Admitted or admit
+
+IMPORTANT for Bool specifications:
+- The goal format is: precond params = true -> postcond params (code params) = true
+- First, intro the precondition hypothesis: intro H_precond
+- Then use native_compute or vm_compute to evaluate the bool expression
+- Finish with reflexivity
+
+Common proof pattern for Bool specs:
+  intro H_precond.
+  native_compute. reflexivity.
+
+If native_compute doesn't work directly:
+  intro H_precond.
+  unfold postcond, precond. simpl.
+  (* may need destruct or case analysis on booleans *)
+  reflexivity.
+
+CRITICAL - Output format:
+- The template already includes "Proof." before and "Qed." after your proof
+- DO NOT include "Proof." or "Qed." in your output - only the tactics
+- DO NOT use Admitted, admit, or Abort - provide a complete proof
 - DO NOT use axioms or assume
+
+Example - what to output:
+  intro H_precond.
+  native_compute. reflexivity.
+
+Example - what NOT to output:
+  Proof.
+  intro H_precond.
+  native_compute. reflexivity.
+  Qed.
+
 IMPORTANT:
 - DO NOT add extra imports - the template already has all necessary imports
 - DO NOT redefine any existing definitions - use unfold to work with them
@@ -414,14 +508,13 @@ IMPORTANT:
 - Keep imports and proof_aux empty unless absolutely necessary
 - The proof should work with the EXACT definitions in the template
 Hint:
-- Use unfold to expand definitions
-- Use simpl, reflexivity for computation
-- Use induction for recursive proofs over lists
-- Use lia for linear integer arithmetic
-- Use destruct for case analysis
-- Use intros to introduce hypotheses
-- Use rewrite to substitute equalities
-- Use auto, trivial, easy for simple goals
+- Use intro H_precond to introduce the precondition
+- Use native_compute or vm_compute for fast bool evaluation
+- Use reflexivity after computation reduces to true = true
+- Use unfold to expand definitions if needed
+- Use simpl for simplification
+- Use destruct for case analysis on booleans
+- Use lia for linear integer arithmetic (may need conversion from bool to Prop)
 
 Furthermore, `prev_error` is the error message from the previous proving attempt.
 Please use the `prev_imports`, `prev_proof_aux`, and `prev_proof` as references to improve the generated proof.
@@ -446,7 +539,7 @@ class CoqBaselineGenProofWithRefinementSig(DspySignature):
         desc="Auxiliary lemmas for `proof`. Keep it empty if not needed."
     )
     proof = OutputField(
-        desc="Generated Coq proof tactics that prove the theorem."
+        desc="Generated Coq proof tactics only. Do NOT include 'Proof.' or 'Qed.' - the template adds them. Do NOT use Admitted or admit."
     )
 
 

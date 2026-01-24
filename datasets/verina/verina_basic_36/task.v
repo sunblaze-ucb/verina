@@ -1,95 +1,105 @@
 (* !benchmark @start import type=task *)
 Require Import String.
+Require Import Ascii.
+Require Import List.
+Import ListNotations.
+Require Import Bool.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Ascii.
-Require Import String.
-Require Import List.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper function to check if a character is space, comma, or dot *)
 Definition isSpaceCommaDot (c : ascii) : bool :=
-  if ascii_dec c " "%char then true
-  else if ascii_dec c ","%char then true
-  else if ascii_dec c "."%char then true
+  if (c =? " ")%char then true
+  else if (c =? ",")%char then true
+  else if (c =? ".")%char then true
   else false.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition replaceWithColon_precond_dec (s : string) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition replaceWithColon_precond (s : string) : Prop :=
+Definition replaceWithColon_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Helper to map a function over a string by converting to list and back *)
-Fixpoint map_string_chars (f : ascii -> ascii) (s : string) : string :=
-  match s with
-  | EmptyString => EmptyString
-  | String c rest => String (f c) (map_string_chars f rest)
+Definition replaceCharWithColon (c : ascii) : ascii :=
+  if isSpaceCommaDot c then ":"
+  else c.
+
+Fixpoint mapChars (cs : list ascii) : list ascii :=
+  match cs with
+  | [] => []
+  | c :: rest => replaceCharWithColon c :: mapChars rest
   end.
 (* !benchmark @end code_aux *)
 
-Definition replaceWithColon (s : string) (h_precond : replaceWithColon_precond s) : string :=
+Definition replaceWithColon (s : string) : string :=
   (* !benchmark @start code *)
-  map_string_chars (fun c => if isSpaceCommaDot c then ":"%char else c) s
+  let cs := list_ascii_of_string s in
+  let cs' := mapChars cs in
+  string_of_list_ascii cs'
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Helper to convert string to list of ascii chars *)
-Fixpoint string_to_list (s : string) : list ascii :=
-  match s with
-  | EmptyString => []
-  | String c rest => c :: string_to_list rest
+Fixpoint list_ascii_eqb (l1 l2 : list ascii) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1::t1, h2::t2 => (h1 =? h2)%char && list_ascii_eqb t1 t2
+  | _, _ => false
   end.
 
-(* Helper to get length of string *)
-Fixpoint string_length (s : string) : nat :=
-  match s with
-  | EmptyString => 0%nat
-  | String _ rest => S (string_length rest)
+Fixpoint nth_ascii (n : nat) (l : list ascii) (default : ascii) : ascii :=
+  match n, l with
+  | O, x :: _ => x
+  | S n', _ :: t => nth_ascii n' t default
+  | _, [] => default
   end.
 
-(* Helper to get nth character of string *)
-Fixpoint string_get (s : string) (n : nat) : option ascii :=
-  match s, n with
-  | EmptyString, _ => None
-  | String c _, 0%nat => Some c
-  | String _ rest, S n' => string_get rest n'
+Fixpoint checkAllIndices (i : nat) (len : nat) (cs cs' : list ascii) : bool :=
+  match i with
+  | O => 
+    if (O <? len)%nat then
+      let c := nth_ascii O cs "000"%char in
+      let c' := nth_ascii O cs' "000"%char in
+      implb (isSpaceCommaDot c) (c' =? ":")%char &&
+      implb (negb (isSpaceCommaDot c)) (c' =? c)%char
+    else true
+  | S i' =>
+    (if (i <? len)%nat then
+      let c := nth_ascii i cs "000"%char in
+      let c' := nth_ascii i cs' "000"%char in
+      implb (isSpaceCommaDot c) (c' =? ":")%char &&
+      implb (negb (isSpaceCommaDot c)) (c' =? c)%char
+    else true) && checkAllIndices i' len cs cs'
   end.
-
-Definition replaceWithColon_postcond_dec (s result : string) : bool :=
-  Nat.eqb (string_length result) (string_length s).
 (* !benchmark @end postcond_aux *)
 
-Definition replaceWithColon_postcond (s : string) (result : string) (h_precond : replaceWithColon_precond s) : Prop :=
+Definition replaceWithColon_postcond (s : string) (result : string) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
-let cs' := string_to_list result in
-string_length result = string_length s /\
-(forall i, (i < string_length s)%nat ->
-  (forall c, string_get s i = Some c ->
-    (isSpaceCommaDot c = true -> string_get result i = Some ":"%char) /\
-    (isSpaceCommaDot c = false -> string_get result i = Some c)))
+  let cs := list_ascii_of_string s in
+  let cs' := list_ascii_of_string result in
+  let len := length cs in
+  (length cs' =? len)%nat && checkAllIndices (len - 1) len cs cs'
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem replaceWithColon_postcond_satisfied (s : string) (h_precond : replaceWithColon_precond s) :
-    replaceWithColon_postcond s (replaceWithColon s h_precond) h_precond.
+Theorem replaceWithColon_postcond_satisfied (s : string) :
+    replaceWithColon_precond s = true ->
+    replaceWithColon_postcond s (replaceWithColon s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,89 +1,73 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper function to update element at index in a list *)
-Fixpoint list_set (l : list Z) (n : nat) (v : Z) : list Z :=
-  match l, n with
-  | [], _ => []
-  | _ :: tl, O => v :: tl
-  | hd :: tl, S n' => hd :: list_set tl n' v
-  end.
 
-(* Helper to get element at index with default for out of bounds *)
-Fixpoint list_get (l : list Z) (n : nat) (default : Z) : Z :=
-  match l, n with
-  | [], _ => default
-  | hd :: _, O => hd
-  | _ :: tl, S n' => list_get tl n' default
-  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition swapFirstAndLast_precond_dec (a : list Z) : bool :=
-  (0 <? length a)%nat.
+
 (* !benchmark @end precond_aux *)
 
-Definition swapFirstAndLast_precond (a : (list Z)) : Prop :=
+Definition swapFirstAndLast_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  (length a > 0)%nat
+  (1 <=? length a)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No additional code helpers *)
+Definition nth_default (l : list Z) (i : nat) : Z :=
+  nth i l 0%Z.
+
+Definition set_nth (l : list Z) (i : nat) (v : Z) : list Z :=
+  firstn i l ++ [v] ++ skipn (S i) l.
 (* !benchmark @end code_aux *)
 
-Definition swapFirstAndLast (a : (list Z)) (h_precond : swapFirstAndLast_precond a) : (list Z) :=
+Definition swapFirstAndLast (a : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let first := list_get a 0%nat 0 in
-  let last := list_get a (length a - 1)%nat 0 in
-  list_set (list_set a 0%nat last) (length a - 1)%nat first
+  let first := nth_default a 0%nat in
+  let last := nth_default a (length a - 1)%nat in
+  let a' := set_nth a 0%nat last in
+  set_nth a' (length a - 1)%nat first
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Helper to check if all elements in range satisfy a predicate *)
-Fixpoint all_range (n : nat) (f : nat -> bool) : bool :=
-  match n with
-  | O => true
-  | S n' => f n' && all_range n' f
-  end.
+Definition nth_default_post (l : list Z) (i : nat) : Z :=
+  nth i l 0%Z.
 
-Definition swapFirstAndLast_postcond_dec (a result : list Z) : bool :=
-  (length result =? length a)%nat &&
-  (Z.eqb (list_get result 0%nat 0) (list_get a (length a - 1)%nat 0)) &&
-  (Z.eqb (list_get result (length result - 1)%nat 0) (list_get a 0%nat 0)) &&
-  (all_range (length result - 2)%nat (fun i => Z.eqb (list_get result (i + 1)%nat 0) (list_get a (i + 1)%nat 0))).
+Fixpoint range (n : nat) : list nat :=
+  match n with
+  | O => []
+  | S n' => range n' ++ [n']
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition swapFirstAndLast_postcond (a : (list Z)) (result : (list Z)) (h_precond : swapFirstAndLast_precond a) : Prop :=
+Definition swapFirstAndLast_postcond (a : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  length result = length a /\
-  list_get result 0%nat 0 = list_get a (length a - 1)%nat 0 /\
-  list_get result (length result - 1)%nat 0 = list_get a 0%nat 0 /\
-  (forall i : nat, (i < length result - 2)%nat -> 
-    list_get result (i + 1)%nat 0 = list_get a (i + 1)%nat 0)
+  ((length result =? length a)%nat &&
+   (nth_default_post result 0%nat =? nth_default_post a (length a - 1)%nat) &&
+   (nth_default_post result (length result - 1)%nat =? nth_default_post a 0%nat) &&
+   forallb (fun i => (nth_default_post result (i + 1)%nat =? nth_default_post a (i + 1)%nat)) (range (length result - 2)%nat))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem swapFirstAndLast_postcond_satisfied (a : (list Z)) (h_precond : swapFirstAndLast_precond a) :
-    swapFirstAndLast_postcond a (swapFirstAndLast a h_precond) h_precond.
+Theorem swapFirstAndLast_postcond_satisfied (a : (list Z)) :
+    swapFirstAndLast_precond a = true ->
+    swapFirstAndLast_postcond a (swapFirstAndLast a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

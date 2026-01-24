@@ -1,174 +1,156 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.Arith.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Fixpoint nodup_Z (l : list Z) : bool :=
+Fixpoint list_nodup_Z (l : list Z) : bool :=
   match l with
   | [] => true
-  | x :: xs => negb (existsb (Z.eqb x) xs) && nodup_Z xs
+  | h :: t => negb (existsb (fun x => x =? h) t) && list_nodup_Z t
   end.
-
-Fixpoint all_in (nums1 nums2 : list Z) : bool :=
-  forallb (fun x => existsb (Z.eqb x) nums2) nums1.
-
-Definition nextGreaterElement_precond_dec (nums1 : list Z) (nums2 : list Z) : bool :=
-  nodup_Z nums1 && nodup_Z nums2 && all_in nums1 nums2.
 (* !benchmark @end precond_aux *)
 
-Definition nextGreaterElement_precond (nums1 : (list Z)) (nums2 : (list Z)) : Prop :=
+Definition nextGreaterElement_precond (nums1 : (list Z)) (nums2 : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  NoDup nums1 /\ NoDup nums2 /\ forallb (fun x => existsb (Z.eqb x) nums2) nums1 = true
+  list_nodup_Z nums1 && list_nodup_Z nums2 && forallb (fun x => existsb (fun y => y =? x) nums2) nums1
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint processStack (nums2 : list Z) (currentValue : Z) (s : list nat) (m : list (Z * Z)) : list nat * list (Z * Z) :=
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z t n'
+  end.
+
+Fixpoint processStack (nums2 : list Z) (s : list nat) (currentValue : Z) (m : list (Z * Z)) : list nat * list (Z * Z) :=
   match s with
   | [] => ([], m)
   | topIndex :: rest =>
-      match nth_error nums2 topIndex with
-      | None => (s, m)
-      | Some topValue =>
-          if (currentValue >? topValue)%Z then
-            let newMap := (topValue, currentValue) :: m in
-            processStack nums2 currentValue rest newMap
-          else
-            (s, m)
-      end
-  end.
-
-Fixpoint mapLoop (nums2 : list Z) (index : nat) (stack : list nat) (map : list (Z * Z)) (fuel : nat) : list (Z * Z) :=
-  match fuel with
-  | O => fold_left (fun acc pos => match nth_error nums2 pos with
-                                    | Some v => (v, -1) :: acc
-                                    | None => acc
-                                    end) stack map
-  | S fuel' =>
-      if (index >=? length nums2)%nat then
-        fold_left (fun acc pos => match nth_error nums2 pos with
-                                  | Some v => (v, -1) :: acc
-                                  | None => acc
-                                  end) stack map
+      let topValue := nth_Z nums2 topIndex in
+      if currentValue >? topValue then
+        let newMap := (topValue, currentValue) :: m in
+        processStack nums2 rest currentValue newMap
       else
-        match nth_error nums2 index with
-        | None => map
-        | Some currentValue =>
-            let '(newStack, newMap) := processStack nums2 currentValue stack map in
-            mapLoop nums2 (index + 1)%nat (index :: newStack) newMap fuel'
-        end
+        (s, m)
   end.
 
-Fixpoint findInMap (val : Z) (m : list (Z * Z)) : Z :=
+Fixpoint mapLoop (nums2 : list Z) (fuel : nat) (index : nat) (stack : list nat) (map : list (Z * Z)) : list (Z * Z) :=
+  match fuel with
+  | O => fold_left (fun acc pos => (nth_Z nums2 pos, -1) :: acc) stack map
+  | S fuel' =>
+      if (index <? length nums2)%nat then
+        let currentValue := nth_Z nums2 index in
+        let '(newStack, newMap) := processStack nums2 stack currentValue map in
+        mapLoop nums2 fuel' (S index) (index :: newStack) newMap
+      else
+        fold_left (fun acc pos => (nth_Z nums2 pos, -1) :: acc) stack map
+  end.
+
+Definition buildNextGreaterMap (nums2 : list Z) : list (Z * Z) :=
+  mapLoop nums2 (length nums2) O [] [].
+
+Fixpoint findInMap (m : list (Z * Z)) (val : Z) : Z :=
   match m with
   | [] => -1
   | (num, nextGreater) :: rest =>
-      if (num =? val)%Z then nextGreater
-      else findInMap val rest
+      if num =? val then nextGreater
+      else findInMap rest val
   end.
 
-Fixpoint resultLoop (nums1 : list Z) (buildNextGreaterMap : list (Z * Z)) (i : nat) (result : list Z) (fuel : nat) : list Z :=
+Fixpoint resultLoop (nums1 : list Z) (ngMap : list (Z * Z)) (fuel : nat) (i : nat) (result : list Z) : list Z :=
   match fuel with
   | O => rev result
   | S fuel' =>
-      if (i >=? length nums1)%nat then
-        rev result
+      if (i <? length nums1)%nat then
+        let val := nth_Z nums1 i in
+        let nextGreater := findInMap ngMap val in
+        resultLoop nums1 ngMap fuel' (S i) (nextGreater :: result)
       else
-        match nth_error nums1 i with
-        | None => rev result
-        | Some val =>
-            let nextGreater := findInMap val buildNextGreaterMap in
-            resultLoop nums1 buildNextGreaterMap (i + 1)%nat (nextGreater :: result) fuel'
-        end
+        rev result
   end.
 (* !benchmark @end code_aux *)
 
-Definition nextGreaterElement (nums1 : (list Z)) (nums2 : (list Z)) (h_precond : nextGreaterElement_precond nums1 nums2) : (list Z) :=
+Definition nextGreaterElement (nums1 : (list Z)) (nums2 : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let buildNextGreaterMap := mapLoop nums2 0%nat [] [] (length nums2) in
-resultLoop nums1 buildNextGreaterMap 0%nat [] (length nums1)
+  let ngMap := buildNextGreaterMap nums2 in
+  resultLoop nums1 ngMap (length nums1) O []
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint findIdx_Z (l : list Z) (x : Z) (idx : nat) : option nat :=
-  match l with
-  | [] => None
-  | y :: ys => if (y =? x)%Z then Some idx else findIdx_Z ys x (idx + 1)%nat
+Fixpoint nth_Z_post (l : list Z) (n : nat) : Z :=
+  match l, n with
+  | [], _ => 0
+  | h :: _, O => h
+  | _ :: t, S n' => nth_Z_post t n'
   end.
 
-Fixpoint find_next_greater (nums2 : list Z) (val : Z) (start : nat) (fuel : nat) : option Z :=
-  match fuel with
+Fixpoint findIdx_Z (l : list Z) (val : Z) (idx : nat) : option nat :=
+  match l with
+  | [] => None
+  | h :: t => if h =? val then Some idx else findIdx_Z t val (S idx)
+  end.
+
+Fixpoint findNextGreaterOffset (nums2 : list Z) (idx : nat) (val : Z) (k : nat) (limit : nat) : option nat :=
+  match limit with
   | O => None
-  | S fuel' =>
-      match nth_error nums2 start with
-      | None => None
-      | Some v =>
-          if (v >? val)%Z then Some v
-          else find_next_greater nums2 val (start + 1)%nat fuel'
+  | S limit' =>
+      let pos := (idx + k + 1)%nat in
+      if (pos <? length nums2)%nat then
+        if nth_Z_post nums2 pos >? val then Some k
+        else findNextGreaterOffset nums2 idx val (S k) limit'
+      else None
+  end.
+
+Definition checkOneResult (nums1 nums2 result : list Z) (i : nat) : bool :=
+  let val := nth_Z_post nums1 i in
+  let resultVal := nth_Z_post result i in
+  match findIdx_Z nums2 val O with
+  | None => false
+  | Some idx =>
+      let limit := (length nums2 - idx)%nat in
+      match findNextGreaterOffset nums2 idx val O limit with
+      | None => resultVal =? -1
+      | Some offset => resultVal =? nth_Z_post nums2 (idx + offset + 1)%nat
       end
   end.
 
-Fixpoint check_all_indices (nums1 nums2 result : list Z) (i : nat) (fuel : nat) : bool :=
-  match fuel with
-  | O => true
-  | S fuel' =>
-      if (i >=? length nums1)%nat then true
-      else
-        match nth_error nums1 i, nth_error result i with
-        | Some val, Some resultVal =>
-            match findIdx_Z nums2 val 0%nat with
-            | None => false
-            | Some idx =>
-                match find_next_greater nums2 val (idx + 1)%nat (length nums2) with
-                | None => (resultVal =? -1)%Z && check_all_indices nums1 nums2 result (i + 1)%nat fuel'
-                | Some nextGreater => (resultVal =? nextGreater)%Z && check_all_indices nums1 nums2 result (i + 1)%nat fuel'
-                end
-            end
-        | _, _ => false
-        end
+Fixpoint range (n : nat) : list nat :=
+  match n with
+  | O => []
+  | S n' => range n' ++ [n']
   end.
-
-Fixpoint all_in_or_neg1 (result nums2 : list Z) : bool :=
-  forallb (fun val => (val =? -1)%Z || existsb (Z.eqb val) nums2) result.
-
-Definition nextGreaterElement_postcond_dec (nums1 : list Z) (nums2 : list Z) (result : list Z) : bool :=
-  (length result =? length nums1)%nat &&
-  check_all_indices nums1 nums2 result 0%nat (length nums1) &&
-  all_in_or_neg1 result nums2.
 (* !benchmark @end postcond_aux *)
 
-Definition nextGreaterElement_postcond (nums1 : (list Z)) (nums2 : (list Z)) (result : (list Z)) (h_precond : nextGreaterElement_precond nums1 nums2) : Prop :=
+Definition nextGreaterElement_postcond (nums1 : (list Z)) (nums2 : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  length result = length nums1 /\
-check_all_indices nums1 nums2 result 0%nat (length nums1) = true /\
-all_in_or_neg1 result nums2 = true
+  ((length result =? length nums1)%nat) &&
+  (forallb (fun i => checkOneResult nums1 nums2 result i) (range (length nums1))) &&
+  (forallb (fun val => (val =? -1) || existsb (fun y => y =? val) nums2) result)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem nextGreaterElement_postcond_satisfied (nums1 : (list Z)) (nums2 : (list Z)) (h_precond : nextGreaterElement_precond nums1 nums2) :
-    nextGreaterElement_postcond nums1 nums2 (nextGreaterElement nums1 nums2 h_precond) h_precond.
+Theorem nextGreaterElement_postcond_satisfied (nums1 : (list Z)) (nums2 : (list Z)) :
+    nextGreaterElement_precond nums1 nums2 = true ->
+    nextGreaterElement_postcond nums1 nums2 (nextGreaterElement nums1 nums2) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

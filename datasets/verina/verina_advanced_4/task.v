@@ -1,142 +1,148 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import List.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition LongestIncreasingSubsequence_precond_dec (a : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition LongestIncreasingSubsequence_precond (a : (list Z)) : Prop :=
+Definition LongestIncreasingSubsequence_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Definition intMax (x y : Z) : Z :=
-  if (x <? y)%Z then y else x.
+  if x <? y then y else x.
 
-Fixpoint update_dp (dp : list Z) (a : list Z) (i j : nat) : list Z :=
-  match j with
-  | 0%nat => 
-      match nth_error a 0%nat, nth_error a i, nth_error dp 0%nat, nth_error dp i with
-      | Some aj, Some ai, Some dpj, Some dpi =>
-          if (aj <? ai)%Z then
-            let newVal := intMax dpi (dpj + 1)%Z in
-            match i with
-            | 0%nat => [newVal]
-            | S i' => (firstn i dp) ++ [newVal] ++ (skipn (S i) dp)
-            end
-          else dp
-      | _, _, _, _ => dp
-      end
-  | S j' =>
-      let dp' := update_dp dp a i j' in
-      match nth_error a (S j'), nth_error a i, nth_error dp' (S j'), nth_error dp' i with
-      | Some aj, Some ai, Some dpj, Some dpi =>
-          if (aj <? ai)%Z then
-            let newVal := intMax dpi (dpj + 1)%Z in
-            match i with
-            | 0%nat => [newVal]
-            | S i' => (firstn i dp') ++ [newVal] ++ (skipn (S i) dp')
-            end
-          else dp'
-      | _, _, _, _ => dp'
-      end
-  end.
-
-Fixpoint outer_loop (dp : list Z) (a : list Z) (i n : nat) : list Z :=
-  match n with
-  | 0%nat => dp
-  | S n' =>
-      match i with
-      | 0%nat => dp
-      | S i' =>
-          let dp' := outer_loop dp a i' n' in
-          match i' with
-          | 0%nat => update_dp dp' a 1%nat 0%nat
-          | _ => update_dp dp' a i (pred i)
-          end
-      end
-  end.
-
-Fixpoint list_max (l : list Z) : Z :=
+Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
   match l with
-  | [] => 0%Z
-  | [x] => x
-  | x :: xs => intMax x (list_max xs)
+  | [] => 0
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_Z t n'
+              end
+  end.
+
+Fixpoint update_list (l : list Z) (n : nat) (v : Z) : list Z :=
+  match l with
+  | [] => []
+  | h :: t => match n with
+              | O => v :: t
+              | S n' => h :: update_list t n' v
+              end
+  end.
+
+Fixpoint inner_loop (a : list Z) (dp : list Z) (i j : nat) : list Z :=
+  match j with
+  | O => dp
+  | S j' =>
+    let idx := (i - j)%nat in
+    let dp' := if (nth_Z a idx <? nth_Z a i)
+               then update_list dp i (intMax (nth_Z dp i) (nth_Z dp idx + 1))
+               else dp
+    in inner_loop a dp' i j'
+  end.
+
+Fixpoint outer_loop (a : list Z) (dp : list Z) (remaining : nat) (current : nat) : list Z :=
+  match remaining with
+  | O => dp
+  | S r' =>
+    let dp' := inner_loop a dp current current in
+    outer_loop a dp' r' (S current)
+  end.
+
+Fixpoint make_ones (n : nat) : list Z :=
+  match n with
+  | O => []
+  | S n' => 1 :: make_ones n'
+  end.
+
+Fixpoint fold_max (l : list Z) (acc : Z) : Z :=
+  match l with
+  | [] => acc
+  | h :: t => fold_max t (intMax acc h)
   end.
 (* !benchmark @end code_aux *)
 
-Definition LongestIncreasingSubsequence (a : (list Z)) (h_precond : LongestIncreasingSubsequence_precond a) : Z :=
+Definition LongestIncreasingSubsequence (a : (list Z)) : Z :=
   (* !benchmark @start code *)
   let n := length a in
-  let dp := repeat 1%Z n in
-  let dp_final := outer_loop dp a (pred n) (pred n) in
-  match dp_final with
-  | [] => 0%Z
-  | _ => list_max dp_final
+  match n with
+  | O => 0
+  | _ =>
+    let dp := make_ones n in
+    let dp' := outer_loop a dp (n - 1)%nat 1%nat in
+    fold_max dp' 0
   end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint subsequences {A : Type} (l : list A) : list (list A) :=
-  match l with
+Fixpoint subsequences_aux (a : list Z) : list (list Z) :=
+  match a with
   | [] => [[]]
   | x :: xs =>
-      let subs := subsequences xs in
-      subs ++ map (fun sub => x :: sub) subs
+    let subs := subsequences_aux xs in
+    subs ++ map (fun sub => x :: sub) subs
   end.
+
+Definition subsequences (a : list Z) : list (list Z) :=
+  subsequences_aux a.
 
 Fixpoint is_strictly_increasing (l : list Z) : bool :=
   match l with
   | [] => true
-  | [_] => true
-  | x :: y :: rest =>
-      if (x <? y)%Z then is_strictly_increasing (y :: rest) else false
+  | x :: xs =>
+    match xs with
+    | [] => true
+    | y :: _ => (x <? y)%Z && is_strictly_increasing xs
+    end
   end.
 
-Definition LongestIncreasingSubsequence_postcond_dec (a : list Z) (result : Z) : bool :=
-  let allSubseq := subsequences a in
-  let increasingSubseqs := filter is_strictly_increasing allSubseq in
-  let increasingSubseqLens := map (fun l => Z.of_nat (length l)) increasingSubseqs in
-  existsb (Z.eqb result) increasingSubseqLens &&
-  forallb (fun len => (len <=? result)%Z) increasingSubseqLens.
+Definition increasing_subsequences (a : list Z) : list (list Z) :=
+  filter is_strictly_increasing (subsequences a).
+
+Definition increasing_subseq_lens (a : list Z) : list Z :=
+  map (fun l => Z.of_nat (length l)) (increasing_subsequences a).
+
+Fixpoint list_Z_contains (l : list Z) (x : Z) : bool :=
+  match l with
+  | [] => false
+  | h :: t => (h =? x) || list_Z_contains t x
+  end.
+
+Definition all_leq (l : list Z) (x : Z) : bool :=
+  forallb (fun y => y <=? x) l.
 (* !benchmark @end postcond_aux *)
 
-Definition LongestIncreasingSubsequence_postcond (a : (list Z)) (result : Z) (h_precond : LongestIncreasingSubsequence_precond a) : Prop :=
+Definition LongestIncreasingSubsequence_postcond (a : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let allSubseq := subsequences a in
-  let increasingSubseqs := filter is_strictly_increasing allSubseq in
-  let increasingSubseqLens := map (fun l => Z.of_nat (length l)) increasingSubseqs in
-  In result increasingSubseqLens /\ Forall (fun len => (len <= result)%Z) increasingSubseqLens
+  let lens := increasing_subseq_lens a in
+  list_Z_contains lens result && all_leq lens result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem LongestIncreasingSubsequence_postcond_satisfied (a : (list Z)) (h_precond : LongestIncreasingSubsequence_precond a) :
-    LongestIncreasingSubsequence_postcond a (LongestIncreasingSubsequence a h_precond) h_precond.
+Theorem LongestIncreasingSubsequence_postcond_satisfied (a : (list Z)) :
+    LongestIncreasingSubsequence_precond a = true ->
+    LongestIncreasingSubsequence_postcond a (LongestIncreasingSubsequence a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

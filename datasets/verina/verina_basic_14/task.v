@@ -1,73 +1,69 @@
 (* !benchmark @start import type=task *)
 Require Import Bool.
 Require Import String.
-(* !benchmark @end import *)
-
-(* !benchmark @start import type=solution *)
 Require Import Ascii.
-Require Import String.
 Require Import List.
+Require Import Arith.
 Import ListNotations.
 (* !benchmark @end import *)
 
+(* !benchmark @start import type=solution *)
+
+(* !benchmark @end import *)
+
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition containsZ_precond_dec (s : string) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition containsZ_precond (s : string) : Prop :=
+Definition containsZ_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Definition is_z_char (c : ascii) : bool :=
-  if ascii_dec c "122"%char then true
-  else if ascii_dec c "090"%char then true
-  else false.
+Definition is_z (c : ascii) : bool :=
+  let n := nat_of_ascii c in
+  Nat.eqb n 122 || Nat.eqb n 90.
 
-Fixpoint existsb_string (f : ascii -> bool) (s : string) : bool :=
-  match s with
-  | EmptyString => false
-  | String c s' => if f c then true else existsb_string f s'
+Fixpoint any_is_z (cs : list ascii) : bool :=
+  match cs with
+  | [] => false
+  | c :: rest => if is_z c then true else any_is_z rest
   end.
 (* !benchmark @end code_aux *)
 
-Definition containsZ (s : string) (h_precond : containsZ_precond s) : bool :=
+Definition containsZ (s : string) : bool :=
   (* !benchmark @start code *)
-  existsb_string is_z_char s
+  any_is_z (list_ascii_of_string s)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint string_to_list (s : string) : list ascii :=
-  match s with
-  | EmptyString => []
-  | String c s' => c :: string_to_list s'
-  end.
-
-Definition containsZ_postcond_dec (s : string) (result : bool) : bool :=
-  result.
+Definition is_z_post (c : ascii) : bool :=
+  let n := nat_of_ascii c in
+  Nat.eqb n 122 || Nat.eqb n 90.
 (* !benchmark @end postcond_aux *)
 
-Definition containsZ_postcond (s : string) (result : bool) (h_precond : containsZ_precond s) : Prop :=
+Definition containsZ_postcond (s : string) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
-  (exists x, In x cs /\ (x = "122"%char \/ x = "090"%char)) <-> result = true
+  let cs := list_ascii_of_string s in
+  Bool.eqb (existsb is_z_post cs) result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem containsZ_postcond_satisfied (s : string) (h_precond : containsZ_precond s) :
-    containsZ_postcond s (containsZ s h_precond) h_precond.
+Theorem containsZ_postcond_satisfied (s : string) :
+    containsZ_precond s = true ->
+    containsZ_postcond s (containsZ s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,91 +1,90 @@
 (* !benchmark @start import type=task *)
-Require Import List.
-Import ListNotations.
 Require Import ZArith.
+Require Import List.
+Require Import Bool.
+Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Require Import List.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition findFirstOdd_precond_dec (a : list Z) : bool :=
-  Nat.ltb 0%nat (length a).
+
 (* !benchmark @end precond_aux *)
 
-Definition findFirstOdd_precond (a : (list Z)) : Prop :=
+Definition findFirstOdd_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  (length a > 0)%nat
+  (1 <=? length a)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Definition isOdd (x : Z) : bool :=
-  negb (Z.eqb (x mod 2)%Z 0%Z).
+  negb (x mod 2 =? 0).
 
-Fixpoint find_index_aux {A : Type} (f : A -> bool) (l : list A) (idx : nat) : option nat :=
+Fixpoint findFirstOddHelper (l : list Z) (idx : nat) : option nat :=
   match l with
   | [] => None
-  | x :: xs => if f x then Some idx else find_index_aux f xs (S idx)
+  | x :: xs => if isOdd x then Some idx else findFirstOddHelper xs (S idx)
   end.
-
-Definition find_index {A : Type} (f : A -> bool) (l : list A) : option nat :=
-  find_index_aux f l 0%nat.
 (* !benchmark @end code_aux *)
 
-Definition findFirstOdd (a : (list Z)) (h_precond : findFirstOdd_precond a) : (option nat) :=
+Definition findFirstOdd (a : (list Z)) : (option nat) :=
   (* !benchmark @start code *)
-  find_index isOdd a
+  findFirstOddHelper a O
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
+Definition isOdd_spec (x : Z) : bool :=
+  negb (x mod 2 =? 0).
+
 Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
   match l, n with
-  | [], _ => 0%Z
-  | x :: _, 0%nat => x
-  | _ :: xs, S m => nth_Z xs m
+  | [], _ => 0
+  | x :: _, O => x
+  | _ :: xs, S n' => nth_Z xs n'
   end.
 
-Definition findFirstOdd_postcond_dec (a : list Z) (result : option nat) : bool :=
-  match result with
-  | Some idx =>
-      (Nat.ltb idx (length a)) &&
-      (isOdd (nth_Z a idx)) &&
-      (forallb (fun j => negb (isOdd (nth_Z a j))) (seq 0 idx))
-  | None =>
-      forallb (fun i => negb (isOdd (nth_Z a i))) (seq 0 (length a))
+Fixpoint all_even_before (l : list Z) (idx : nat) : bool :=
+  match idx with
+  | O => true
+  | S idx' => match l with
+              | [] => true
+              | x :: xs => negb (isOdd_spec x) && all_even_before xs idx'
+              end
+  end.
+
+Fixpoint all_even (l : list Z) : bool :=
+  match l with
+  | [] => true
+  | x :: xs => negb (isOdd_spec x) && all_even xs
   end.
 (* !benchmark @end postcond_aux *)
 
-Definition findFirstOdd_postcond (a : (list Z)) (result : (option nat)) (h_precond : findFirstOdd_precond a) : Prop :=
+Definition findFirstOdd_postcond (a : (list Z)) (result : (option nat)) : bool :=
   (* !benchmark @start postcond *)
   match result with
-| Some idx => 
-    (idx < length a)%nat /\ 
-    isOdd (nth_Z a idx) = true /\
-    (forall j, (j < idx)%nat -> isOdd (nth_Z a j) = false)
-| None => 
-    forall i, (i < length a)%nat -> isOdd (nth_Z a i) = false
-end
+  | Some idx => (idx <? length a)%nat && isOdd_spec (nth_Z a idx) && all_even_before a idx
+  | None => all_even a
+  end
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem findFirstOdd_postcond_satisfied (a : (list Z)) (h_precond : findFirstOdd_precond a) :
-    findFirstOdd_postcond a (findFirstOdd a h_precond) h_precond.
+Theorem findFirstOdd_postcond_satisfied (a : (list Z)) :
+    findFirstOdd_precond a = true ->
+    findFirstOdd_postcond a (findFirstOdd a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

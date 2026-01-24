@@ -1,98 +1,101 @@
 (* !benchmark @start import type=task *)
+Require Import Bool.
 Require Import String.
+Require Import Ascii.
+Require Import List.
+Import ListNotations.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Ascii.
-Require Import String.
-Require Import List.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition toUppercase_precond_dec (s : string) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition toUppercase_precond (s : string) : Prop :=
+Definition toUppercase_precond (s : string) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Definition isLowerCase (c : ascii) : bool :=
   let n := nat_of_ascii c in
-  let a_val := nat_of_ascii "a"%char in
-  let z_val := nat_of_ascii "z"%char in
-  andb (Nat.leb a_val n) (Nat.leb n z_val).
+  (nat_of_ascii "a" <=? n)%nat && (n <=? nat_of_ascii "z")%nat.
 
 Definition shiftMinus32 (c : ascii) : ascii :=
   let n := nat_of_ascii c in
-  ascii_of_nat (Nat.modulo (n - 32) 128).
+  ascii_of_nat ((n - 32) mod 128).
 
-Fixpoint map_chars (f : ascii -> ascii) (s : string) : string :=
-  match s with
-  | EmptyString => EmptyString
-  | String c rest => String (f c) (map_chars f rest)
+Definition toUpperChar (c : ascii) : ascii :=
+  if isLowerCase c then shiftMinus32 c else c.
+
+Fixpoint mapChars (cs : list ascii) : list ascii :=
+  match cs with
+  | [] => []
+  | c :: rest => toUpperChar c :: mapChars rest
   end.
 (* !benchmark @end code_aux *)
 
-Definition toUppercase (s : string) (h_precond : toUppercase_precond s) : string :=
+Definition toUppercase (s : string) : string :=
   (* !benchmark @start code *)
-  map_chars (fun c => if isLowerCase c then shiftMinus32 c else c) s
+  let cs := list_ascii_of_string s in
+  let cs' := mapChars cs in
+  string_of_list_ascii cs'
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint string_to_list (s : string) : list ascii :=
-  match s with
-  | EmptyString => []
-  | String c rest => c :: string_to_list rest
+Definition isLowerCase_post (c : ascii) : bool :=
+  let n := nat_of_ascii c in
+  (nat_of_ascii "a" <=? n)%nat && (n <=? nat_of_ascii "z")%nat.
+
+Definition shiftMinus32_post (c : ascii) : ascii :=
+  let n := nat_of_ascii c in
+  ascii_of_nat ((n - 32) mod 128).
+
+Fixpoint nth_ascii (l : list ascii) (n : nat) : ascii :=
+  match l, n with
+  | [], _ => "000"%char
+  | h :: _, O => h
+  | _ :: t, S n' => nth_ascii t n'
   end.
 
-Fixpoint string_length (s : string) : nat :=
-  match s with
-  | EmptyString => 0%nat
-  | String _ rest => S (string_length rest)
+Fixpoint check_all_indices (cs cs' : list ascii) (i len : nat) : bool :=
+  match len with
+  | O => true
+  | S len' =>
+    let c := nth_ascii cs i in
+    let c' := nth_ascii cs' i in
+    let check_lower := implb (isLowerCase_post c) (Ascii.eqb c' (shiftMinus32_post c)) in
+    let check_not_lower := implb (negb (isLowerCase_post c)) (Ascii.eqb c' c) in
+    check_lower && check_not_lower && check_all_indices cs cs' (S i) len'
   end.
-
-Fixpoint nth_char (l : list ascii) (i : nat) : ascii :=
-  match l, i with
-  | [], _ => "!"%char
-  | c :: _, 0%nat => c
-  | _ :: rest, S i' => nth_char rest i'
-  end.
-
-Definition toUppercase_postcond_dec (s : string) (result : string) : bool :=
-  let cs := string_to_list s in
-  let cs' := string_to_list result in
-  let len_eq := Nat.eqb (string_length result) (string_length s) in
-  len_eq.
 (* !benchmark @end postcond_aux *)
 
-Definition toUppercase_postcond (s : string) (result : string) (h_precond : toUppercase_precond s) : Prop :=
+Definition toUppercase_postcond (s : string) (result : string) : bool :=
   (* !benchmark @start postcond *)
-  let cs := string_to_list s in
-let cs' := string_to_list result in
-(string_length result = string_length s) /\
-(forall i, (i < string_length s)%nat ->
-  (isLowerCase (nth_char cs i) = true -> nth_char cs' i = shiftMinus32 (nth_char cs i)) /\
-  (isLowerCase (nth_char cs i) = false -> nth_char cs' i = nth_char cs i))
+  let cs := list_ascii_of_string s in
+  let cs' := list_ascii_of_string result in
+  (length cs' =? length cs)%nat && check_all_indices cs cs' 0 (length cs)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem toUppercase_postcond_satisfied (s : string) (h_precond : toUppercase_precond s) :
-    toUppercase_postcond s (toUppercase s h_precond) h_precond.
+Theorem toUppercase_postcond_satisfied (s : string) :
+    toUppercase_precond s = true ->
+    toUppercase_postcond s (toUppercase s) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

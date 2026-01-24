@@ -1,110 +1,110 @@
 (* !benchmark @start import type=task *)
 Require Import List.
+Require Import Nat.
+Require Import Bool.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import List.
-Import ListNotations.
-Require Import Arith.
-Require Import Lia.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-
-Definition modify_array_element_precond_dec (arr : list (list nat)) (index1 : nat) (index2 : nat) (val : nat) : bool :=
-  (index1 <? length arr) && 
-  match nth_error arr index1 with
-  | Some inner => index2 <? length inner
-  | None => false
+Fixpoint nth_default_list {A : Type} (default : list A) (l : list (list A)) (n : nat) : list A :=
+  match l with
+  | [] => default
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_default_list default t n'
+              end
   end.
 (* !benchmark @end precond_aux *)
 
-Definition modify_array_element_precond (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) : Prop :=
+Definition modify_array_element_precond (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) : bool :=
   (* !benchmark @start precond *)
-  (index1 < length arr)%nat /\
-(index2 < length (nth index1 arr []))%nat
+  (index1 <? length arr)%nat && (index2 <? length (nth_default_list [] arr index1))%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* complete helper function definitions *)
-
-Fixpoint update_at {A : Type} (l : list A) (idx : nat) (new_val : A) : list A :=
-  match l, idx with
-  | [], _ => []
-  | x :: xs, 0 => new_val :: xs
-  | x :: xs, S n => x :: update_at xs n new_val
+Fixpoint update_nth {A : Type} (l : list A) (n : nat) (v : A) : list A :=
+  match l with
+  | [] => []
+  | h :: t => match n with
+              | O => v :: t
+              | S n' => h :: update_nth t n' v
+              end
   end.
+
+Definition updateInner (a : list nat) (idx val : nat) : list nat :=
+  update_nth a idx val.
 (* !benchmark @end code_aux *)
 
-Definition modify_array_element (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) (h_precond : modify_array_element_precond arr index1 index2 val) : (list (list nat)) :=
+Definition modify_array_element (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) : (list (list nat)) :=
   (* !benchmark @start code *)
   let inner := nth index1 arr [] in
-let inner' := update_at inner index2 val in
-update_at arr index1 inner'
+    let inner' := updateInner inner index2 val in
+    update_nth arr index1 inner'
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* postcondition helpers including _dec version, complete definitions *)
-
-Fixpoint forall_nat_below (n : nat) (f : nat -> bool) : bool :=
-  match n with
-  | 0 => true
-  | S m => f m && forall_nat_below m f
+Fixpoint nth_default_nat (default : nat) (l : list nat) (n : nat) : nat :=
+  match l with
+  | [] => default
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_default_nat default t n'
+              end
   end.
 
-Definition list_nat_eq_dec (l1 l2 : list nat) : bool :=
-  if list_eq_dec Nat.eq_dec l1 l2 then true else false.
+Fixpoint nth_default_list_post (default : list nat) (l : list (list nat)) (n : nat) : list nat :=
+  match l with
+  | [] => default
+  | h :: t => match n with
+              | O => h
+              | S n' => nth_default_list_post default t n'
+              end
+  end.
 
-Definition modify_array_element_postcond_dec (arr : list (list nat)) (index1 : nat) (index2 : nat) (val : nat) (result : list (list nat)) : bool :=
-  forall_nat_below (length arr) (fun i =>
-    if Nat.eqb i index1 then true
-    else match nth_error arr i, nth_error result i with
-         | Some ai, Some ri => list_nat_eq_dec ai ri
-         | _, _ => false
-         end) &&
-  match nth_error arr index1 with
-  | Some inner_arr =>
-      match nth_error result index1 with
-      | Some inner_result =>
-          forall_nat_below (length inner_arr) (fun j =>
-            if Nat.eqb j index2 then true
-            else match nth_error inner_arr j, nth_error inner_result j with
-                 | Some vj, Some rj => Nat.eqb vj rj
-                 | _, _ => false
-                 end) &&
-          match nth_error inner_result index2 with
-          | Some v => Nat.eqb v val
-          | None => false
-          end
-      | None => false
-      end
-  | None => false
+Definition forallb_indexed {A : Type} (f : nat -> A -> bool) (l : list A) : bool :=
+  (fix aux (n : nat) (l : list A) : bool :=
+    match l with
+    | [] => true
+    | h :: t => andb (f n h) (aux (S n) t)
+    end) O l.
+
+Fixpoint list_eqb (l1 l2 : list nat) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1::t1, h2::t2 => andb (Nat.eqb h1 h2) (list_eqb t1 t2)
+  | _, _ => false
   end.
 (* !benchmark @end postcond_aux *)
 
-Definition modify_array_element_postcond (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) (result : (list (list nat))) (h_precond : modify_array_element_precond arr index1 index2 val) : Prop :=
+Definition modify_array_element_postcond (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) (result : (list (list nat))) : bool :=
   (* !benchmark @start postcond *)
-  (forall i, (i < length arr)%nat -> i <> index1 -> nth i result [] = nth i arr []) /\
-(forall j, (j < length (nth index1 arr []))%nat -> j <> index2 -> nth j (nth index1 result []) 0%nat = nth j (nth index1 arr []) 0%nat) /\
-(nth index2 (nth index1 result []) 0%nat = val)
+  andb (andb 
+      (forallb_indexed (fun i _ => implb (andb (i <? length arr)%nat (negb (Nat.eqb i index1)))
+                                         (list_eqb (nth_default_list_post [] result i) (nth_default_list_post [] arr i))) arr)
+      (forallb_indexed (fun j _ => implb (andb (j <? length (nth_default_list_post [] arr index1))%nat (negb (Nat.eqb j index2)))
+                                            (Nat.eqb (nth_default_nat 0 (nth_default_list_post [] result index1) j) (nth_default_nat 0 (nth_default_list_post [] arr index1) j))) (nth_default_list_post [] arr index1)))
+      (Nat.eqb (nth_default_nat 0 (nth_default_list_post [] result index1) index2) val)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem modify_array_element_postcond_satisfied (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) (h_precond : modify_array_element_precond arr index1 index2 val) :
-    modify_array_element_postcond arr index1 index2 val (modify_array_element arr index1 index2 val h_precond) h_precond.
+Theorem modify_array_element_postcond_satisfied (arr : (list (list nat))) (index1 : nat) (index2 : nat) (val : nat) :
+    modify_array_element_precond arr index1 index2 val = true ->
+    modify_array_element_postcond arr index1 index2 val (modify_array_element arr index1 index2 val) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

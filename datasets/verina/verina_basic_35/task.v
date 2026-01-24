@@ -1,103 +1,95 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import List.
-Require Import ZArith.
-Require Import Lia.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Filter function for lists *)
-Fixpoint filter_list {A : Type} (f : A -> bool) (l : list A) : list A :=
-  match l with
-  | [] => []
-  | x :: xs => if f x then x :: filter_list f xs else filter_list f xs
-  end.
 
-(* Check if Z is non-zero *)
-Definition is_nonzero (z : Z) : bool := negb (Z.eqb z 0).
-
-(* Check if Z is zero *)
-Definition is_zero (z : Z) : bool := Z.eqb z 0.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition MoveZeroesToEnd_precond_dec (arr : list Z) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition MoveZeroesToEnd_precond (arr : (list Z)) : Prop :=
+Definition MoveZeroesToEnd_precond (arr : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* Find index of first occurrence of element in list *)
-Fixpoint index_of {A : Type} (eq_dec : forall x y : A, {x = y} + {x <> y}) (x : A) (l : list A) : nat :=
-  match l with
-  | [] => 0%nat
-  | y :: ys => if eq_dec x y then 0%nat else S (index_of eq_dec x ys)
-  end.
+Definition filter_nonzeros (l : list Z) : list Z :=
+  filter (fun x => negb (x =? 0)) l.
+
+Definition filter_zeros (l : list Z) : list Z :=
+  filter (fun x => x =? 0) l.
 (* !benchmark @end code_aux *)
 
-Definition MoveZeroesToEnd (arr : (list Z)) (h_precond : MoveZeroesToEnd_precond arr) : (list Z) :=
+Definition MoveZeroesToEnd (arr : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let nonZeros := filter_list is_nonzero arr in
-let zeros := filter_list is_zero arr in
-nonZeros ++ zeros
+  let nonZeros := filter_nonzeros arr in
+  let zeros := filter_zeros arr in
+  nonZeros ++ zeros
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* Permutation relation - list has same elements *)
-Fixpoint count_occ {A : Type} (eq_dec : forall x y : A, {x = y} + {x <> y}) (l : list A) (x : A) : nat :=
+(* Count occurrences of an element in a list *)
+Fixpoint count_occ_Z (l : list Z) (x : Z) : nat :=
   match l with
-  | [] => 0%nat
-  | y :: ys => if eq_dec x y then S (count_occ eq_dec ys x) else count_occ eq_dec ys x
+  | [] => O
+  | h :: t => if h =? x then S (count_occ_Z t x) else count_occ_Z t x
   end.
 
-Definition is_perm {A : Type} (eq_dec : forall x y : A, {x = y} + {x <> y}) (l1 l2 : list A) : Prop :=
-  forall x, count_occ eq_dec l1 x = count_occ eq_dec l2 x.
+(* Check if l1 is a permutation of l2 by checking counts match for all elements *)
+Fixpoint all_counts_match (elems l1 l2 : list Z) : bool :=
+  match elems with
+  | [] => true
+  | h :: t => (count_occ_Z l1 h =? count_occ_Z l2 h)%nat && all_counts_match t l1 l2
+  end.
 
-Definition Z_eq_dec : forall x y : Z, {x = y} + {x <> y}.
-Proof. intros. destruct (Z.eq_dec x y); auto. Defined.
+Definition isPerm_Z (l1 l2 : list Z) : bool :=
+  (length l1 =? length l2)%nat && all_counts_match l1 l1 l2 && all_counts_match l2 l1 l2.
 
-(* Helper to convert sumbool to bool *)
-Definition sumbool_to_bool {P Q : Prop} (s : {P} + {Q}) : bool :=
-  if s then true else false.
+(* Find index of first occurrence of 0 in list, return length if not found *)
+Fixpoint idxOf_zero (l : list Z) : nat :=
+  match l with
+  | [] => O
+  | h :: t => if h =? 0 then O else S (idxOf_zero t)
+  end.
 
-(* Decidable version of postcondition *)
-Definition MoveZeroesToEnd_postcond_dec (arr result : list Z) : bool :=
-  let firstResZeroIdx := index_of Z_eq_dec 0 result in
-  let nonZeros := filter_list is_nonzero arr in
-  let zeros := filter_list is_zero arr in
-  andb (sumbool_to_bool (list_eq_dec Z_eq_dec (firstn firstResZeroIdx result) nonZeros))
-       (sumbool_to_bool (list_eq_dec Z_eq_dec (skipn firstResZeroIdx result) zeros)).
+(* List equality for Z *)
+Fixpoint list_Z_eqb (l1 l2 : list Z) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | h1 :: t1, h2 :: t2 => (h1 =? h2) && list_Z_eqb t1 t2
+  | _, _ => false
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition MoveZeroesToEnd_postcond (arr : (list Z)) (result : (list Z)) (h_precond : MoveZeroesToEnd_precond arr) : Prop :=
+Definition MoveZeroesToEnd_postcond (arr : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  let firstResZeroIdx := index_of Z_eq_dec 0 result in
-is_perm Z_eq_dec result arr /\
-firstn firstResZeroIdx result = filter_list is_nonzero arr /\
-skipn firstResZeroIdx result = filter_list is_zero arr
+  let firstResZeroIdx := idxOf_zero result in
+  isPerm_Z result arr &&
+  list_Z_eqb (firstn firstResZeroIdx result) (filter (fun x => negb (x =? 0)) arr) &&
+  list_Z_eqb (skipn firstResZeroIdx result) (filter (fun x => x =? 0) arr)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem MoveZeroesToEnd_postcond_satisfied (arr : (list Z)) (h_precond : MoveZeroesToEnd_precond arr) :
-    MoveZeroesToEnd_postcond arr (MoveZeroesToEnd arr h_precond) h_precond.
+Theorem MoveZeroesToEnd_postcond_satisfied (arr : (list Z)) :
+    MoveZeroesToEnd_precond arr = true ->
+    MoveZeroesToEnd_postcond arr (MoveZeroesToEnd arr) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

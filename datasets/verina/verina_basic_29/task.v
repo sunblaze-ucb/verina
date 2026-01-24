@@ -1,81 +1,80 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper function to remove element at index k from list *)
-Fixpoint removeAt {A : Type} (l : list A) (k : nat) : list A :=
-  match k, l with
-  | 0%nat, _ :: tl => tl
-  | S k', hd :: tl => hd :: removeAt tl k'
-  | _, [] => []
-  end.
 
-(* Helper function to get element at index i *)
-Fixpoint nth_Z (l : list Z) (i : nat) : Z :=
-  match i, l with
-  | 0%nat, hd :: _ => hd
-  | S i', _ :: tl => nth_Z tl i'
-  | _, [] => 0%Z
-  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition removeElement_precond_dec (s : list Z) (k : nat) : bool :=
-  (k <? length s)%nat.
+
 (* !benchmark @end precond_aux *)
 
-Definition removeElement_precond (s : (list Z)) (k : nat) : Prop :=
+Definition removeElement_precond (s : (list Z)) (k : nat) : bool :=
   (* !benchmark @start precond *)
-  (k < length s)%nat
+  (k <? length s)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No additional code helpers needed *)
+Fixpoint removeElement_aux (s : list Z) (k : nat) : list Z :=
+  match s with
+  | [] => []
+  | h :: t =>
+    match k with
+    | O => t
+    | S k' => h :: removeElement_aux t k'
+    end
+  end.
 (* !benchmark @end code_aux *)
 
-Definition removeElement (s : (list Z)) (k : nat) (h_precond : removeElement_precond s k) : (list Z) :=
+Definition removeElement (s : (list Z)) (k : nat) : (list Z) :=
   (* !benchmark @start code *)
-  removeAt s k
+  removeElement_aux s k
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition removeElement_postcond_dec (s : list Z) (k : nat) (result : list Z) : bool :=
-  let size_check := Nat.eqb (length result) (length s - 1)%nat in
-  let before_check := 
-    forallb (fun i => Z.eqb (nth_Z result i) (nth_Z s i)) (seq 0 k) in
-  let after_check := 
-    forallb (fun i => 
-      if andb (i <? length result)%nat (k <=? i)%nat
-      then Z.eqb (nth_Z result i) (nth_Z s (i + 1)%nat)
-      else true) (seq 0 (length result)) in
-  andb (andb size_check before_check) after_check.
+Fixpoint nth_or_zero (l : list Z) (n : nat) : Z :=
+  match l with
+  | [] => 0%Z
+  | h :: t =>
+    match n with
+    | O => h
+    | S n' => nth_or_zero t n'
+    end
+  end.
+
+Fixpoint forall_nat_lt (n : nat) (f : nat -> bool) : bool :=
+  match n with
+  | O => true
+  | S n' => f n' && forall_nat_lt n' f
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition removeElement_postcond (s : (list Z)) (k : nat) (result : (list Z)) (h_precond : removeElement_precond s k) : Prop :=
+Definition removeElement_postcond (s : (list Z)) (k : nat) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  length result = (length s - 1)%nat /\
-  (forall i, (i < k)%nat -> nth_Z result i = nth_Z s i) /\
-  (forall i, (i < length result)%nat -> (i >= k)%nat -> nth_Z result i = nth_Z s (i + 1)%nat)
+  ((length result =? length s - 1)%nat) &&
+  forall_nat_lt k (fun i => (nth_or_zero result i =? nth_or_zero s i)) &&
+  forall_nat_lt (length result) (fun i => implb (k <=? i)%nat (nth_or_zero result i =? nth_or_zero s (i + 1)%nat))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem removeElement_postcond_satisfied (s : (list Z)) (k : nat) (h_precond : removeElement_precond s k) :
-    removeElement_postcond s k (removeElement s k h_precond) h_precond.
+Theorem removeElement_postcond_satisfied (s : (list Z)) (k : nat) :
+    removeElement_precond s k = true ->
+    removeElement_postcond s k (removeElement s k) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

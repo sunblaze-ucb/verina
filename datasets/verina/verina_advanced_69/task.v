@@ -1,128 +1,85 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No additional solution-level helpers needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Fixpoint StrictlySorted (l : list Z) : Prop :=
-  match l with
-  | [] => True
-  | x :: xs =>
-      match xs with
-      | [] => True
-      | y :: _ => x < y /\ StrictlySorted xs
-      end
-  end.
-
-Fixpoint StrictlySorted_dec (l : list Z) : bool :=
-  match l with
+Fixpoint is_sorted_strict (xs : list Z) : bool :=
+  match xs with
   | [] => true
-  | x :: xs =>
-      match xs with
-      | [] => true
-      | y :: _ => (x <? y) && StrictlySorted_dec xs
-      end
+  | [_] => true
+  | x :: ((y :: _) as rest) => (x <? y) && is_sorted_strict rest
   end.
-
-Definition searchInsert_precond_dec (xs : list Z) (target : Z) : bool :=
-  StrictlySorted_dec xs.
 (* !benchmark @end precond_aux *)
 
-Definition searchInsert_precond (xs : (list Z)) (target : Z) : Prop :=
+Definition searchInsert_precond (xs : (list Z)) (target : Z) : bool :=
   (* !benchmark @start precond *)
-  StrictlySorted xs
+  is_sorted_strict xs
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint searchInsert_helper (ys : list Z) (idx : nat) (target : Z) : nat :=
+Fixpoint searchInsert_helper (ys : list Z) (target : Z) (idx : nat) : nat :=
   match ys with
   | [] => idx
   | y :: ys' =>
-      let isCurrent := y in
-      let currentIndex := idx in
-      let targetValue := target in
-      let condition := (targetValue <=? isCurrent)%Z in
-      if condition then
-        currentIndex
-      else
-        let incrementedIndex := (currentIndex + 1)%nat in
-        let rest := ys' in
-        searchInsert_helper rest incrementedIndex target
+      if (target <=? y)
+      then idx
+      else searchInsert_helper ys' target (idx + 1)%nat
   end.
 (* !benchmark @end code_aux *)
 
-Definition searchInsert (xs : (list Z)) (target : Z) (h_precond : searchInsert_precond xs target) : nat :=
+Definition searchInsert (xs : (list Z)) (target : Z) : nat :=
   (* !benchmark @start code *)
   match xs with
-| [] => 0%nat
-| _ :: _ =>
-    let startingIndex := 0%nat in
-    let result := searchInsert_helper xs startingIndex target in
-    result
-end
+  | [] => O
+  | _ :: _ => searchInsert_helper xs target O
+  end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
 Fixpoint nth_Z (l : list Z) (n : nat) (default : Z) : Z :=
-  match n, l with
-  | O, x :: _ => x
-  | S m, _ :: t => nth_Z t m default
-  | _, [] => default
+  match l, n with
+  | [], _ => default
+  | x :: _, O => x
+  | _ :: t, S n' => nth_Z t n' default
   end.
 
-Fixpoint all_indices_less (xs : list Z) (target : Z) (n : nat) : Prop :=
+Fixpoint range (n : nat) : list nat :=
   match n with
-  | O => True
-  | S m => all_indices_less xs target m /\ (nth_Z xs m 0) < target
+  | O => []
+  | S n' => range n' ++ [n']
   end.
-
-Fixpoint all_indices_less_dec (xs : list Z) (target : Z) (n : nat) : bool :=
-  match n with
-  | O => true
-  | S m => all_indices_less_dec xs target m && ((nth_Z xs m 0) <? target)
-  end.
-
-Definition searchInsert_postcond_dec (xs : list Z) (target : Z) (result : nat) : bool :=
-  let allBeforeLess := all_indices_less_dec xs target result in
-  let inBounds := (result <=? length xs)%nat in
-  let insertedCorrectly :=
-    if (result <? length xs)%nat then (target <=? nth_Z xs result 0)%Z else true
-  in
-  inBounds && allBeforeLess && insertedCorrectly.
 (* !benchmark @end postcond_aux *)
 
-Definition searchInsert_postcond (xs : (list Z)) (target : Z) (result : nat) (h_precond : searchInsert_precond xs target) : Prop :=
+Definition searchInsert_postcond (xs : (list Z)) (target : Z) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  let allBeforeLess := all_indices_less xs target result in
-let inBounds := (result <= length xs)%nat in
-let insertedCorrectly := (result < length xs)%nat -> target <= nth_Z xs result 0 in
-inBounds /\ allBeforeLess /\ insertedCorrectly
+  let allBeforeLess := forallb (fun i => (nth_Z xs i 0 <? target)) (range result) in
+  let inBounds := (result <=? length xs)%nat in
+  let insertedCorrectly := implb (result <? length xs)%nat (target <=? nth_Z xs result 0) in
+  inBounds && allBeforeLess && insertedCorrectly
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem searchInsert_postcond_satisfied (xs : (list Z)) (target : Z) (h_precond : searchInsert_precond xs target) :
-    searchInsert_postcond xs target (searchInsert xs target h_precond) h_precond.
+Theorem searchInsert_postcond_satisfied (xs : (list Z)) (target : Z) :
+    searchInsert_precond xs target = true ->
+    searchInsert_postcond xs target (searchInsert xs target) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

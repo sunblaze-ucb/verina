@@ -1,58 +1,53 @@
 (* !benchmark @start import type=task *)
-
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Nat.
-Require Import Arith.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
-Definition lastDigit_precond_dec (n : nat) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition lastDigit_precond (n : nat) : Prop :=
+Definition lastDigit_precond (n : nat) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* complete helper function definitions *)
+
 (* !benchmark @end code_aux *)
 
-Definition lastDigit (n : nat) (h_precond : lastDigit_precond n) : nat :=
+Definition lastDigit (n : nat) : nat :=
   (* !benchmark @start code *)
   n mod 10
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* postcondition helpers including _dec version, complete definitions *)
-Definition lastDigit_postcond_dec (n result : nat) : bool :=
-  (0 <=? result) && (result <? 10) && 
-  (Nat.eqb (n mod 10 - result) 0) && (Nat.eqb (result - n mod 10) 0).
+
 (* !benchmark @end postcond_aux *)
 
-Definition lastDigit_postcond (n : nat) (result : nat) (h_precond : lastDigit_precond n) : Prop :=
+Definition lastDigit_postcond (n : nat) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  (0 <= result /\ result < 10) /\
-  (n mod 10 - result = 0 /\ result - n mod 10 = 0)
+  ((0 <=? result)%nat && (result <? 10)%nat) && ((n mod 10 - result =? 0)%nat && (result - n mod 10 =? 0)%nat)
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem lastDigit_postcond_satisfied (n : nat) (h_precond : lastDigit_precond n) :
-    lastDigit_postcond n (lastDigit n h_precond) h_precond.
+Theorem lastDigit_postcond_satisfied (n : nat) :
+    lastDigit_precond n = true ->
+    lastDigit_postcond n (lastDigit n) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

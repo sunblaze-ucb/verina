@@ -1,97 +1,79 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Bool.Bool.
-Require Import Coq.Arith.PeanoNat.
-Import ListNotations.
-Open Scope Z_scope.
+Require Import Bool.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition maxStrength_precond_dec (nums : list Z) : bool :=
-  negb (match nums with | [] => true | _ => false end).
+
 (* !benchmark @end precond_aux *)
 
-Definition maxStrength_precond (nums : (list Z)) : Prop :=
+Definition maxStrength_precond (nums : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  nums <> []
+  negb (match nums with [] => true | _ => false end)
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
+Fixpoint powerSet_helper (l : list Z) (mask : nat) (idx : nat) : list Z :=
+  match idx with
+  | O => []
+  | S idx' =>
+    let rest := powerSet_helper l (Nat.div mask 2) idx' in
+    if Nat.eqb (Nat.modulo mask 2) 1%nat then
+      match nth_error l idx' with
+      | Some v => v :: rest
+      | None => rest
+      end
+    else rest
+  end.
+
 Fixpoint range (n : nat) : list nat :=
   match n with
-  | 0%nat => []
-  | S m => range m ++ [m]
-  end.
-
-Fixpoint nth_Z (l : list Z) (n : nat) : Z :=
-  match l, n with
-  | [], _ => 0
-  | x :: _, 0%nat => x
-  | _ :: xs, S m => nth_Z xs m
-  end.
-
-Fixpoint powerSet_helper (l : list Z) (n : nat) (i : nat) (mask : nat) : list Z :=
-  match i with
-  | 0%nat => []
-  | S i' =>
-      let rest := powerSet_helper l n i' mask in
-      if Nat.eqb (Nat.land (Nat.shiftr mask i') 1%nat) 1%nat then
-        (nth_Z l i') :: rest
-      else
-        rest
+  | O => []
+  | S n' => range n' ++ [n']
   end.
 
 Definition powerSet (l : list Z) : list (list Z) :=
   let n := length l in
-  let masks := range (Nat.pow 2%nat n) in
-  map (fun mask => powerSet_helper l n n mask) masks.
+  let masks := range (Nat.pow 2 n) in
+  map (fun mask => powerSet_helper l mask n) masks.
 
-Fixpoint product (l : list Z) : Z :=
-  match l with
-  | [] => 1
-  | x :: xs => (x * product xs)%Z
+Definition list_Z_eqb (l1 l2 : list Z) : bool :=
+  match l1, l2 with
+  | [], [] => true
+  | _, _ => false
   end.
 
-Fixpoint max_list (l : list Z) : option Z :=
-  match l with
-  | [] => None
-  | [x] => Some x
-  | x :: xs =>
-      match max_list xs with
-      | None => Some x
-      | Some y => Some (Z.max x y)
-      end
-  end.
+Definition productZ (l : list Z) : Z :=
+  fold_left Z.mul l 1.
 
-Definition filter_nonempty (l : list (list Z)) : list (list Z) :=
-  filter (fun x => negb (match x with | [] => true | _ => false end)) l.
+Fixpoint maxZ_list (l : list Z) (default : Z) : Z :=
+  match l with
+  | [] => default
+  | [x] => x
+  | x :: xs => Z.max x (maxZ_list xs default)
+  end.
 (* !benchmark @end code_aux *)
 
-Definition maxStrength (nums : (list Z)) (h_precond : maxStrength_precond nums) : Z :=
+Definition maxStrength (nums : (list Z)) : Z :=
   (* !benchmark @start code *)
-  let powerSet_result := powerSet nums in
-  let nonEmpty := filter_nonempty powerSet_result in
-  let products := map product nonEmpty in
-  match max_list products with
-  | Some m => m
-  | None => (-1000000)
-  end
+  let subsets := powerSet nums in
+  let nonEmpty := filter (fun s => negb (list_Z_eqb s [])) subsets in
+  let products := map productZ nonEmpty in
+  maxZ_list products (-1000000)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
@@ -99,44 +81,39 @@ Fixpoint sublists {A : Type} (l : list A) : list (list A) :=
   match l with
   | [] => [[]]
   | x :: xs =>
-      let rest := sublists xs in
-      rest ++ map (cons x) rest
+    let rest := sublists xs in
+    rest ++ map (fun s => x :: s) rest
   end.
 
-Fixpoint all {A : Type} (f : A -> bool) (l : list A) : bool :=
-  match l with
-  | [] => true
-  | x :: xs => andb (f x) (all f xs)
-  end.
+Definition list_Z_eqb_full (l1 l2 : list Z) : bool :=
+  (length l1 =? length l2)%nat &&
+  forallb (fun p => (fst p =? snd p)) (combine l1 l2).
 
-Fixpoint contains_Z (l : list Z) (x : Z) : bool :=
-  match l with
-  | [] => false
-  | y :: ys => orb (Z.eqb x y) (contains_Z ys x)
-  end.
+Definition list_Z_empty (l : list Z) : bool :=
+  match l with [] => true | _ => false end.
 
-Definition maxStrength_postcond_dec (nums : list Z) (result : Z) : bool :=
-  let sublists_result := sublists nums in
-  let nonempty_sublists := filter_nonempty sublists_result in
-  let products := map product nonempty_sublists in
-  andb (contains_Z products result)
-       (all (fun x => (x <=? result)%Z) products).
+Definition productZ_post (l : list Z) : Z :=
+  fold_left Z.mul l 1.
+
+Definition containsZ (l : list Z) (x : Z) : bool :=
+  existsb (fun y => y =? x) l.
 (* !benchmark @end postcond_aux *)
 
-Definition maxStrength_postcond (nums : (list Z)) (result : Z) (h_precond : maxStrength_precond nums) : Prop :=
+Definition maxStrength_postcond (nums : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  let sublists_result := sublists nums in
-  let nonempty_sublists := filter_nonempty sublists_result in
-  let products := map (fun subset => fold_left Z.mul subset 1) nonempty_sublists in
-  In result products /\ Forall (fun x => (x <= result)%Z) products
+  let subs := sublists nums in
+  let nonEmptySubs := filter (fun s => negb (list_Z_empty s)) subs in
+  let products := map productZ_post nonEmptySubs in
+  containsZ products result && forallb (fun p => p <=? result) products
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem maxStrength_postcond_satisfied (nums : (list Z)) (h_precond : maxStrength_precond nums) :
-    maxStrength_postcond nums (maxStrength nums h_precond) h_precond.
+Theorem maxStrength_postcond_satisfied (nums : (list Z)) :
+    maxStrength_precond nums = true ->
+    maxStrength_postcond nums (maxStrength nums) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

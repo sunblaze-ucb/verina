@@ -1,81 +1,85 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Lists.List.
-Require Import Coq.ZArith.ZArith.
-Require Import Coq.Arith.Arith.
-Require Import Lia.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition minArray_precond_dec (a : list Z) : bool :=
-  match length a with
-  | O => false
-  | _ => true
-  end.
+
 (* !benchmark @end precond_aux *)
 
-Definition minArray_precond (a : (list Z)) : Prop :=
+Definition minArray_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  (length a > 0)%nat
+  (1 <=? length a)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint loop (a : list Z) (i : nat) (currentMin : Z) (fuel : nat) : Z :=
-  match fuel with
+Fixpoint loop (a : list Z) (i : nat) (currentMin : Z) : Z :=
+  match i with
   | O => currentMin
-  | S fuel' =>
-      if (i <? length a)%nat then
-        match nth_error a i with
-        | Some ai =>
-            let newMin := if (currentMin >? ai)%Z then ai else currentMin in
-            loop a (i + 1)%nat newMin fuel'
-        | None => currentMin
-        end
-      else
-        currentMin
+  | S i' =>
+    match a with
+    | [] => currentMin
+    | _ =>
+      let idx := (length a - i)%nat in
+      match nth_error a idx with
+      | None => currentMin
+      | Some v =>
+        let newMin := if currentMin >? v then v else currentMin in
+        loop a i' newMin
+      end
+    end
+  end.
+
+Definition minArray_helper (a : list Z) : Z :=
+  match a with
+  | [] => 0
+  | h :: t => loop a (length t) h
   end.
 (* !benchmark @end code_aux *)
 
-Definition minArray (a : (list Z)) (h_precond : minArray_precond a) : Z :=
+Definition minArray (a : (list Z)) : Z :=
   (* !benchmark @start code *)
-  match a with
-| [] => 0%Z
-| a0 :: _ => loop a 1%nat a0 (length a)
-end
+  minArray_helper a
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition minArray_postcond_dec (a : list Z) (result : Z) : bool :=
-  let all_geq := forallb (fun x => (result <=? x)%Z) a in
-  let exists_eq := existsb (fun x => (result =? x)%Z) a in
-  andb all_geq exists_eq.
+Fixpoint forall_indices (a : list Z) (i : nat) (result : Z) : bool :=
+  match i with
+  | O => true
+  | S i' =>
+    match nth_error a i' with
+    | None => forall_indices a i' result
+    | Some v => (result <=? v) && forall_indices a i' result
+    end
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition minArray_postcond (a : (list Z)) (result : Z) (h_precond : minArray_precond a) : Prop :=
+Definition minArray_postcond (a : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  (forall i : nat, (i < length a)%nat -> match nth_error a i with Some ai => (result <= ai)%Z | None => True end) /\ (exists i : nat, (i < length a)%nat /\ match nth_error a i with Some ai => result = ai | None => False end)
+  forall_indices a (length a) result && existsb (fun x => x =? result) a
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem minArray_postcond_satisfied (a : (list Z)) (h_precond : minArray_precond a) :
-    minArray_postcond a (minArray a h_precond) h_precond.
+Theorem minArray_postcond_satisfied (a : (list Z)) :
+    minArray_precond a = true ->
+    minArray_postcond a (minArray a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

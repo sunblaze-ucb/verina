@@ -1,82 +1,82 @@
 (* !benchmark @start import type=task *)
-Require Import Bool.
-Require Import List.
-Import ListNotations.
 Require Import ZArith.
+Require Import List.
+Require Import Bool.
+Import ListNotations.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions needed *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No additional solution-level helpers needed *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition isSorted_precond_dec (a : list Z) : bool :=
-  true.
+
 (* !benchmark @end precond_aux *)
 
-Definition isSorted_precond (a : (list Z)) : Prop :=
+Definition isSorted_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Fixpoint isSorted_helper (l : list Z) : bool :=
   match l with
   | [] => true
-  | [x] => true
-  | x :: rest => 
-      match rest with
-      | [] => true
-      | y :: _ => 
-          if (x <=? y)%Z then isSorted_helper rest
-          else false
-      end
+  | [_] => true
+  | x :: ((y :: _) as rest) => (x <=? y) && isSorted_helper rest
   end.
 (* !benchmark @end code_aux *)
 
-Definition isSorted (a : (list Z)) (h_precond : isSorted_precond a) : bool :=
+Definition isSorted (a : (list Z)) : bool :=
   (* !benchmark @start code *)
-  match a with
-| [] => true
-| [_] => true
-| _ => isSorted_helper a
-end
+  isSorted_helper a
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Fixpoint nth_Z (l : list Z) (n : nat) (default : Z) : Z :=
-  match l, n with
-  | [], _ => default
+Fixpoint nth_Z (l : list Z) (i : nat) : Z :=
+  match l, i with
+  | [], _ => 0
   | x :: _, O => x
-  | _ :: xs, S n' => nth_Z xs n' default
+  | _ :: xs, S i' => nth_Z xs i'
   end.
 
-Definition isSorted_postcond_dec (a : list Z) (result : bool) : bool :=
-  result.
+Fixpoint check_sorted_indices (a : list Z) (len : nat) (i : nat) : bool :=
+  match i with
+  | O => true
+  | S i' => 
+    let idx := (len - 1 - i)%nat in
+    (nth_Z a idx <=? nth_Z a (S idx)) && check_sorted_indices a len i'
+  end.
+
+Definition all_pairs_sorted (a : list Z) : bool :=
+  match length a with
+  | O => true
+  | S O => true
+  | S (S n) => check_sorted_indices a (length a) (S n)
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition isSorted_postcond (a : (list Z)) (result : bool) (h_precond : isSorted_precond a) : Prop :=
+Definition isSorted_postcond (a : (list Z)) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  (forall i : nat, (i < Nat.pred (length a))%nat -> (nth_Z a i 0 <= nth_Z a (i + 1)%nat 0)%Z) <-> result = true
+  Bool.eqb (all_pairs_sorted a) result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem isSorted_postcond_satisfied (a : (list Z)) (h_precond : isSorted_precond a) :
-    isSorted_postcond a (isSorted a h_precond) h_precond.
+Theorem isSorted_postcond_satisfied (a : (list Z)) :
+    isSorted_precond a = true ->
+    isSorted_postcond a (isSorted a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

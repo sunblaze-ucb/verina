@@ -3,7 +3,8 @@
 This module provides the Coq-specific template engine for rendering
 benchmark code, specifications, proofs, and tests.
 
-Uses auto tactics (lia, intuition, etc.) for spec evaluation.
+Uses bool-based specifications with Compute for fast evaluation.
+Both preconditions and postconditions return bool for instant decidability.
 """
 
 from typing import Any, List
@@ -13,11 +14,40 @@ from verina.itp.base import ITPTemplate
 from verina.coq.types import lean_type_to_coq
 
 
+# =============================================================================
+# Standard imports for Coq tasks
+# =============================================================================
+# NOTE: String/Ascii imported BEFORE List so that List.length is not shadowed
+# by String.length. This is the single source of truth - used by both
+# translator (translate_lean_to_coq.py) and test rendering.
+
+STANDARD_COQ_IMPORTS = """Require Import Bool.
+Require Import ZArith.
+Require Import String.
+Require Import Ascii.
+Require Import List.
+Require Import Nat.
+Import ListNotations.
+Open Scope Z_scope."""
+
+# Additional imports for testing (tactics, equality schemes)
+# NOTE: With bool-based specs, we use Compute for instant evaluation.
+# No custom tactics needed - just equality schemes for compound types.
+STANDARD_COQ_TEST_EXTRAS = """Require Import Lia.
+Require Import Arith.
+
+(* Generate boolean equality functions for compound types *)
+Scheme Equality for list.
+Scheme Equality for prod.
+Scheme Equality for option."""
+
+
 class CoqGenerationTaskTemplate(ITPTemplate):
     """Coq template engine implementing ITPTemplate interface.
 
     Renders Coq code for code generation, specification, proofs, and testing.
-    Uses auto tactics for spec evaluation (not QuickChick, which doesn't support Prop).
+    Uses bool-based specifications with Compute for instant evaluation.
+    Both preconditions and postconditions return bool for decidability.
     """
 
     # Test message markers (same format as Lean for consistency)
@@ -54,6 +84,141 @@ class CoqGenerationTaskTemplate(ITPTemplate):
             return lean_type_to_coq(type_str)
         return type_str
 
+    def _parse_coq_type(self, coq_type: str) -> tuple:
+        """Parse a Coq type string into a structured representation.
+
+        Returns a tuple of (type_name, [inner_types]) where:
+        - Primitives: ("Z", []), ("nat", []), ("bool", []), ("string", [])
+        - Lists: ("list", [inner_type])
+        - Options: ("option", [inner_type])
+        - Products/tuples: ("prod", [type1, type2])
+
+        Examples:
+        - "Z" -> ("Z", [])
+        - "(list Z)" -> ("list", [("Z", [])])
+        - "(Z * nat)" -> ("prod", [("Z", []), ("nat", [])])
+        - "(list (Z * Z))" -> ("list", [("prod", [("Z", []), ("Z", [])])])
+        - "(option (nat * nat))" -> ("option", [("prod", [("nat", []), ("nat", [])])])
+        """
+        coq_type = coq_type.strip()
+
+        # Remove outer parentheses if present
+        while coq_type.startswith('(') and coq_type.endswith(')'):
+            # Check if these parens are matched (not just coincidental)
+            depth = 0
+            matched = True
+            for i, c in enumerate(coq_type[:-1]):  # Skip last char
+                if c == '(':
+                    depth += 1
+                elif c == ')':
+                    depth -= 1
+                if depth == 0 and i > 0:
+                    matched = False
+                    break
+            if matched:
+                coq_type = coq_type[1:-1].strip()
+            else:
+                break
+
+        # Check for product type (A * B)
+        # Need to find * at depth 0
+        depth = 0
+        star_pos = -1
+        for i, c in enumerate(coq_type):
+            if c == '(':
+                depth += 1
+            elif c == ')':
+                depth -= 1
+            elif c == '*' and depth == 0:
+                star_pos = i
+                break
+
+        if star_pos > 0:
+            left = coq_type[:star_pos].strip()
+            right = coq_type[star_pos+1:].strip()
+            return ("prod", [self._parse_coq_type(left), self._parse_coq_type(right)])
+
+        # Check for type constructor (list X, option X)
+        parts = coq_type.split(None, 1)  # Split on first whitespace
+        if len(parts) == 2:
+            constructor = parts[0].lower()
+            inner = parts[1].strip()
+            if constructor in ("list", "option"):
+                return (constructor, [self._parse_coq_type(inner)])
+
+        # Primitive type
+        return (coq_type, [])
+
+    def _generate_equality_expr(self, parsed_type: tuple, val1: str, val2: str) -> str:
+        """Generate an equality expression for a parsed type.
+
+        Args:
+            parsed_type: Tuple from _parse_coq_type
+            val1, val2: The two values to compare
+
+        Returns:
+            A Coq expression that evaluates to bool
+        """
+        type_name, inner_types = parsed_type
+        type_lower = type_name.lower()
+
+        # Primitive types
+        if type_lower == "z":
+            return f"Z.eqb {val1} {val2}"
+        elif type_lower == "nat":
+            return f"Nat.eqb {val1} {val2}"
+        elif type_lower == "bool":
+            return f"Bool.eqb {val1} {val2}"
+        elif type_lower == "string":
+            return f"String.eqb {val1} {val2}"
+
+        # Compound types
+        elif type_lower == "list":
+            inner_eq_fn = self._get_inner_equality_fn(inner_types[0])
+            return f"list_beq _ {inner_eq_fn} {val1} {val2}"
+        elif type_lower == "option":
+            inner_eq_fn = self._get_inner_equality_fn(inner_types[0])
+            return f"option_beq _ {inner_eq_fn} {val1} {val2}"
+        elif type_lower == "prod":
+            eq_fn1 = self._get_inner_equality_fn(inner_types[0])
+            eq_fn2 = self._get_inner_equality_fn(inner_types[1])
+            return f"prod_beq _ _ {eq_fn1} {eq_fn2} {val1} {val2}"
+        else:
+            # Unknown type - fallback to eqb (may not work)
+            return f"eqb {val1} {val2}"
+
+    def _get_inner_equality_fn(self, parsed_type: tuple) -> str:
+        """Get the equality function for use as an argument to list_beq/option_beq/prod_beq.
+
+        Returns a function of type (A -> A -> bool) for the given type.
+        """
+        type_name, inner_types = parsed_type
+        type_lower = type_name.lower()
+
+        # Primitive types - return the equality function directly
+        if type_lower == "z":
+            return "Z.eqb"
+        elif type_lower == "nat":
+            return "Nat.eqb"
+        elif type_lower == "bool":
+            return "Bool.eqb"
+        elif type_lower == "string":
+            return "String.eqb"
+
+        # Compound types - need to build a lambda or partial application
+        elif type_lower == "list":
+            inner_eq_fn = self._get_inner_equality_fn(inner_types[0])
+            return f"(list_beq _ {inner_eq_fn})"
+        elif type_lower == "option":
+            inner_eq_fn = self._get_inner_equality_fn(inner_types[0])
+            return f"(option_beq _ {inner_eq_fn})"
+        elif type_lower == "prod":
+            eq_fn1 = self._get_inner_equality_fn(inner_types[0])
+            eq_fn2 = self._get_inner_equality_fn(inner_types[1])
+            return f"(prod_beq _ _ {eq_fn1} {eq_fn2})"
+        else:
+            return "eqb"
+
     def _get_equality_fn(self, coq_type: str) -> str:
         """Get the appropriate equality function for a Coq type.
 
@@ -62,19 +227,14 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         - nat: Nat.eqb
         - bool: Bool.eqb
         - string: String.eqb
+        - list T: list_beq with inner equality function
+        - option T: option_beq with inner equality function
+        - T1 * T2: prod_beq with two inner equality functions
+
+        Returns a function suitable for use as (eq_fn val1 val2).
         """
-        coq_type_lower = coq_type.lower()
-        if coq_type_lower == "z":
-            return "Z.eqb"
-        elif coq_type_lower == "nat":
-            return "Nat.eqb"
-        elif coq_type_lower == "bool":
-            return "Bool.eqb"
-        elif coq_type_lower == "string":
-            return "String.eqb"
-        else:
-            # Fallback - may not work for all types
-            return "eqb"
+        parsed = self._parse_coq_type(coq_type)
+        return self._get_inner_equality_fn(parsed)
 
     # ==========================================================================
     # ITPTemplate interface implementation
@@ -125,70 +285,17 @@ class CoqGenerationTaskTemplate(ITPTemplate):
         return rendered
 
     def render_test_imports(self) -> str:
-        """Render imports needed for testing (auto tactics).
+        """Render extra imports needed for testing (Compute-based Bool evaluation).
 
-        Note: Basic imports (ZArith, Bool, List, etc.) should be in the task.v
-        preamble which is automatically captured as task_imports.
-        This method only adds test-specific imports like Lia for auto tactics.
-        CoqHammer is included for sauto/hammer tactics.
+        NOTE: This only adds TEST EXTRAS (Lia, Arith, Scheme Equality, tactics).
+        The base imports (STANDARD_COQ_IMPORTS) should already be in the content
+        being tested (from task_imports parsed from task.v).
 
-        Includes unified verina_auto Ltac tactic that handles both completeness
-        and soundness goals with case analysis on concrete lists and nat indices.
+        Since both precond and postcond return bool, we use Compute for instant
+        evaluation instead of slow ATP tactics like hammer.
         """
-        imports = """Require Import Lia.
-Require Import Arith.
-Require Import List.
-Import ListNotations.
-From Hammer Require Import Tactics.
-From Hammer Require Import Hammer.
-Require Import ZArith.
-Local Open Scope Z_scope.
-
-(* Try witness n for a forall over nat, discharge implications, derive contradiction *)
-Ltac try_nat_forall n :=
-  match goal with
-  | [ H : forall _ : nat, _ |- False ] =>
-      let H' := fresh "H" in
-      pose proof (H n) as H';
-      simpl in H';
-      repeat match type of H' with
-      | ?P -> ?Q =>
-          let Hp := fresh in
-          assert (Hp : P) by (lia || reflexivity || trivial);
-          specialize (H' Hp); clear Hp
-      end;
-      try match type of H' with
-      | forall v : _, Some ?x = Some v -> _ => specialize (H' x eq_refl)
-      end;
-      lia
-  end.
-
-Ltac solve_forall_false :=
-  first [ try_nat_forall 0%nat | try_nat_forall 1%nat
-        | try_nat_forall 2%nat | try_nat_forall 3%nat
-        | try_nat_forall 4%nat | try_nat_forall 5%nat
-        | try_nat_forall 6%nat | try_nat_forall 7%nat ].
-
-(* Verina automation tactic for spec testing - with timeout on hammer *)
-Ltac verina_auto :=
-  cbn [length nth_error nth firstn skipn app rev List.In];
-  simpl;
-  repeat match goal with
-  | [ |- ~ _ ] => intro
-  | [ |- _ /\\ _ ] => split
-  | [ |- _ <-> _ ] => split; intro
-  | [ H : _ /\\ _ |- _ ] => destruct H
-  | [ H : _ <-> _ |- _ ] => destruct H
-  | [ H : exists _, _ |- _ ] => destruct H
-  end;
-  try solve [reflexivity | discriminate | contradiction | lia | tauto | intuition lia];
-  try (intros;
-    repeat match goal with [ i : nat |- _ ] => destruct i; simpl; try lia end;
-    try match goal with [ H : Some _ = Some _ |- _ ] => inversion H; subst; clear H end;
-    try solve [lia | tauto | intuition lia]);
-  try solve_forall_false;
-  try sauto; try (timeout 5 hammer)."""
-        return self.render_imports(imports, "test")
+        # Only add test extras - base imports are already in the content
+        return self.render_imports(STANDARD_COQ_TEST_EXTRAS, "test")
 
     def render_param_list(self) -> str:
         """Render Coq parameter list: (a : Z) (b : Z)"""
@@ -217,9 +324,10 @@ Ltac verina_auto :=
         return f"{self.signature.name}_precond_{precond_name}"
 
     def render_precond_signature(self, *, precond_name: str = "") -> str:
+        """Render precondition signature with bool return type."""
         rendered = f"Definition {self.render_full_precond_name(precond_name=precond_name)} "
         rendered += self.render_param_list()
-        rendered += " : Prop"
+        rendered += " : bool"  # Bool for fast Compute evaluation
         return rendered
 
     def render_precond(self, precond: str, *, precond_name: str = "") -> str:
@@ -228,19 +336,30 @@ Ltac verina_auto :=
         return rendered
 
     def render_precond_hypothesis(self, *, precond_name: str = "") -> str:
+        """Render precondition hypothesis.
+
+        Note: With bool-based preconditions, this is no longer used in code signatures.
+        Kept for backward compatibility with any code that references it.
+        """
         rendered = (
             f"(h_precond : {self.render_full_precond_name(precond_name=precond_name)}"
         )
         for param in self.signature.parameters:
             rendered += f" {param.param_name}"
-        rendered += ")"
+        rendered += " = true)"  # Bool precondition as equality
         return rendered
 
     def render_code_signature(self, *, precond_name: str = "") -> str:
+        """Render code signature without h_precond parameter.
+
+        With bool-based preconditions, the code no longer takes a precondition
+        proof term. The precondition is checked separately as a boolean.
+        """
         coq_return_type = self._get_type(self.signature.return_type)
         rendered = f"Definition {self.signature.name} "
         rendered += self.render_param_list()
-        rendered += f" {self.render_precond_hypothesis(precond_name=precond_name)} : {coq_return_type}"
+        # No h_precond parameter - precond is bool, checked separately
+        rendered += f" : {coq_return_type}"
         return rendered
 
     def render_code(self, code: str, *, precond_name: str = "") -> str:
@@ -256,11 +375,18 @@ Ltac verina_auto :=
     def render_postcond(
         self, postcond: str, *, precond_name: str = "", postcond_name: str = ""
     ) -> str:
+        """Render postcondition with bool return type.
+
+        With bool-based specifications:
+        - Postcond returns bool for fast Compute evaluation
+        - No h_precond parameter (precond is a separate bool check)
+        """
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
         coq_return_type = self._get_type(self.signature.return_type)
         rendered = f"Definition {full_postcond_name} "
         rendered += self.render_param_list()
-        rendered += f" (result : {coq_return_type}) {self.render_precond_hypothesis(precond_name=precond_name)} : Prop :=\n"
+        # Bool return type, no h_precond parameter
+        rendered += f" (result : {coq_return_type}) : bool :=\n"
         rendered += f"  (* !benchmark @start postcond *)\n{self.render_coq_content(postcond)}  (* !benchmark @end postcond *).\n"
         return rendered
 
@@ -291,22 +417,101 @@ Ltac verina_auto :=
         precond_name: str = "",
         postcond_name: str = "",
     ) -> str:
+        """Render proof theorem with bool-based goal format.
+
+        New goal format: precond params = true -> postcond params (code params) = true
+        - Precondition is now a premise (assumption), not a type parameter
+        - Tactics: intro H_precond; native_compute; reflexivity
+        """
+        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
+        full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
+
         rendered = f"Theorem {self.render_theorem_name(postcond_name=postcond_name)}"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             rendered += f" ({param.param_name} : {coq_type})"
-        rendered += f" {self.render_precond_hypothesis(precond_name=precond_name)}"
-        rendered += f" :\n    {self.render_full_postcond_name(postcond_name=postcond_name)}"
+
+        # New goal format: precond = true -> postcond (code) = true
+        rendered += f" :\n    {full_precond_name}"
+        for param in self.signature.parameters:
+            rendered += f" {param.param_name}"
+        rendered += f" = true ->\n    {full_postcond_name}"
         for param in self.signature.parameters:
             rendered += f" {param.param_name}"
         rendered += f" ({self.signature.name}"
         for param in self.signature.parameters:
             rendered += f" {param.param_name}"
-        rendered += " h_precond) h_precond.\n"
+        rendered += ") = true.\n"
         rendered += "Proof.\n"
         rendered += f"  (* !benchmark @start proof *)\n{self.render_coq_content(proof)}  (* !benchmark @end proof *)\n"
-        rendered += "Qed.\n"
+        # Use Admitted if proof contains admit, otherwise Qed
+        if "admit" in proof.lower():
+            rendered += "Admitted.\n"
+        else:
+            rendered += "Qed.\n"
         return rendered
+
+    def render_full_task_file(
+        self,
+        task_imports: str,
+        solution_imports: str,
+        task_aux: str,
+        solution_aux: str,
+        precond_aux: str,
+        precond: str,
+        code_aux: str,
+        code: str,
+        postcond_aux: str,
+        postcond: str,
+        proof_aux: str,
+        proof: str = "admit.",
+    ) -> str:
+        """Render a complete task.v file with bool-based signatures.
+
+        This is the single source of truth for task.v file structure.
+        Used by both the translator and the fix script to ensure consistency.
+
+        Args:
+            task_imports: Imports for task (derived from signature types)
+            solution_imports: Additional imports for solution code
+            task_aux: Task-level type definitions (Record, Inductive, etc.)
+            solution_aux: Helper definitions shared by code and specs
+            precond_aux: Helper definitions for precondition
+            precond: Precondition body (bool expression)
+            code_aux: Helper definitions for code
+            code: Code body
+            postcond_aux: Helper definitions for postcondition
+            postcond: Postcondition body (bool expression)
+            proof_aux: Helper definitions for proof
+            proof: Proof body (tactics)
+
+        Returns:
+            Complete task.v file content with correct bool-based signatures.
+        """
+        content = self.render_imports(task_imports, "task")
+        content += "\n"
+        content += self.render_imports(solution_imports, "solution")
+        content += "\n"
+        content += self.render_aux(task_aux, "task")
+        content += "\n"
+        content += self.render_aux(solution_aux, "solution")
+        content += "\n"
+        content += self.render_aux(precond_aux, "precond")
+        content += "\n"
+        content += self.render_precond(precond)
+        content += "\n"
+        content += self.render_aux(code_aux, "code")
+        content += "\n"
+        content += self.render_code(code)
+        content += "\n"
+        content += self.render_aux(postcond_aux, "postcond")
+        content += "\n"
+        content += self.render_postcond(postcond)
+        content += "\n"
+        content += self.render_aux(proof_aux, "proof")
+        content += "\n"
+        content += self.render_proof(proof)
+        return content
 
     @staticmethod
     def _wrap_parens(value: str) -> str:
@@ -381,16 +586,48 @@ Ltac verina_auto :=
         """Render a Compute-based unit test for code.
 
         Uses type-specific equality functions (e.g., Z.eqb for integers).
-        Generates an axiom for the precondition since Compute needs an actual
-        proof term (not tactics).
+        With bool-based preconditions, code no longer takes h_precond parameter.
 
         Output format:
-            Axiom _test_0_precond : precond args.
-            Compute (Z.eqb (fn args _test_0_precond) expected).
-        Expected result: = true : bool
+            Definition _m_code_test_0 := tt. Print _m_code_test_0.
+            Compute (Z.eqb (fn args) expected).
+        Expected result in output:
+            _m_code_test_0 = tt : unit
+            = true : bool
         """
         coq_return_type = self._get_type(self.signature.return_type)
-        equality_fn = self._get_equality_fn(coq_return_type)
+
+        # Build argument string
+        args_str = ""
+        for param in self.signature.parameters:
+            coq_type = self._get_type(param.param_type)
+            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
+
+        # Build the code call and expected value
+        code_call = f"({self.signature.name}{args_str})"
+        expected = self.render_unit_test_value(coq_return_type, test_case.expected)
+
+        # Generate equality expression using recursive type parser
+        parsed_type = self._parse_coq_type(coq_return_type)
+        eq_expr = self._generate_equality_expr(parsed_type, code_call, expected)
+
+        # Add marker Definition + Print so we can correlate output with test index
+        marker_name = f"_m_{self.CODE_TEST_MSG_MARKER}_{test_idx}"
+        rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
+        rendered += f"Compute ({eq_expr})."
+        return rendered
+
+
+    def render_precond_unit_test_sound_decidable(
+        self, test_case: TestCase, *, test_idx: int, precond_name: str = ""
+    ) -> str:
+        """Render Compute-based precondition soundness test.
+
+        Tests that precond evaluates to true for valid input using Compute.
+        With bool-based preconditions, this is instant evaluation.
+
+        Expected output: = true : bool (for valid inputs)
+        """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
         # Build argument string
@@ -399,67 +636,10 @@ Ltac verina_auto :=
             coq_type = self._get_type(param.param_type)
             args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
 
-        # Generate axiom for precondition
-        axiom_name = f"_test_{test_idx}_precond"
-        rendered = f'(* <{self.CODE_TEST_MSG_MARKER}>{test_idx}</{self.CODE_TEST_MSG_MARKER}> *)\n'
-        rendered += f"Axiom {axiom_name} : {full_precond_name}{args_str}.\n"
-        rendered += f"Compute ({equality_fn} ({self.signature.name}{args_str} {axiom_name})"
-        expected = self.render_unit_test_value(coq_return_type, test_case.expected)
-        rendered += f" {expected})."
-        return rendered
-
-    # Automation tactics use verina_auto which dispatches to verina_complete or verina_sound
-    # based on goal shape. The Ltac tactics handle case analysis on nat indices, list
-    # computations, and forall witness specialization that ATPs cannot do directly.
-    # Fall back to hammer/sauto for remaining goals.
-    AUTOMATION_TACTICS = "verina_auto"
-
-    # For negation goals, verina_auto will automatically dispatch to verina_sound
-    NEGATION_AUTOMATION_TACTICS = "verina_auto"
-
-    # Markers for SOLVED/UNSOLVED detection in bidirectional testing
-    SOLVED_MARKER = "SOLVED"
-    UNSOLVED_MARKER = "UNSOLVED"
-
-    def render_precond_unit_test_sound_decidable(
-        self, test_case: TestCase, *, test_idx: int, precond_name: str = ""
-    ) -> str:
-        """Render decidable precondition soundness test with bidirectional testing.
-
-        Tests that precond holds for valid input using Goal/Proof pattern.
-        Uses automation tactics (hammer-like) to close the goal without
-        knowing the specific proof ahead of time.
-
-        Generates both primary and inverse goals for bidirectional testing:
-        - Primary: prove precond holds (expected behavior)
-        - Inverse: prove ~precond (if this succeeds, spec is wrong)
-
-        Uses try/first/solve pattern with Abort to avoid axiom leakage.
-        Outputs SOLVED/UNSOLVED markers for parsing.
-        """
-        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
-
-        # Build argument string once
-        args_str = ""
-        for param in self.signature.parameters:
-            coq_type = self._get_type(param.param_type)
-            args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
-
-        # Primary: prove precond holds (expected behavior)
+        # Use Compute for instant bool evaluation
         marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal {full_precond_name}{args_str}.\n"
-        rendered += f"  unfold {full_precond_name}.\n"
-        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort.\n\n"
-
-        # Inverse: prove ~precond (if this succeeds, spec is wrong)
-        marker_name_inv = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
-        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal ~({full_precond_name}{args_str}).\n"
-        rendered += f"  unfold {full_precond_name}.\n"
-        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort."
+        rendered += f"Compute ({full_precond_name}{args_str})."
 
         return rendered
 
@@ -488,92 +668,55 @@ Ltac verina_auto :=
     def render_precond_unit_test_complete_decidable(
         self, reject_input: RejectInput, *, test_idx: int, precond_name: str = ""
     ) -> str:
-        """Render decidable precondition completeness test with bidirectional testing.
+        """Render Compute-based precondition completeness test.
 
-        Tests that precond rejects invalid input by proving the negation.
-        Uses automation tactics to prove ~(precond args).
+        Tests that precond evaluates to false for invalid/rejected input using Compute.
+        With bool-based preconditions, this is instant evaluation.
 
-        Generates both primary and inverse goals for bidirectional testing:
-        - Primary: prove ~precond (expected: should reject invalid input)
-        - Inverse: prove precond (if this succeeds, spec incorrectly accepts invalid input)
-
-        Uses try/first/solve pattern with Abort to avoid axiom leakage.
-
-        Note: For simple preconditions like `True`, this test would fail
-        since we can't prove ~True. Such tasks shouldn't have reject_inputs.
+        Expected output: = false : bool (for invalid/rejected inputs)
         """
         full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
-        # Build argument string once
+        # Build argument string
         args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             args_str += f" {self.render_unit_test_value(coq_type, reject_input.input[param.param_name])}"
 
-        # Primary: prove ~precond (expected behavior - should reject invalid input)
-        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        # Use Compute for instant bool evaluation
+        # Use _c suffix to distinguish complete tests from sound tests
+        marker_name = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_c"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal ~({full_precond_name}{args_str}).\n"
-        rendered += f"  unfold {full_precond_name}.\n"
-        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort.\n\n"
-
-        # Inverse: prove precond (if this succeeds, spec incorrectly accepts invalid input)
-        marker_name_inv = f"_m_{self.PRECOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
-        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal {full_precond_name}{args_str}.\n"
-        rendered += f"  unfold {full_precond_name}.\n"
-        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort."
+        rendered += f"Compute ({full_precond_name}{args_str})."
 
         return rendered
 
     def render_postcond_unit_test_complete_decidable(
         self, test_case: TestCase, *, test_idx: int, precond_name: str = "", postcond_name: str = ""
     ) -> str:
-        """Render decidable postcondition completeness test with bidirectional testing.
+        """Render Compute-based postcondition completeness test.
 
-        Tests that postcond accepts the expected output using automation tactics.
-        Uses hammer-like tactics to close the goal without knowing the proof.
+        Tests that postcond evaluates to true for expected output using Compute.
+        With bool-based postconditions, this is instant evaluation.
+        No h_precond parameter needed since postcond is now bool.
 
-        Generates both primary and inverse goals for bidirectional testing:
-        - Primary: prove postcond holds for expected output
-        - Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
-
-        Uses try/first/solve pattern with Abort to avoid axiom leakage.
-        Uses forall intro pattern to handle non-trivial preconditions.
+        Expected output: = true : bool (for expected outputs)
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
-        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
-        # Build argument string once
+        # Build argument string
         args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
         expected_str = self.render_unit_test_value(coq_return_type, test_case.expected)
 
-        # Build precond type for the forall
-        precond_applied = f"{full_precond_name}{args_str}"
-
-        # Primary: prove postcond holds for expected output
-        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}"
+        # Use Compute for instant bool evaluation - no H parameter needed
+        # Use _c suffix to distinguish complete tests from sound tests
+        marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_c"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal forall (H : {precond_applied}), {full_postcond_name}{args_str} {expected_str} H.\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort.\n\n"
-
-        # Inverse: prove ~postcond (if this succeeds, spec incorrectly rejects expected output)
-        marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_inv"
-        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal forall (H : {precond_applied}), ~({full_postcond_name}{args_str} {expected_str} H).\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort."
+        rendered += f"Compute ({full_postcond_name}{args_str} {expected_str})."
 
         return rendered
 
@@ -586,55 +729,38 @@ Ltac verina_auto :=
         precond_name: str = "",
         postcond_name: str = "",
     ) -> str:
-        """Render decidable postcondition soundness test with bidirectional testing.
+        """Render Compute-based postcondition soundness test.
 
-        Tests that postcond rejects unexpected output by proving the negation.
-        Uses automation tactics to prove ~(postcond args unexpected H).
+        Tests that postcond evaluates to false for unexpected output using Compute.
+        With bool-based postconditions, this is instant evaluation.
+        No h_precond parameter needed since postcond is now bool.
 
-        Generates both primary and inverse goals for bidirectional testing:
-        - Primary: prove ~postcond for unexpected output (expected: should reject)
-        - Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
-
-        Uses try/first/solve pattern with Abort to avoid axiom leakage.
-        Uses forall intro pattern to handle non-trivial preconditions.
+        Expected output: = false : bool (for unexpected outputs)
         """
         coq_return_type = self._get_type(self.signature.return_type)
         full_postcond_name = self.render_full_postcond_name(postcond_name=postcond_name)
-        full_precond_name = self.render_full_precond_name(precond_name=precond_name)
 
-        # Build argument string once
+        # Build argument string
         args_str = ""
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             args_str += f" {self.render_unit_test_value(coq_type, test_case.input[param.param_name])}"
         unexpected_str = self.render_unit_test_value(coq_return_type, test_case.unexpected[unexpected_idx])
 
-        # Build precond type for the forall
-        precond_applied = f"{full_precond_name}{args_str}"
-
-        # Primary: prove ~postcond for unexpected output (expected behavior - should reject)
+        # Use Compute for instant bool evaluation - no H parameter needed
         marker_name = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}"
         rendered = f'Definition {marker_name} := tt. Print {marker_name}.\n'
-        rendered += f"Goal forall (H : {precond_applied}), ~({full_postcond_name}{args_str} {unexpected_str} H).\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f'  try first [ solve [{self.NEGATION_AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort.\n\n"
-
-        # Inverse: prove postcond (if this succeeds, spec incorrectly accepts unexpected output)
-        marker_name_inv = f"_m_{self.POSTCOND_TEST_DECIDABLE_MSG_MARKER}_{test_idx}_{unexpected_idx}_inv"
-        rendered += f'Definition {marker_name_inv} := tt. Print {marker_name_inv}.\n'
-        rendered += f"Goal forall (H : {precond_applied}), {full_postcond_name}{args_str} {unexpected_str} H.\n"
-        rendered += f"  intro H.\n"
-        rendered += f"  unfold {full_postcond_name}.\n"
-        rendered += f'  try first [ solve [{self.AUTOMATION_TACTICS}]; idtac "{self.SOLVED_MARKER}" | idtac "{self.UNSOLVED_MARKER}" ].\n'
-        rendered += "Abort."
+        rendered += f"Compute ({full_postcond_name}{args_str} {unexpected_str})."
 
         return rendered
 
     # ==========================================================================
     # Formal verification rendering methods
     # ==========================================================================
+    #
+    # Note: For formal verification proofs comparing ground truth vs generated specs,
+    # we use "= true" assertions since both precond and postcond are now bool.
+    # The lemmas prove: if ground_truth = true, then generated = true (or vice versa).
 
     def render_precond_formal_soundness(
         self,
@@ -642,11 +768,12 @@ Ltac verina_auto :=
         ground_truth_precond: str,
         proof: str,
     ) -> str:
+        """Prove: if ground_truth_precond = true, then generated_precond = true."""
         rendered = "Lemma precond_soundness"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             rendered += f" ({param.param_name} : {coq_type})"
-        rendered += f" :\n    ({ground_truth_precond}) -> ({generated_precond}).\n"
+        rendered += f" :\n    ({ground_truth_precond}) = true -> ({generated_precond}) = true.\n"
         rendered += "Proof.\n"
         rendered += self.render_coq_content(proof)
         rendered += "Qed.\n"
@@ -655,11 +782,12 @@ Ltac verina_auto :=
     def render_precond_formal_completeness(
         self, generated_precond: str, ground_truth_precond: str, proof: str
     ) -> str:
+        """Prove: if generated_precond = true, then ground_truth_precond = true."""
         rendered = "Lemma precond_completeness"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             rendered += f" ({param.param_name} : {coq_type})"
-        rendered += f" :\n    ({generated_precond}) -> ({ground_truth_precond}).\n"
+        rendered += f" :\n    ({generated_precond}) = true -> ({ground_truth_precond}) = true.\n"
         rendered += "Proof.\n"
         rendered += self.render_coq_content(proof)
         rendered += "Qed.\n"
@@ -672,11 +800,13 @@ Ltac verina_auto :=
         ground_truth_postcond: str,
         proof: str,
     ) -> str:
+        r"""Prove: if ground_truth_precond = true /\ generated_postcond = true,
+        then ground_truth_postcond = true."""
         rendered = "Lemma postcond_soundness"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             rendered += f" ({param.param_name} : {coq_type})"
-        rendered += f" :\n    (({ground_truth_precond}) /\\ ({generated_postcond})) -> ({ground_truth_postcond}).\n"
+        rendered += f" :\n    (({ground_truth_precond}) = true /\\ ({generated_postcond}) = true) -> ({ground_truth_postcond}) = true.\n"
         rendered += "Proof.\n"
         rendered += self.render_coq_content(proof)
         rendered += "Qed.\n"
@@ -689,11 +819,13 @@ Ltac verina_auto :=
         ground_truth_postcond: str,
         proof: str,
     ) -> str:
+        r"""Prove: if ground_truth_precond = true /\ ground_truth_postcond = true,
+        then generated_postcond = true."""
         rendered = "Lemma postcond_completeness"
         for param in self.signature.parameters:
             coq_type = self._get_type(param.param_type)
             rendered += f" ({param.param_name} : {coq_type})"
-        rendered += f" :\n    (({ground_truth_precond}) /\\ ({ground_truth_postcond})) -> ({generated_postcond}).\n"
+        rendered += f" :\n    (({ground_truth_precond}) = true /\\ ({ground_truth_postcond}) = true) -> ({generated_postcond}) = true.\n"
         rendered += "Proof.\n"
         rendered += self.render_coq_content(proof)
         rendered += "Qed.\n"
@@ -713,10 +845,12 @@ if __name__ == "__main__":
         return_type="Int",
     )
     template = CoqGenerationTaskTemplate(signature)
-    precond = "True"
+    # Bool-based specs: precond and postcond return bool
+    precond = "true"  # Bool: always true precondition
     code = "(x + 1)%Z"
-    spec = "result = (x + 1)%Z"
-    proof = "reflexivity."
+    # Bool postcond: check property, not algorithm restatement
+    spec = "(result >? x)%Z"  # result > x (property check)
+    proof = "intro H_precond. native_compute. reflexivity."
     test_case = TestCase(input={"x": 1}, expected=2, unexpected=[3])
 
     rendered_precond = template.render_precond(precond)
@@ -727,22 +861,28 @@ if __name__ == "__main__":
     rendered_precond_unit_test_sound_decidable = (
         template.render_precond_unit_test_sound_decidable(test_case, test_idx=0)
     )
+    rendered_postcond_unit_test_complete_decidable = (
+        template.render_postcond_unit_test_complete_decidable(test_case, test_idx=0)
+    )
 
     print("=" * 60)
-    print("Precond:")
+    print("Precond (bool):")
     print(rendered_precond)
     print("=" * 60)
-    print("Code:")
+    print("Code (no h_precond):")
     print(rendered_code)
     print("=" * 60)
-    print("Postcond:")
+    print("Postcond (bool, no h_precond):")
     print(rendered_spec)
     print("=" * 60)
-    print("Proof:")
+    print("Proof (precond=true -> postcond=true):")
     print(rendered_proof)
     print("=" * 60)
-    print("Code unit test:")
+    print("Code unit test (Compute-based):")
     print(rendered_code_unit_test)
     print("=" * 60)
-    print("Precond unit test (decidable):")
+    print("Precond unit test (Compute-based):")
     print(rendered_precond_unit_test_sound_decidable)
+    print("=" * 60)
+    print("Postcond unit test (Compute-based):")
+    print(rendered_postcond_unit_test_complete_decidable)

@@ -131,15 +131,37 @@ def coq_type_to_lean(coq_type: str) -> str:
 
 
 # Common Coq library imports for different types
+# Each type maps to its required import statement
 COQ_TYPE_IMPORTS: Dict[str, str] = {
-    "Z": "Require Import ZArith.\nOpen Scope Z_scope.",
-    "nat": "",  # Built-in
+    "Z": "Require Import ZArith.",
+    "nat": "Require Import Arith.\nRequire Import Nat.",
     "bool": "Require Import Bool.",
     "string": "Require Import String.",
     "ascii": "Require Import Ascii.",
-    "R": "Require Import Reals.\nOpen Scope R_scope.",
+    "R": "Require Import Reals.",
     "list": "Require Import List.\nImport ListNotations.",
     "option": "",  # Built-in
+    "prod": "",  # Built-in (for tuples like Z * Z)
+}
+
+# Import ordering: earlier items come first in output
+# CRITICAL: String/Ascii must come BEFORE List to avoid String.length shadowing List.length
+COQ_IMPORT_ORDER = [
+    "Require Import Bool.",
+    "Require Import ZArith.",
+    "Require Import Arith.",
+    "Require Import Nat.",
+    "Require Import Reals.",
+    "Require Import String.",
+    "Require Import Ascii.",
+    "Require Import List.",
+    "Import ListNotations.",
+]
+
+# Scope openings - added at the end based on types used
+COQ_SCOPE_FOR_TYPE: Dict[str, str] = {
+    "Z": "Open Scope Z_scope.",
+    "R": "Open Scope R_scope.",
 }
 
 
@@ -147,29 +169,64 @@ def get_coq_imports_for_types(types: list[str]) -> str:
     """Get required Coq imports for a list of types.
 
     Args:
-        types: List of Coq types.
+        types: List of Coq types (e.g., ["Z", "list Z", "Z * nat"]).
 
     Returns:
-        String of Coq import statements.
+        String of Coq import statements in correct order.
+        String/Ascii imports come before List to avoid length shadowing.
     """
-    imports = set()
-    for t in types:
-        # Extract base type
-        base_type = t.strip()
-        if base_type.startswith("("):
-            # Parameterized type - get both outer and inner
-            parts = base_type[1:-1].split(None, 1)
-            if parts:
-                base_type = parts[0]
-                if len(parts) > 1:
-                    inner_import = get_coq_imports_for_types([parts[1]])
-                    if inner_import:
-                        imports.add(inner_import)
+    import_lines = set()
+    scopes = set()
 
+    def process_type(t: str):
+        """Recursively process a type and collect its imports."""
+        t = t.strip()
+
+        # Handle parenthesized types like (list Z)
+        if t.startswith("(") and t.endswith(")"):
+            t = t[1:-1].strip()
+
+        # Handle tuple types like Z * nat
+        if " * " in t:
+            for part in t.split(" * "):
+                process_type(part.strip())
+            return
+
+        # Handle parameterized types like "list Z" or "option nat"
+        parts = t.split(None, 1)
+        base_type = parts[0]
+
+        # Get imports for base type
         if base_type in COQ_TYPE_IMPORTS and COQ_TYPE_IMPORTS[base_type]:
-            imports.add(COQ_TYPE_IMPORTS[base_type])
+            for line in COQ_TYPE_IMPORTS[base_type].split("\n"):
+                import_lines.add(line)
 
-    return "\n".join(sorted(imports))
+        # Get scope for base type
+        if base_type in COQ_SCOPE_FOR_TYPE:
+            scopes.add(COQ_SCOPE_FOR_TYPE[base_type])
+
+        # Recursively process inner type if present
+        if len(parts) > 1:
+            process_type(parts[1])
+
+    # Process all types
+    for t in types:
+        process_type(t)
+
+    # Sort imports by defined order
+    ordered_imports = []
+    for import_line in COQ_IMPORT_ORDER:
+        if import_line in import_lines:
+            ordered_imports.append(import_line)
+            import_lines.discard(import_line)
+
+    # Add any remaining imports not in the order list
+    ordered_imports.extend(sorted(import_lines))
+
+    # Add scopes at the end
+    ordered_imports.extend(sorted(scopes))
+
+    return "\n".join(ordered_imports)
 
 
 # Lean to Coq operator mapping

@@ -1,98 +1,104 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import ZArith.
-Require Import List.
-Require Import Bool.
-Import ListNotations.
-Open Scope Z_scope.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper definitions *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
+Definition isEven_b (n : Z) : bool :=
+  (n mod 2 =? 0)%Z.
+
+Definition isOdd_b (n : Z) : bool :=
+  negb (n mod 2 =? 0)%Z.
+(* !benchmark @end precond_aux *)
+
+Definition findProduct_precond (lst : (list Z)) : bool :=
+  (* !benchmark @start precond *)
+  (2 <=? length lst)%nat && existsb isEven_b lst && existsb isOdd_b lst
+  (* !benchmark @end precond *).
+
+(* !benchmark @start code_aux *)
 Definition isEven (n : Z) : bool :=
   (n mod 2 =? 0)%Z.
 
 Definition isOdd (n : Z) : bool :=
-  negb (isEven n).
+  negb (n mod 2 =? 0)%Z.
 
-Fixpoint findIdx_aux {A : Type} (p : A -> bool) (lst : list A) (idx : nat) : option nat :=
+Fixpoint findIdx_aux (lst : list Z) (pred : Z -> bool) (idx : nat) : option nat :=
   match lst with
   | [] => None
-  | x :: xs => if p x then Some idx else findIdx_aux p xs (S idx)
+  | h :: t => if pred h then Some idx else findIdx_aux t pred (S idx)
   end.
 
-Definition findIdx {A : Type} (p : A -> bool) (lst : list A) : option nat :=
-  findIdx_aux p lst 0%nat.
+Definition findIdx (lst : list Z) (pred : Z -> bool) : option nat :=
+  findIdx_aux lst pred O.
+
+Definition nth_default (lst : list Z) (n : nat) : Z :=
+  nth n lst 0.
 
 Definition firstEvenOddIndices (lst : list Z) : option (nat * nat) :=
-  let evenIndex := findIdx isEven lst in
-  let oddIndex := findIdx isOdd lst in
+  let evenIndex := findIdx lst isEven in
+  let oddIndex := findIdx lst isOdd in
   match evenIndex, oddIndex with
   | Some ei, Some oi => Some (ei, oi)
   | _, _ => None
   end.
-
-Fixpoint existsb_prop (p : Z -> bool) (lst : list Z) : Prop :=
-  match lst with
-  | [] => False
-  | x :: xs => p x = true \/ existsb_prop p xs
-  end.
-
-Definition findProduct_precond_dec (lst : list Z) : bool :=
-  ((length lst >? 1)%nat) && existsb isEven lst && existsb isOdd lst.
-(* !benchmark @end precond_aux *)
-
-Definition findProduct_precond (lst : (list Z)) : Prop :=
-  (* !benchmark @start precond *)
-  ((length lst) > 1)%nat /\
-  (exists x, In x lst /\ isEven x = true) /\
-  (exists x, In x lst /\ isOdd x = true)
-  (* !benchmark @end precond *).
-
-(* !benchmark @start code_aux *)
-(* Helper to get nth element with default *)
-Fixpoint nth_default {A : Type} (default : A) (lst : list A) (n : nat) : A :=
-  match n, lst with
-  | O, x :: _ => x
-  | S m, _ :: xs => nth_default default xs m
-  | _, [] => default
-  end.
 (* !benchmark @end code_aux *)
 
-Definition findProduct (lst : (list Z)) (h_precond : findProduct_precond lst) : Z :=
+Definition findProduct (lst : (list Z)) : Z :=
   (* !benchmark @start code *)
   match firstEvenOddIndices lst with
-  | Some (ei, oi) => (nth_default 0 lst ei * nth_default 0 lst oi)%Z
-  | None => 0%Z
+  | Some (ei, oi) => (nth_default lst ei) * (nth_default lst oi)
+  | None => 0
   end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition findProduct_postcond_dec (lst : list Z) (result : Z) : bool :=
-  match firstEvenOddIndices lst with
-  | Some (ei, oi) => (result =? (nth_default 0 lst ei * nth_default 0 lst oi))%Z
-  | None => true
+Definition isEven_post (n : Z) : bool :=
+  (n mod 2 =? 0)%Z.
+
+Definition isOdd_post (n : Z) : bool :=
+  negb (n mod 2 =? 0)%Z.
+
+Fixpoint findIdx_aux_post (lst : list Z) (pred : Z -> bool) (idx : nat) : option nat :=
+  match lst with
+  | [] => None
+  | h :: t => if pred h then Some idx else findIdx_aux_post t pred (S idx)
+  end.
+
+Definition findIdx_post (lst : list Z) (pred : Z -> bool) : option nat :=
+  findIdx_aux_post lst pred O.
+
+Definition nth_default_post (lst : list Z) (n : nat) : Z :=
+  nth n lst 0.
+
+Definition firstEvenOddIndices_post (lst : list Z) : option (nat * nat) :=
+  let evenIndex := findIdx_post lst isEven_post in
+  let oddIndex := findIdx_post lst isOdd_post in
+  match evenIndex, oddIndex with
+  | Some ei, Some oi => Some (ei, oi)
+  | _, _ => None
   end.
 (* !benchmark @end postcond_aux *)
 
-Definition findProduct_postcond (lst : (list Z)) (result : Z) (h_precond : findProduct_precond lst) : Prop :=
+Definition findProduct_postcond (lst : (list Z)) (result : Z) : bool :=
   (* !benchmark @start postcond *)
-  match firstEvenOddIndices lst with
-  | Some (ei, oi) => result = (nth_default 0 lst ei * nth_default 0 lst oi)%Z
-  | None => True
+  match firstEvenOddIndices_post lst with
+  | Some (ei, oi) => (result =? (nth_default_post lst ei) * (nth_default_post lst oi))%Z
+  | None => true
   end
   (* !benchmark @end postcond *).
 
@@ -100,8 +106,9 @@ Definition findProduct_postcond (lst : (list Z)) (result : Z) (h_precond : findP
 
 (* !benchmark @end proof_aux *)
 
-Theorem findProduct_postcond_satisfied (lst : (list Z)) (h_precond : findProduct_precond lst) :
-    findProduct_postcond lst (findProduct lst h_precond) h_precond.
+Theorem findProduct_postcond_satisfied (lst : (list Z)) :
+    findProduct_precond lst = true ->
+    findProduct_postcond lst (findProduct lst) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

@@ -1,141 +1,132 @@
 (* !benchmark @start import type=task *)
+Require Import Bool.
+Require Import Nat.
 Require Import List.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import List.
-Require Import Arith.
-Require Import Lia.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+Fixpoint merge_intervals_aux (sorted : list (nat * nat)) (acc : list (nat * nat)) : list (nat * nat) :=
+  match sorted with
+  | [] => acc
+  | curr :: rest =>
+    match acc with
+    | [] => merge_intervals_aux rest [curr]
+    | (s, e) :: acc_rest =>
+      if (fst curr <=? e)%nat then
+        merge_intervals_aux rest ((s, max e (snd curr)) :: acc_rest)
+      else
+        merge_intervals_aux rest (curr :: acc)
+    end
+  end.
+
+Fixpoint compute_coverage (merged : list (nat * nat)) : nat :=
+  match merged with
+  | [] => O
+  | (s, e) :: rest => ((e - s) + compute_coverage rest)%nat
+  end.
 
 Fixpoint eraseIdx {A : Type} (l : list A) (i : nat) : list A :=
   match l, i with
   | [], _ => []
-  | _ :: tl, 0 => tl
-  | hd :: tl, S i' => hd :: eraseIdx tl i'
+  | _ :: t, O => t
+  | h :: t, S i' => h :: eraseIdx t i'
   end.
 
-Fixpoint split (l : list (nat * nat)) : (list (nat * nat) * list (nat * nat)) :=
+Fixpoint insert_sorted (x : nat * nat) (l : list (nat * nat)) : list (nat * nat) :=
   match l with
-  | [] => ([], [])
-  | [x] => ([x], [])
-  | x :: y :: rest =>
-      let (l1, l2) := split rest in
-      (x :: l1, y :: l2)
+  | [] => [x]
+  | h :: t =>
+    if (fst x <=? fst h)%nat then x :: h :: t
+    else h :: insert_sorted x t
   end.
 
-Fixpoint merge (l1 l2 : list (nat * nat)) : list (nat * nat) :=
-  match l1, l2 with
-  | [], _ => l2
-  | _, [] => l1
-  | (a1, b1) :: t1, (a2, b2) :: t2 =>
-      if (a1 <=? a2)%nat then (a1, b1) :: merge t1 l2
-      else (a2, b2) :: merge l1 t2
+Fixpoint sort_intervals (l : list (nat * nat)) : list (nat * nat) :=
+  match l with
+  | [] => []
+  | h :: t => insert_sorted h (sort_intervals t)
   end.
-
-Fixpoint mergeSort (l : list (nat * nat)) (n : nat) : list (nat * nat) :=
-  match n with
-  | 0 => l
-  | S n' =>
-      match l with
-      | [] => []
-      | [x] => [x]
-      | _ =>
-          let (l1, l2) := split l in
-          merge (mergeSort l1 n') (mergeSort l2 n')
-      end
-  end.
-
-Definition mergeInterval (acc : list (nat * nat)) (curr : nat * nat) : list (nat * nat) :=
-  match acc with
-  | [] => [curr]
-  | (s, e) :: rest =>
-      if (fst curr <=? e)%nat then (s, Nat.max e (snd curr)) :: rest
-      else curr :: acc
-  end.
-
-Definition computeCoverage (intervals : list (nat * nat)) (i : nat) : nat :=
-  let remaining := eraseIdx intervals i in
-  let sorted := mergeSort remaining (length remaining) in
-  let merged := fold_left mergeInterval sorted [] in
-  let coverage := fold_left (fun acc p => (acc + (snd p - fst p))%nat) (rev merged) 0%nat in
-  coverage.
-
-Fixpoint maxInRangeAux (intervals : list (nat * nat)) (i : nat) (fuel : nat) (acc : nat) : nat :=
-  match fuel with
-  | 0 => acc
-  | S fuel' =>
-      if (i <? length intervals)%nat then
-        let cov := computeCoverage intervals i in
-        maxInRangeAux intervals (S i) fuel' (Nat.max acc cov)
-      else acc
-  end.
-
-Definition maxInRange (intervals : list (nat * nat)) : nat :=
-  maxInRangeAux intervals 0%nat (length intervals) 0%nat.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-(* precondition helpers including _dec version, complete definitions *)
 
-Definition maxCoverageAfterRemovingOne_precond_dec (intervals : list (nat * nat)) : bool :=
-  (length intervals >? 0)%nat.
 (* !benchmark @end precond_aux *)
 
-Definition maxCoverageAfterRemovingOne_precond (intervals : (list (nat * nat))) : Prop :=
+Definition maxCoverageAfterRemovingOne_precond (intervals : (list (nat * nat))) : bool :=
   (* !benchmark @start precond *)
-  (length intervals > 0)%nat
+  (1 <=? length intervals)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* complete helper function definitions *)
+Definition coverage_after_remove (intervals : list (nat * nat)) (i : nat) : nat :=
+  let remaining := eraseIdx intervals i in
+  let sorted := sort_intervals remaining in
+  let merged := merge_intervals_aux sorted [] in
+  compute_coverage (rev merged).
+
+Fixpoint max_coverage_loop (intervals : list (nat * nat)) (i : nat) (n : nat) (acc : nat) : nat :=
+  match n with
+  | O => acc
+  | S n' =>
+    let cov := coverage_after_remove intervals i in
+    max_coverage_loop intervals (S i) n' (max acc cov)
+  end.
 (* !benchmark @end code_aux *)
 
-Definition maxCoverageAfterRemovingOne (intervals : (list (nat * nat))) (h_precond : maxCoverageAfterRemovingOne_precond intervals) : nat :=
+Definition maxCoverageAfterRemovingOne (intervals : (list (nat * nat))) : nat :=
   (* !benchmark @start code *)
   let n := length intervals in
-  if n <=? 1 then 0%nat
-  else maxInRange intervals
+    if (n <=? 1)%nat then O
+    else max_coverage_loop intervals O n O
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-(* postcondition helpers including _dec version, complete definitions *)
+Fixpoint existsb_indexed {A : Type} (f : nat -> A -> bool) (l : list A) (start : nat) : bool :=
+  match l with
+  | [] => false
+  | h :: t => f start h || existsb_indexed f t (S start)
+  end.
 
-Definition maxCoverageAfterRemovingOne_postcond_dec (intervals : list (nat * nat)) (result : nat) : bool :=
-  true.
+Fixpoint forallb_indexed {A : Type} (f : nat -> A -> bool) (l : list A) (start : nat) : bool :=
+  match l with
+  | [] => true
+  | h :: t => f start h && forallb_indexed f t (S start)
+  end.
+
+Definition coverage_for_index (intervals : list (nat * nat)) (i : nat) : nat :=
+  let remaining := eraseIdx intervals i in
+  let sorted := sort_intervals remaining in
+  let merged := merge_intervals_aux sorted [] in
+  compute_coverage (rev merged).
 (* !benchmark @end postcond_aux *)
 
-Definition maxCoverageAfterRemovingOne_postcond (intervals : (list (nat * nat))) (result : nat) (h_precond : maxCoverageAfterRemovingOne_precond intervals) : Prop :=
+Definition maxCoverageAfterRemovingOne_postcond (intervals : (list (nat * nat))) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  exists i : nat, (i < length intervals)%nat /\
-  let remaining := eraseIdx intervals i in
-  let sorted := mergeSort remaining (length remaining) in
-  let merged := fold_left mergeInterval sorted [] in
-  let cov := fold_left (fun acc p => (acc + (snd p - fst p))%nat) (rev merged) 0%nat in
-  result = cov /\
-  forall j : nat, (j < length intervals)%nat ->
-    let rem_j := eraseIdx intervals j in
-    let sort_j := mergeSort rem_j (length rem_j) in
-    let merged_j := fold_left mergeInterval sort_j [] in
-    let cov_j := fold_left (fun acc p => (acc + (snd p - fst p))%nat) (rev merged_j) 0%nat in
-    (cov >= cov_j)%nat
+  existsb_indexed (fun i _ =>
+    let cov := coverage_for_index intervals i in
+    (result =? cov)%nat &&
+    forallb_indexed (fun j _ =>
+      let cov_j := coverage_for_index intervals j in
+      (cov_j <=? cov)%nat
+    ) intervals O
+  ) intervals O
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem maxCoverageAfterRemovingOne_postcond_satisfied (intervals : (list (nat * nat))) (h_precond : maxCoverageAfterRemovingOne_precond intervals) :
-    maxCoverageAfterRemovingOne_postcond intervals (maxCoverageAfterRemovingOne intervals h_precond) h_precond.
+Theorem maxCoverageAfterRemovingOne_postcond_satisfied (intervals : (list (nat * nat))) :
+    maxCoverageAfterRemovingOne_precond intervals = true ->
+    maxCoverageAfterRemovingOne_postcond intervals (maxCoverageAfterRemovingOne intervals) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

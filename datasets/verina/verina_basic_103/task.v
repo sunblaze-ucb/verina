@@ -1,83 +1,93 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* Helper function to update element at index in list *)
-Fixpoint list_set (l : list Z) (idx : nat) (val : Z) : list Z :=
-  match l, idx with
-  | [], _ => []
-  | x :: xs, 0%nat => val :: xs
-  | x :: xs, S n => x :: list_set xs n val
-  end.
 
-(* Helper function to get element at index in list *)
-Fixpoint list_get (l : list Z) (idx : nat) (default : Z) : Z :=
-  match l, idx with
-  | [], _ => default
-  | x :: xs, 0%nat => x
-  | x :: xs, S n => list_get xs n default
-  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition UpdateElements_precond_dec (a : list Z) : bool :=
-  (8 <=? length a)%nat.
+
 (* !benchmark @end precond_aux *)
 
-Definition UpdateElements_precond (a : (list Z)) : Prop :=
+Definition UpdateElements_precond (a : (list Z)) : bool :=
   (* !benchmark @start precond *)
-  (length a >= 8)%nat
+  (8 <=? length a)%nat
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-(* No additional code auxiliaries needed *)
+Fixpoint set_nth (l : list Z) (n : nat) (v : Z) : list Z :=
+  match l with
+  | [] => []
+  | h :: t =>
+    match n with
+    | O => v :: t
+    | S n' => h :: set_nth t n' v
+    end
+  end.
+
+Definition nth_default (l : list Z) (n : nat) (d : Z) : Z :=
+  nth n l d.
 (* !benchmark @end code_aux *)
 
-Definition UpdateElements (a : (list Z)) (h_precond : UpdateElements_precond a) : (list Z) :=
+Definition UpdateElements (a : (list Z)) : (list Z) :=
   (* !benchmark @start code *)
-  let a1 := list_set a 4%nat ((list_get a 4%nat 0%Z) + 3)%Z in
-  let a2 := list_set a1 7%nat 516%Z in
+  let a1 := set_nth a 4 ((nth_default a 4 0) + 3) in
+  let a2 := set_nth a1 7 516 in
   a2
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition UpdateElements_postcond_dec (a : list Z) (result : list Z) : bool :=
-  (list_get result 4%nat 0%Z =? (list_get a 4%nat 0%Z) + 3)%Z &&
-  (list_get result 7%nat 0%Z =? 516)%Z &&
-  (forallb (fun i => 
-    if (i <? length a)%nat then
-      if Nat.eqb i 4%nat then true
-      else if Nat.eqb i 7%nat then true
-      else (list_get result i 0%Z =? list_get a i 0%Z)%Z
-    else true
-  ) (seq 0%nat (length a))).
+Fixpoint nth_Z (l : list Z) (n : nat) (d : Z) : Z :=
+  nth n l d.
+
+Fixpoint set_nth_Z (l : list Z) (n : nat) (v : Z) : list Z :=
+  match l with
+  | [] => []
+  | h :: t =>
+    match n with
+    | O => v :: t
+    | S n' => h :: set_nth_Z t n' v
+    end
+  end.
+
+Fixpoint check_unchanged (result a : list Z) (i len : nat) : bool :=
+  match len with
+  | O => true
+  | S len' =>
+    if (i =? 4)%nat then check_unchanged result a (S i) len'
+    else if (i =? 7)%nat then check_unchanged result a (S i) len'
+    else if (i <? length a)%nat then
+      ((nth_Z result i 0 =? nth_Z a i 0) && check_unchanged result a (S i) len')%bool
+    else check_unchanged result a (S i) len'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition UpdateElements_postcond (a : (list Z)) (result : (list Z)) (h_precond : UpdateElements_precond a) : Prop :=
+Definition UpdateElements_postcond (a : (list Z)) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  list_get result 4%nat 0%Z = ((list_get a 4%nat 0%Z) + 3)%Z /\
-  list_get result 7%nat 0%Z = 516%Z /\
-  (forall i, (i < length a)%nat -> i <> 4%nat -> i <> 7%nat -> list_get result i 0%Z = list_get a i 0%Z)
+  ((nth_Z result 4 0 =? (nth_Z a 4 0) + 3) &&
+   (nth_Z result 7 0 =? 516) &&
+   check_unchanged result a 0 (length a))%bool
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem UpdateElements_postcond_satisfied (a : (list Z)) (h_precond : UpdateElements_precond a) :
-    UpdateElements_postcond a (UpdateElements a h_precond) h_precond.
+Theorem UpdateElements_postcond_satisfied (a : (list Z)) :
+    UpdateElements_precond a = true ->
+    UpdateElements_postcond a (UpdateElements a) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

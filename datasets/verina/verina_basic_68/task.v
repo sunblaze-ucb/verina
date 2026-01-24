@@ -1,80 +1,80 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Require Import List.
-Import ListNotations.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition LinearSearch_precond_dec (a : list Z) (e : Z) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition LinearSearch_precond (a : (list Z)) (e : Z) : Prop :=
+Definition LinearSearch_precond (a : (list Z)) (e : Z) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint LinearSearch_loop (a : list Z) (e : Z) (n : nat) (fuel : nat) : nat :=
+Fixpoint loop (a : list Z) (e : Z) (n : nat) (fuel : nat) : nat :=
   match fuel with
   | O => n
   | S fuel' =>
-      if (n <? length a)%nat then
-        match nth_error a n with
-        | Some v => if (v =? e)%Z then n else LinearSearch_loop a e (n + 1) fuel'
-        | None => n
-        end
-      else n
+    if (n <? length a)%nat then
+      match nth_error a n with
+      | Some v => if (v =? e)%Z then n else loop a e (n + 1)%nat fuel'
+      | None => n
+      end
+    else n
   end.
 (* !benchmark @end code_aux *)
 
-Definition LinearSearch (a : (list Z)) (e : Z) (h_precond : LinearSearch_precond a e) : nat :=
+Definition LinearSearch (a : (list Z)) (e : Z) : nat :=
   (* !benchmark @start code *)
-  LinearSearch_loop a e 0%nat (length a + 1)
+  loop a e 0%nat (length a)
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition LinearSearch_postcond_dec (a : list Z) (e : Z) (result : nat) : bool :=
-  (result <=? length a)%nat &&
-  match nth_error a result with
-  | Some v => (v =? e)%Z
-  | None => (result =? length a)%nat
-  end &&
-  forallb (fun i => 
-    match nth_error a i with
-    | Some v => negb (v =? e)%Z
+Fixpoint all_before_not_equal (a : list Z) (e : Z) (i : nat) : bool :=
+  match i with
+  | O => true
+  | S i' =>
+    match nth_error a i' with
+    | Some v => negb (v =? e)%Z && all_before_not_equal a e i'
     | None => true
-    end) (seq 0 result).
+    end
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition LinearSearch_postcond (a : (list Z)) (e : Z) (result : nat) (h_precond : LinearSearch_precond a e) : Prop :=
+Definition LinearSearch_postcond (a : (list Z)) (e : Z) (result : nat) : bool :=
   (* !benchmark @start postcond *)
-  (result <= length a)%nat /\
-(result = length a \/ exists v, nth_error a result = Some v /\ v = e) /\
-(forall i, (i < result)%nat -> forall v, nth_error a i = Some v -> v <> e)
+  (result <=? length a)%nat &&
+  ((result =? length a)%nat ||
+   match nth_error a result with
+   | Some v => (v =? e)%Z
+   | None => false
+   end) &&
+  all_before_not_equal a e result
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem LinearSearch_postcond_satisfied (a : (list Z)) (e : Z) (h_precond : LinearSearch_precond a e) :
-    LinearSearch_postcond a e (LinearSearch a e h_precond) h_precond.
+Theorem LinearSearch_postcond_satisfied (a : (list Z)) (e : Z) :
+    LinearSearch_precond a e = true ->
+    LinearSearch_postcond a e (LinearSearch a e) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

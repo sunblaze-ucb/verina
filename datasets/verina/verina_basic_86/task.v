@@ -1,103 +1,92 @@
 (* !benchmark @start import type=task *)
+Require Import ZArith.
 Require Import List.
 Import ListNotations.
-Require Import ZArith.
 Open Scope Z_scope.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Lia.
-Require Import ZArith.
-Require Import List.
-Import ListNotations.
+Require Import Nat.
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* task-level type definitions: Record, Inductive, etc. - translate from Lean task_aux *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* complete helper definitions with Fixpoint/Definition keywords *)
+
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition rotate_precond_dec (a : list Z) (offset : Z) : bool :=
-  (offset >=? 0)%Z.
+
 (* !benchmark @end precond_aux *)
 
-Definition rotate_precond (a : (list Z)) (offset : Z) : Prop :=
+Definition rotate_precond (a : (list Z)) (offset : Z) : bool :=
   (* !benchmark @start precond *)
-  (offset >= 0)%Z
+  (offset >=? 0)%Z
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
-Fixpoint rotateAux (a : list Z) (offset : Z) (len : nat) (b : list Z) (fuel : nat) : list Z :=
-  match fuel with
+Fixpoint rotateAux (a : list Z) (offset : Z) (i : nat) (len : nat) (b : list Z) : list Z :=
+  match i with
   | O => b
-  | S fuel' =>
-      let i := (len - S fuel')%nat in
-      if Nat.ltb i len then
-        let idx_int := ((Z.of_nat i) + offset)%Z in
-        let len_z := Z.of_nat len in
-        let idx_mod := (idx_int mod len_z)%Z in
-        let idx_adjusted := if (idx_mod <? 0)%Z then (idx_mod + len_z)%Z else idx_mod in
-        let idx_nat := Z.to_nat idx_adjusted in
-        let new_b := 
-          match nth_error a idx_nat with
-          | Some v => 
-              match nth_error b i with
-              | Some _ => 
-                  (firstn i b) ++ [v] ++ (skipn (S i) b)
-              | None => b
-              end
-          | None => b
-          end in
-        rotateAux a offset len new_b fuel'
-      else b
+  | S i' =>
+    let current_idx := (len - i)%nat in
+    let idx_int := (Z.of_nat current_idx + offset) mod (Z.of_nat len) in
+    let idx_int_adjusted := if (idx_int <? 0)%Z then idx_int + Z.of_nat len else idx_int in
+    let idx_nat := Z.to_nat idx_int_adjusted in
+    let val := nth idx_nat a 0%Z in
+    let new_b := firstn current_idx b ++ [val] ++ skipn (current_idx + 1)%nat b in
+    rotateAux a offset i' len new_b
+  end.
+
+Definition rotate_impl (a : list Z) (offset : Z) : list Z :=
+  let len := length a in
+  match len with
+  | O => []
+  | _ =>
+    let default_val := nth O a 0%Z in
+    let b0 := repeat default_val len in
+    rotateAux a offset len len b0
   end.
 (* !benchmark @end code_aux *)
 
-Definition rotate (a : (list Z)) (offset : Z) (h_precond : rotate_precond a offset) : (list Z) :=
+Definition rotate (a : (list Z)) (offset : Z) : (list Z) :=
   (* !benchmark @start code *)
-  let len := length a in
-let default_val := match a with
-                   | [] => 0%Z
-                   | h :: _ => h
-                   end in
-let b0 := repeat default_val len in
-rotateAux a offset len b0 len
+  rotate_impl a offset
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition rotate_postcond_dec (a : list Z) (offset : Z) (result : list Z) : bool :=
-  let len_eq := Nat.eqb (length result) (length a) in
-  len_eq.
+Fixpoint check_rotation (a result : list Z) (offset : Z) (i : nat) (len : nat) : bool :=
+  match i with
+  | O => true
+  | S i' =>
+    let current_idx := (len - i)%nat in
+    let idx_int := (Z.of_nat current_idx + offset) mod (Z.of_nat len) in
+    let idx_int_adjusted := if (idx_int <? 0)%Z then idx_int + Z.of_nat len else idx_int in
+    let idx_nat := Z.to_nat idx_int_adjusted in
+    let expected := nth idx_nat a 0%Z in
+    let actual := nth current_idx result 0%Z in
+    ((expected =? actual)%Z && check_rotation a result offset i' len)%bool
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition rotate_postcond (a : (list Z)) (offset : Z) (result : (list Z)) (h_precond : rotate_precond a offset) : Prop :=
+Definition rotate_postcond (a : (list Z)) (offset : Z) (result : (list Z)) : bool :=
   (* !benchmark @start postcond *)
-  (length result = length a) /\
-(forall i : nat, (i < length a)%nat ->
-  match nth_error result i with
-  | Some r_val =>
-      let idx := ((Z.of_nat i) + offset)%Z in
-      let len_z := Z.of_nat (length a) in
-      let idx_mod := (idx mod len_z)%Z in
-      let idx_nat := Z.to_nat idx_mod in
-      match nth_error a idx_nat with
-      | Some a_val => r_val = a_val
-      | None => True
-      end
-  | None => True
-  end)
+  ((length result =? length a)%nat &&
+    (match length a with
+     | O => true
+     | _ => check_rotation a result offset (length a) (length a)
+     end))%bool
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem rotate_postcond_satisfied (a : (list Z)) (offset : Z) (h_precond : rotate_precond a offset) :
-    rotate_postcond a offset (rotate a offset h_precond) h_precond.
+Theorem rotate_postcond_satisfied (a : (list Z)) (offset : Z) :
+    rotate_precond a offset = true ->
+    rotate_postcond a offset (rotate a offset) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.

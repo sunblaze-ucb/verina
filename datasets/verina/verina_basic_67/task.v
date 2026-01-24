@@ -1,95 +1,93 @@
 (* !benchmark @start import type=task *)
-Require Import Ascii.
 Require Import Bool.
 Require Import List.
+Require Import Ascii.
+Require Import Nat.
 Import ListNotations.
 (* !benchmark @end import *)
 
 (* !benchmark @start import type=solution *)
-Require Import Coq.Strings.Ascii.
-Require Import Coq.Lists.List.
-Require Import Coq.Arith.PeanoNat.
-Import ListNotations.
+
 (* !benchmark @end import *)
 
 (* !benchmark @start task_aux *)
-(* No task-level type definitions *)
+
 (* !benchmark @end task_aux *)
 
 (* !benchmark @start solution_aux *)
-(* No solution auxiliary definitions *)
+Definition ascii_eqb (a b : ascii) : bool :=
+  match a, b with
+  | Ascii a0 a1 a2 a3 a4 a5 a6 a7, Ascii b0 b1 b2 b3 b4 b5 b6 b7 =>
+    Bool.eqb a0 b0 && Bool.eqb a1 b1 && Bool.eqb a2 b2 && Bool.eqb a3 b3 &&
+    Bool.eqb a4 b4 && Bool.eqb a5 b5 && Bool.eqb a6 b6 && Bool.eqb a7 b7
+  end.
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-Definition IsPalindrome_precond_dec (x : list ascii) : bool := true.
+
 (* !benchmark @end precond_aux *)
 
-Definition IsPalindrome_precond (x : (list ascii)) : Prop :=
+Definition IsPalindrome_precond (x : (list ascii)) : bool :=
   (* !benchmark @start precond *)
-  True
+  true
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
 Fixpoint isPalindromeHelper (x : list ascii) (i j : nat) (fuel : nat) : bool :=
   match fuel with
-  | 0%nat => true
+  | O => true
   | S fuel' =>
-      if (i <? j)%nat then
-        match nth_error x i, nth_error x j with
-        | Some ci, Some cj =>
-            if ascii_dec ci cj then 
-              isPalindromeHelper x (i + 1)%nat (j - 1)%nat fuel'
-            else false
-        | _, _ => false
-        end
-      else true
+    if (i <? j)%nat then
+      match nth_error x i, nth_error x j with
+      | Some ci, Some cj =>
+        if negb (ascii_eqb ci cj) then false
+        else isPalindromeHelper x (i + 1)%nat (j - 1)%nat fuel'
+      | _, _ => false
+      end
+    else true
   end.
 (* !benchmark @end code_aux *)
 
-Definition IsPalindrome (x : (list ascii)) (h_precond : IsPalindrome_precond x) : bool :=
+Definition IsPalindrome (x : (list ascii)) : bool :=
   (* !benchmark @start code *)
-  let len := length x in
-if Nat.eqb len 0%nat then true 
-else isPalindromeHelper x 0%nat (len - 1)%nat len
+  match x with
+  | [] => true
+  | _ => isPalindromeHelper x 0 (length x - 1)%nat (length x)
+  end
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition nth_default (A : Type) (default : A) (l : list A) (n : nat) : A :=
+Definition ascii_zero : ascii := Ascii false false false false false false false false.
+
+Definition nth_default_ascii (l : list ascii) (n : nat) : ascii :=
   match nth_error l n with
-  | Some x => x
-  | None => default
+  | Some c => c
+  | None => ascii_zero
   end.
 
-Definition IsPalindrome_postcond_dec (x : list ascii) (result : bool) : bool :=
-  let len := length x in
-  let fix check_all (i : nat) (fuel : nat) : bool :=
-    match fuel with
-    | 0%nat => true
-    | S fuel' =>
-        if (i <? len)%nat then
-          let ci := nth_default ascii zero x i in
-          let cj := nth_default ascii zero x (len - i - 1)%nat in
-          if ascii_dec ci cj then
-            check_all (i + 1)%nat fuel'
-          else false
-        else true
-    end
-  in
-  if result then check_all 0%nat len else negb (check_all 0%nat len).
+Fixpoint check_palindrome_indices (x : list ascii) (i : nat) : bool :=
+  match i with
+  | O => true
+  | S i' =>
+    let idx := (length x - i)%nat in
+    let mirror := (length x - idx - 1)%nat in
+    (ascii_eqb (nth_default_ascii x idx) (nth_default_ascii x mirror)) &&
+    check_palindrome_indices x i'
+  end.
 (* !benchmark @end postcond_aux *)
 
-Definition IsPalindrome_postcond (x : (list ascii)) (result : bool) (h_precond : IsPalindrome_precond x) : Prop :=
+Definition IsPalindrome_postcond (x : (list ascii)) (result : bool) : bool :=
   (* !benchmark @start postcond *)
-  result = true <-> (forall i : nat, (i < length x)%nat -> 
-  nth_default ascii zero x i = nth_default ascii zero x (length x - i - 1)%nat)
+  Bool.eqb result (check_palindrome_indices x (length x))
   (* !benchmark @end postcond *).
 
 (* !benchmark @start proof_aux *)
 
 (* !benchmark @end proof_aux *)
 
-Theorem IsPalindrome_postcond_satisfied (x : (list ascii)) (h_precond : IsPalindrome_precond x) :
-    IsPalindrome_postcond x (IsPalindrome x h_precond) h_precond.
+Theorem IsPalindrome_postcond_satisfied (x : (list ascii)) :
+    IsPalindrome_precond x = true ->
+    IsPalindrome_postcond x (IsPalindrome x) = true.
 Proof.
   (* !benchmark @start proof *)
   admit.
