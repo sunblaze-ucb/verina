@@ -36,12 +36,16 @@ Fixpoint nth_default (l : list R) (n : nat) (default : R) : R :=
 (* !benchmark @end solution_aux *)
 
 (* !benchmark @start precond_aux *)
-
+Definition Rgeb (x y : R) : bool :=
+  match Rge_dec x y with
+  | left _ => true
+  | right _ => false
+  end.
 (* !benchmark @end precond_aux *)
 
 Definition has_close_elements_precond (numbers : (list R)) (threshold : R) : bool :=
   (* !benchmark @start precond *)
-  true
+  Rgeb threshold 0
   (* !benchmark @end precond *).
 
 (* !benchmark @start code_aux *)
@@ -71,12 +75,6 @@ Definition has_close_elements (numbers : (list R)) (threshold : R) : bool :=
   (* !benchmark @end code *).
 
 (* !benchmark @start postcond_aux *)
-Definition Rgeb (x y : R) : bool :=
-  match Rge_dec x y with
-  | left _ => true
-  | right _ => false
-  end.
-
 Fixpoint pairwise_check (l : list R) (threshold : R) : bool :=
   match l with
   | [] => true

@@ -12,13 +12,13 @@
     },
     {
         "input": {
-            "n": "6285195213566005335561053533150026217291776%nat",
+            "n": "16796160000%nat",
             "primes": "[2%nat; 3%nat; 5%nat]"
         },
-        "expected": "[(2%nat, 55%nat); (3%nat, 55%nat); (5%nat, 0%nat)]",
+        "expected": "[(2%nat, 12%nat); (3%nat, 8%nat); (5%nat, 4%nat)]",
         "unexpected": [
-            "[(2%nat, 2%nat); (3%nat, 55%nat); (5%nat, 59%nat)]",
-            "[(2%nat, 55%nat); (3%nat, 55%nat); (7%nat, 0%nat)]"
+            "[(2%nat, 12%nat); (3%nat, 8%nat); (5%nat, 3%nat)]",
+            "[(2%nat, 11%nat); (3%nat, 8%nat); (5%nat, 4%nat)]"
         ]
     },
     {

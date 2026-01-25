@@ -204,6 +204,8 @@ class CoqGenerationTaskTemplate(ITPTemplate):
             return "Bool.eqb"
         elif type_lower == "string":
             return "String.eqb"
+        elif type_lower == "ascii":
+            return "Ascii.eqb"
 
         # Compound types - need to build a lambda or partial application
         elif type_lower == "list":

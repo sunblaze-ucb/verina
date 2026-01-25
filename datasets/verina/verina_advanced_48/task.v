@@ -66,10 +66,8 @@ Fixpoint count (x : Z) (l : list Z) : nat :=
   end.
 
 Fixpoint isPerm (l1 l2 : list Z) : bool :=
-  match l1 with
-  | [] => match l2 with [] => true | _ => false end
-  | x :: xs => (count x l1 =? count x l2)%nat && isPerm xs l2
-  end.
+  (length l1 =? length l2)%nat &&
+  forallb (fun x => (count x l1 =? count x l2)%nat) l1.
 (* !benchmark @end postcond_aux *)
 
 Definition mergeSort_postcond (lst : (list Z)) (result : (list Z)) : bool :=

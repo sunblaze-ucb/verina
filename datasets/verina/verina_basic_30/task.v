@@ -36,7 +36,7 @@ Fixpoint elementWiseModulo_aux (a : list Z) (b : list Z) : list Z :=
   match a, b with
   | [], _ => []
   | _, [] => []
-  | ha :: ta, hb :: tb => (Z.rem ha hb) :: elementWiseModulo_aux ta tb
+  | ha :: ta, hb :: tb => (Z.modulo ha hb) :: elementWiseModulo_aux ta tb
   end.
 (* !benchmark @end code_aux *)
 
@@ -60,7 +60,7 @@ Fixpoint check_all_indices (result a b : list Z) (i : nat) (len : nat) : bool :=
       let ri := nth_default_Z result i 0 in
       let ai := nth_default_Z a i 0 in
       let bi := nth_default_Z b i 0 in
-      (ri =? Z.rem ai bi) && check_all_indices result a b (S i) len'
+      (ri =? Z.modulo ai bi) && check_all_indices result a b (S i) len'
   end.
 (* !benchmark @end postcond_aux *)
 

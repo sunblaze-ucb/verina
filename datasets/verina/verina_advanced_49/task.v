@@ -78,10 +78,8 @@ Fixpoint count_occ_Z (x : Z) (l : list Z) : nat :=
   end.
 
 Fixpoint is_perm (l1 l2 : list Z) : bool :=
-  match l1 with
-  | [] => match l2 with [] => true | _ => false end
-  | h :: t => (count_occ_Z h l1 =? count_occ_Z h l2)%nat && is_perm t l2
-  end.
+  (length l1 =? length l2)%nat &&
+  forallb (fun x => (count_occ_Z x l1 =? count_occ_Z x l2)%nat) l1.
 (* !benchmark @end postcond_aux *)
 
 Definition mergeSortedLists_postcond (arr1 : (list Z)) (arr2 : (list Z)) (result : (list Z)) : bool :=
