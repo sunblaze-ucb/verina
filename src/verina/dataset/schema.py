@@ -96,6 +96,11 @@ class BenchmarkData(BaseModel):
         description="Coq-specific test cases with Coq literal values (from coq_test.json)",
     )
 
+    coq_reject_inputs: Optional[List[RejectInput]] = Field(
+        default=None,
+        description="Coq-specific reject inputs with Coq literal syntax (from coq_reject_inputs.json)",
+    )
+
     metadata: Optional[Json[Any]] = Field(None, description="The metadata")
 
 

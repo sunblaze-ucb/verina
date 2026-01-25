@@ -1439,13 +1439,15 @@ async def metric_generated_spec_unit_test_entry(
         if config.unit_test:
             # Select appropriate tests based on ITP type
             tests = benchmark_data.coq_tests if (itp_type == ITPType.COQ and benchmark_data.coq_tests) else benchmark_data.tests
+            # Select appropriate reject_inputs based on ITP type
+            reject_inputs = benchmark_data.coq_reject_inputs if (itp_type == ITPType.COQ and benchmark_data.coq_reject_inputs) else benchmark_data.reject_inputs
             score = await metric_generated_spec_unit_tests(
                 config,
                 template_engine,
                 content,
                 score,
                 evaluate_type,
-                benchmark_data.reject_inputs,
+                reject_inputs,
                 tests,
                 precond_name,
                 postcond_name,

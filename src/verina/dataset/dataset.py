@@ -154,6 +154,12 @@ def load_benchmark_data_from_task_file(
     if coq_test_path.exists():
         coq_tests = parse_test_file(coq_test_path)
 
+    # Read coq_reject_inputs.json if it exists (Coq-specific reject inputs with Coq literal syntax)
+    coq_reject_inputs_path = task_dir / "coq_reject_inputs.json"
+    coq_reject_inputs = None
+    if coq_reject_inputs_path.exists():
+        coq_reject_inputs = parse_reject_inputs_file(coq_reject_inputs_path)
+
     metadata = task_data.get("metadata", {})
     metadata_json = json.dumps(metadata)
 
@@ -190,6 +196,7 @@ def load_benchmark_data_from_task_file(
         reject_inputs=reject_inputs,
         tests=tests,
         coq_tests=coq_tests,
+        coq_reject_inputs=coq_reject_inputs,
         metadata=metadata_json,
     )
 
