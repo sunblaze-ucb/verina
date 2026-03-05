@@ -39,6 +39,7 @@ def dissimilarElements_postcond (a : Array Int) (b : Array Int) (result: Array I
   -- !benchmark @start postcond
   result.all (fun x => inArray a x ≠ inArray b x)∧
   result.toList.Pairwise (· ≤ ·) ∧
+  List.Nodup result.toList ∧
   a.all (fun x => if x ∈ b then x ∉ result else x ∈ result) ∧
   b.all (fun x => if x ∈ a then x ∉ result else x ∈ result)
   -- !benchmark @end postcond

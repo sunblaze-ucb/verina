@@ -7,15 +7,27 @@ import Mathlib.Data.Nat.Prime.Defs
 -- !benchmark @end solution_aux
 
 -- !benchmark @start precond_aux
+def removePrimeFactor (n : Nat) (p : Nat) : Nat :=
+  if h : p > 1 ∧ n > 0 then
+    if n % p = 0 then
+      have : n / p < n := Nat.div_lt_self h.2 h.1
+      removePrimeFactor (n / p) p
+    else n
+  else n
+termination_by n
 
+def removeAllPrimeFactors (n : Nat) (primes : List Nat) : Nat :=
+  primes.foldl removePrimeFactor n
 -- !benchmark @end precond_aux
+
 @[reducible]
 def findExponents_precond (n : Nat) (primes : List Nat) : Prop :=
   -- !benchmark @start precond
   n > 0 ∧
   primes.length > 0 ∧
   primes.all (fun p => Nat.Prime p) ∧
-  List.Nodup primes
+  List.Nodup primes ∧
+  removeAllPrimeFactors n primes = 1
   -- !benchmark @end precond
 
 
@@ -78,5 +90,3 @@ theorem findExponents_spec_satisfied (n: Nat) (primes: List Nat) (h_precond : fi
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

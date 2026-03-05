@@ -39,6 +39,8 @@ def modify_array_element (arr : Array (Array Nat)) (index1 : Nat) (index2 : Nat)
 @[reducible, simp]
 def modify_array_element_postcond (arr : Array (Array Nat)) (index1 : Nat) (index2 : Nat) (val : Nat) (result: Array (Array Nat)) (h_precond : modify_array_element_precond (arr) (index1) (index2) (val)) :=
   -- !benchmark @start postcond
+  result.size = arr.size ∧
+  (result[index1]!).size = (arr[index1]!).size ∧
   (∀ i, i < arr.size → i ≠ index1 → result[i]! = arr[i]!) ∧
   (∀ j, j < (arr[index1]!).size → j ≠ index2 → (result[index1]!)[j]! = (arr[index1]!)[j]!) ∧
   ((result[index1]!)[index2]! = val)

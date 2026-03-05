@@ -37,6 +37,7 @@ def UpdateElements (a : Array Int) (h_precond : UpdateElements_precond (a)) : Ar
 @[reducible, simp]
 def UpdateElements_postcond (a : Array Int) (result: Array Int) (h_precond : UpdateElements_precond (a)) :=
   -- !benchmark @start postcond
+  result.size = a.size ∧
   result[4]! = (a[4]!) + 3 ∧
   result[7]! = 516 ∧
   (∀ i, i < a.size → i ≠ 4 → i ≠ 7 → result[i]! = a[i]!)

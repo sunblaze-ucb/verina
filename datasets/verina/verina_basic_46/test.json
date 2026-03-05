@@ -70,5 +70,16 @@
             3,
             5
         ]
+    },
+    {
+        "input": {
+            "arr": "#[]",
+            "elem": 0
+        },
+        "expected": -1,
+        "unexpected": [
+            0,
+            1
+        ]
     }
 ]
