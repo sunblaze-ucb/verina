@@ -43,7 +43,10 @@ def firstDuplicate_postcond (lst : List Int) (result: Option Int) (h_precond : f
   | none => List.Nodup lst
   | some x =>
     lst.count x > 1 ∧
-    (lst.filter (fun y => lst.count y > 1)).head? = some x
+    ∃ i : Nat, i < lst.length ∧
+      lst[i]? = some x ∧
+      x ∈ lst.take i ∧
+      ∀ j : Nat, j < i → ∀ y, lst[j]? = some y → y ∉ lst.take j
   -- !benchmark @end postcond
 
 
