@@ -1,5 +1,9 @@
--- !benchmark @start import type=solution
+-- !benchmark @start import type=task
 import Mathlib.Data.Nat.Prime.Defs
+-- !benchmark @end import
+
+-- !benchmark @start import type=solution
+
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
