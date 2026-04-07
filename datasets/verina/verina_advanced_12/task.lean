@@ -43,7 +43,11 @@ def firstDuplicate_postcond (lst : List Int) (result: Option Int) (h_precond : f
   | none => List.Nodup lst
   | some x =>
     lst.count x > 1 ∧
-    (lst.filter (fun y => lst.count y > 1)).head? = some x
+    -- x is the first duplicate encountered in a left-to-right scan:
+    -- there exists a position j where lst[j] = x and x already appeared before j,
+    -- and no earlier position k < j has this property (i.e., no element before k equals lst[k])
+    (∃ j, j < lst.length ∧ lst[j]! = x ∧ x ∈ lst.take j ∧
+       ∀ k, k < j → lst[k]! ∈ lst.take k → False)
   -- !benchmark @end postcond
 
 

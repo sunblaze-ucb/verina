@@ -52,5 +52,14 @@
         "unexpected": [
             true
         ]
+    },
+    {
+        "input": {
+            "nums": "[1, 2, 1]"
+        },
+        "expected": false,
+        "unexpected": [
+            true
+        ]
     }
 ]

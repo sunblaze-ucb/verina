@@ -28,7 +28,8 @@ def insert {K V : Type} [BEq K] [BEq V] (m : Map K V) (k : K) (v : V) : Map K V 
 @[reducible, simp]
 def update_map_precond (m1 : Map Int Int) (m2 : Map Int Int) : Prop :=
   -- !benchmark @start precond
-  True
+  -- Both maps must have unique keys
+  List.Nodup (m1.entries.map Prod.fst) ∧ List.Nodup (m2.entries.map Prod.fst)
   -- !benchmark @end precond
 
 

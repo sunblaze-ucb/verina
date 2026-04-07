@@ -22,45 +22,23 @@ def increasingTriplet_precond (nums : List Int) : Prop :=
 
 
 def increasingTriplet (nums : List Int) (h_precond : increasingTriplet_precond (nums)) : Bool :=
-  -- !benchmark @start code
-  -- must have at least 3 elements to form a triplet
-  let rec lengthCheck : List Int → Nat → Nat
-    | [], acc => acc
-    | _ :: rest, acc => lengthCheck rest (acc + 1)
-
-  let len := lengthCheck nums 0
-
-  if len < 3 then
+  if nums.length < 3 then
     false
   else
-    -- scan for increasing triplet
-    let rec loop (xs : List Int) (first : Int) (second : Int) : Bool :=
-      match xs with
-      | [] => false
-      | x :: rest =>
-        let nextFirst := if x ≤ first then x else first
-        let nextSecond := if x > first ∧ x ≤ second then x else second
-        if x ≤ first then
-          loop rest nextFirst second
-        else if x ≤ second then
-          loop rest first nextSecond
-        else
-          true  -- found triplet
-    match nums with
+    let rec loop (xs : List Int) (first : Option Int) (second : Option Int) : Bool :=
+    match xs with
     | [] => false
-    | _ :: rest1 =>
-      match rest1 with
-      | [] => false
-      | _ :: rest2 =>
-        match rest2 with
-        | [] => false
-        | _ =>
-          -- Use Option to handle unbounded Int values instead of magic number
-          let initFirst := nums.head?
-          let initSecond := nums.head?
-          match initFirst, initSecond with
-          | some f, some s => loop nums f s
-          | _, _ => false
+    | x :: rest =>
+      match first with
+      | none => loop rest (some x) none
+      | some f =>
+        if x ≤ f then loop rest (some x) second
+        else match second with
+        | none => loop rest first (some x)
+        | some s =>
+          if x ≤ s then loop rest first (some x)
+          else true
+  loop nums none none
   -- !benchmark @end code
 
 

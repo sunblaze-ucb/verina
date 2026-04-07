@@ -59,5 +59,15 @@
             "none",
             "some 2"
         ]
+    },
+    {
+        "input": {
+            "lst": "[1, 2, 2, 1]"
+        },
+        "expected": "some 2",
+        "unexpected": [
+            "none",
+            "some 1"
+        ]
     }
 ]

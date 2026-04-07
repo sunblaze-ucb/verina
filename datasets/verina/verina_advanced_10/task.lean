@@ -15,7 +15,9 @@ def findExponents_precond (n : Nat) (primes : List Nat) : Prop :=
   n > 0 ∧
   primes.length > 0 ∧
   primes.all (fun p => Nat.Prime p) ∧
-  List.Nodup primes
+  List.Nodup primes ∧
+  -- n is fully factored by the given primes
+  (∀ p : Nat, Nat.Prime p → p ∣ n → p ∈ primes)
   -- !benchmark @end precond
 
 
