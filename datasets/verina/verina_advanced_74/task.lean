@@ -1,10 +1,9 @@
 -- !benchmark @start import type=solution
 import Std.Data.HashSet
-open Std
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
-
+open Std
 -- !benchmark @end solution_aux
 
 -- !benchmark @start precond_aux
@@ -27,7 +26,7 @@ def solution (nums : List Nat) : Nat :=
   let n := nums.length
   let subarray := fun (i j : Nat) => (nums.drop i).take (j - i + 1)
   let distinctCount := fun (l : List Nat) =>
-    let hashSet := l.foldl (fun (s : HashSet Nat) a => s.insert a) HashSet.empty
+    let hashSet := l.foldl (fun (s : HashSet Nat) a => s.insert a) HashSet.emptyWithCapacity
     hashSet.size
   List.range n |>.foldl (fun acc i =>
     acc +
@@ -92,5 +91,3 @@ theorem solution_spec_satisfied (nums: List Nat) :
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

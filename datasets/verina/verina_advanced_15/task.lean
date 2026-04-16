@@ -22,6 +22,7 @@ def increasingTriplet_precond (nums : List Int) : Prop :=
 
 
 def increasingTriplet (nums : List Int) (h_precond : increasingTriplet_precond (nums)) : Bool :=
+  -- !benchmark @start code
   if nums.length < 3 then
     false
   else
