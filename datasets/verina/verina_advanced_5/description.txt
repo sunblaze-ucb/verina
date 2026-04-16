@@ -8,6 +8,7 @@ as a linked list, also in reverse order.
 The input consists of:
 - l1: A list of natural numbers representing the digits of the first number in reverse order.
 - l2: A list of natural numbers representing the digits of the second number in reverse order.
+Each input list must be in canonical form: the last element (most significant digit) must be nonzero, unless the number is zero itself (represented as [0]).
 
 -----Output-----
 The output is a list of natural numbers:
