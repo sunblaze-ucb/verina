@@ -38,7 +38,7 @@ def secondSmallestAux (s : Array Int) (i minIdx secondIdx : Nat) : Int :=
     let smin := s[secondIdx]!
     if x < m then
       secondSmallestAux s (i + 1) i minIdx
-    else if x < smin then
+    else if m < x ∧ (x < smin ∨ smin ≤ m) then
       secondSmallestAux s (i + 1) minIdx i
     else
       secondSmallestAux s (i + 1) minIdx secondIdx
