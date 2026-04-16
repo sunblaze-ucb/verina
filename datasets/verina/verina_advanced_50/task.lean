@@ -17,30 +17,31 @@ def mergeSorted_precond (a1 : Array Nat) (a2 : Array Nat) : Prop :=
 
 
 -- !benchmark @start code_aux
+def mergeLoop (a1 a2 : Array Nat) (i j : Nat) (result : Array Nat) : Nat × Nat × Array Nat :=
+  if h : i < a1.size ∧ j < a2.size then
+    if a1[i]! ≤ a2[j]! then
+      mergeLoop a1 a2 (i + 1) j (result.push a1[i]!)
+    else
+      mergeLoop a1 a2 i (j + 1) (result.push a2[j]!)
+  else
+    (i, j, result)
+termination_by a1.size - i + (a2.size - j)
 
+def drain (arr : Array Nat) (i : Nat) (result : Array Nat) : Array Nat :=
+  if h : i < arr.size then
+    drain arr (i + 1) (result.push arr[i]!)
+  else
+    result
+termination_by arr.size - i
 -- !benchmark @end code_aux
 
 
 def mergeSorted (a1 : Array Nat) (a2 : Array Nat) (h_precond : mergeSorted_precond (a1) (a2)) : Array Nat :=
   -- !benchmark @start code
-  Id.run <| do
-    let mut i := 0
-    let mut j := 0
-    let mut result := #[]
-    while i < a1.size ∧ j < a2.size do
-      if a1[i]! ≤ a2[j]! then
-        result := result.push a1[i]!
-        i := i + 1
-      else
-        result := result.push a2[j]!
-        j := j + 1
-    while i < a1.size do
-      result := result.push a1[i]!
-      i := i + 1
-    while j < a2.size do
-      result := result.push a2[j]!
-      j := j + 1
-    return result
+  let (i, j, result) := mergeLoop a1 a2 0 0 #[]
+  let result := drain a1 i result
+  let result := drain a2 j result
+  result
   -- !benchmark @end code
 
 

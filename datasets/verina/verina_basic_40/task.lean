@@ -18,39 +18,37 @@ def secondSmallest_precond (s : Array Int) : Prop :=
 
 
 -- !benchmark @start code_aux
-def minListHelper : List Int → Int
-| [] => panic! "minListHelper: empty list"
-| [_] => panic! "minListHelper: singleton list"
-| a :: b :: [] => if a ≤ b then a else b
-| a :: b :: c :: xs =>
-    let m := minListHelper (b :: c :: xs)
-    if a ≤ m then a else m
-
-def minList (l : List Int) : Int :=
-  minListHelper l
-
-def secondSmallestAux (s : Array Int) (i minIdx secondIdx : Nat) : Int :=
+def secondSmallestAux (s : Array Int) (i minIdx : Nat) (secondIdx : Option Nat) : Int :=
   if i ≥ s.size then
-    s[secondIdx]!
+    match secondIdx with
+    | some si => s[si]!
+    | none => panic! "no second smallest"  -- unreachable given precondition
   else
-    let x    := s[i]!
-    let m    := s[minIdx]!
-    let smin := s[secondIdx]!
-    if x < m then
-      secondSmallestAux s (i + 1) i minIdx
-    else if m < x ∧ (x < smin ∨ smin ≤ m) then
-      secondSmallestAux s (i + 1) minIdx i
-    else
-      secondSmallestAux s (i + 1) minIdx secondIdx
+    let x := s[i]!
+    let m := s[minIdx]!
+    match secondIdx with
+    | none =>
+      if x < m then
+        secondSmallestAux s (i + 1) i (some minIdx)
+      else if x > m then
+        secondSmallestAux s (i + 1) minIdx (some i)
+      else
+        secondSmallestAux s (i + 1) minIdx none
+    | some si =>
+      let smin := s[si]!
+      if x < m then
+        secondSmallestAux s (i + 1) i (some minIdx)
+      else if x < smin ∧ x > m then
+        secondSmallestAux s (i + 1) minIdx (some i)
+      else
+        secondSmallestAux s (i + 1) minIdx (some si)
 termination_by s.size - i
 -- !benchmark @end code_aux
 
 
 def secondSmallest (s : Array Int) (h_precond : secondSmallest_precond (s)) : Int :=
   -- !benchmark @start code
-  let (minIdx, secondIdx) :=
-    if s[1]! < s[0]! then (1, 0) else (0, 1)
-  secondSmallestAux s 2 minIdx secondIdx
+  secondSmallestAux s 1 0 none
   -- !benchmark @end code
 
 

@@ -12,7 +12,7 @@
 @[reducible]
 def maxSubarraySumDivisibleByK_precond (arr : Array Int) (k : Int) : Prop :=
   -- !benchmark @start precond
-  k > 1
+  k > 0
   -- !benchmark @end precond
 
 
@@ -24,7 +24,7 @@ def maxSubarraySumDivisibleByK_precond (arr : Array Int) (k : Int) : Prop :=
 def maxSubarraySumDivisibleByK (arr : Array Int) (k : Int) : Int :=
   -- !benchmark @start code
   let n := arr.size
-  if n = 0 || k ≤ 0 then 0
+  if n = 0 || k = 0 then 0
   else
     --compute prefix sums for efficient subarray sum calculation
     let prefixSums := Id.run do
@@ -33,23 +33,21 @@ def maxSubarraySumDivisibleByK (arr : Array Int) (k : Int) : Int :=
         prefixSums := prefixSums.set! (i+1) (prefixSums[i]! + arr[i]!)
       prefixSums
 
-    let minElem := Id.run do -- find minimum element
-      let mut minElem := arr[0]!
-      for elem in arr do
-        minElem := min minElem elem
-      minElem
-    let maxSum := Id.run do
-      let mut maxSum := 0
-      --check all subarrays with length divisible by k
+    let result := Id.run do
+      let mut best : Option Int := none
       for len in List.range (n+1) do
         if len % k = 0 && len > 0 then
           for start in [0:(n - len + 1)] do
             let endIdx := start + len
             let subarraySum := prefixSums[endIdx]! - prefixSums[start]!
-            maxSum := max maxSum subarraySum
-      maxSum
+            best := match best with
+              | none => some subarraySum
+              | some b => some (max b subarraySum)
+      best
 
-    if maxSum ≤ 0 then 0 else maxSum
+    match result with
+    | none => 0
+    | some s => s
   -- !benchmark @end code
 
 
@@ -64,7 +62,7 @@ def maxSubarraySumDivisibleByK_postcond (arr : Array Int) (k : Int) (result: Int
   let subarrays := List.range (arr.size) |>.flatMap (fun start =>
     List.range (arr.size - start + 1) |>.map (fun len => arr.extract start (start + len)))
   let divisibleSubarrays := subarrays.filter (fun subarray => subarray.size % k.toNat = 0 && subarray.size > 0)
-  let subarraySums := (divisibleSubarrays.map (fun subarray => subarray.toList.sum)).filter (· > 0)
+  let subarraySums := divisibleSubarrays.map (fun subarray => subarray.toList.sum)
   -- No valid subarrays -> result is 0
   (subarraySums.length = 0 → result = 0) ∧
   -- Valid subarrays exist -> result is the maximum sum

@@ -7,7 +7,7 @@ the default return value should be 0.
 -----Input-----
 The input consists of:
 arr: The array of integers.
-k: An integer larger than 1.
+k: A positive integer.
 
 -----Output-----
 The output is an integer:
