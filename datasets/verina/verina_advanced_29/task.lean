@@ -34,8 +34,6 @@ def longestGoodSubarray (nums : List Nat) (k : Nat) (h_precond : longestGoodSuba
       let count := freq.getD num 0
       freq := freq.insert num (count + 1)
 
-      -- CHANGED: `while freq.toList.any (...) do` → bounded loop with break
-      -- Bound: left increments by 1 each iteration, bounded by arr.size
       for _ in List.range arr.size do
         if freq.toList.any (fun (_, v) => v > k) then
           let lnum := arr[left]!

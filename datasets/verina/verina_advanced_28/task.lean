@@ -35,8 +35,6 @@ def longestConsecutive (nums : List Int) (h_precond : longestConsecutive_precond
       if !set.contains (x - 1) then
         let mut curr := x
         let mut length := 1
-        -- CHANGED: `while set.contains (curr + 1) do` → bounded loop with break
-        -- Bound: a consecutive chain in the set has at most nums.length elements
         for _ in List.range nums.length do
           if set.contains (curr + 1) then
             curr := curr + 1

@@ -24,9 +24,9 @@ def dissimilarElements_precond (a : Array Int) (b : Array Int) : Prop :=
 
 def dissimilarElements (a : Array Int) (b : Array Int) (h_precond : dissimilarElements_precond (a) (b)) : Array Int :=
   -- !benchmark @start code
-  let res := a.foldl (fun acc x => if !inArray b x then acc.insert x else acc) Std.HashSet.empty
+  let res := a.foldl (fun acc x => if !inArray b x then acc.insert x else acc) Std.HashSet.emptyWithCapacity
   let res := b.foldl (fun acc x => if !inArray a x then acc.insert x else acc) res
-  res.toArray.insertionSort
+  (res.toList.mergeSort (· ≤ ·)).toArray
   -- !benchmark @end code
 
 -- !benchmark @start postcond_aux

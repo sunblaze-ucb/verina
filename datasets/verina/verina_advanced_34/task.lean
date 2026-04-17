@@ -42,7 +42,6 @@ def longestIncreasingSubsequence (nums : List Int) (h_precond : longestIncreasin
       if num > sub[sub.size - 1]! then
         sub := sub.push num
       else
-        -- CHANGED: while loop replaced with call to binarySearchLeft
         let left := binarySearchLeft sub num 0 (sub.size - 1)
         sub := sub.set! left num
     return Int.ofNat sub.size
