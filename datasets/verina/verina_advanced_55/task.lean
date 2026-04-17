@@ -1,10 +1,9 @@
 -- !benchmark @start import type=solution
 import Std.Data.HashMap
-open Std
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
-
+open Std
 -- !benchmark @end solution_aux
 
 -- !benchmark @start precond_aux
@@ -23,7 +22,7 @@ def countMap (xs : List Int) : HashMap Int Nat :=
   let step := fun m x =>
     let current := m.getD x 0
     m.insert x (current + 1)
-  let init := (HashMap.empty : HashMap Int Nat)
+  let init := (HashMap.emptyWithCapacity : HashMap Int Nat)
   xs.foldl step init
 
 -- Compute the maximum frequency in the map
@@ -81,5 +80,3 @@ theorem mostFrequent_spec_satisfied (xs: List Int) (h_precond : mostFrequent_pre
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

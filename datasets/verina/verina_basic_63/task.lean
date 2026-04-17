@@ -2,6 +2,32 @@
 
 -- !benchmark @end import
 
+-- !benchmark @start task_aux
+-- Lean 4's Float is an opaque C FFI type with no kernel lemmas.
+-- These axioms capture IEEE 754-compliant behavior for non-NaN/non-Inf floats.
+axiom Float.not_isNaN_ofNat (n : Nat) : (n.toFloat).isNaN = false
+axiom Float.isFinite_ofNat (n : Nat) (h : n < 2 ^ 53) :
+    (n.toFloat).isNaN = false ∧ (n.toFloat).isInf = false
+axiom Float.ofNat_beq_zero_false (n : Nat) (h : 0 < n) :
+    (n.toFloat == (0 : Float)) = false
+axiom Float.beq_self_of_not_isNaN (x : Float) (h : x.isNaN = false) :
+    (x == x) = true
+axiom Float.not_isNaN_sub (x y : Float)
+    (hx : x.isNaN = false) (hy : y.isNaN = false)
+    (hx_inf : x.isInf = false) (hy_inf : y.isInf = false) :
+    (x - y).isNaN = false
+axiom Float.not_isNaN_div (x y : Float)
+    (hx : x.isNaN = false) (hy : y.isNaN = false)
+    (hy0 : (y == 0) = false) (hinf : x.isInf = false ∨ y.isInf = false) :
+    (x / y).isNaN = false
+axiom Float.le_total_of_not_isNaN (x y : Float)
+    (hx : x.isNaN = false) (hy : y.isNaN = false) :
+    x ≤ y ∨ y ≤ x
+axiom Float.lt_iff_le_not_le_of_not_isNaN (x y : Float)
+    (hx : x.isNaN = false) (hy : y.isNaN = false) :
+    x < y ↔ x ≤ y ∧ ¬ y ≤ x
+-- !benchmark @end task_aux
+
 -- !benchmark @start solution_aux
 def absDiff (a b : Float) : Float :=
   if a - b < 0.0 then b - a else a - b

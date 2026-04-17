@@ -42,6 +42,7 @@ def swap (arr : Array Int) (i : Int) (j : Int) (h_precond : swap_precond (arr) (
 @[reducible, simp]
 def swap_postcond (arr : Array Int) (i : Int) (j : Int) (result: Array Int) (h_precond : swap_precond (arr) (i) (j)) :=
   -- !benchmark @start postcond
+  result.size = arr.size ∧
   (result[Int.toNat i]! = arr[Int.toNat j]!) ∧
   (result[Int.toNat j]! = arr[Int.toNat i]!) ∧
   (∀ (k : Nat), k < arr.size → k ≠ Int.toNat i → k ≠ Int.toNat j → result[k]! = arr[k]!)
@@ -60,6 +61,8 @@ theorem swap_spec_satisfied (arr: Array Int) (i: Int) (j: Int) (h_precond : swap
   unfold swap_precond at h_precond
   obtain ⟨h₁, h₂, h₃, h₄⟩ := h_precond
 
+  apply And.intro
+  . simp [Array.size_setIfInBounds]
   apply And.intro
   . simp
     by_cases h_eq : (i = j)

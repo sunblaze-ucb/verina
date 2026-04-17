@@ -12,7 +12,7 @@
 @[reducible, simp]
 def mergeIntervals_precond (intervals : List (Prod Int Int)) : Prop :=
   -- !benchmark @start precond
-  True
+  intervals.all (fun (s, e) => s ≤ e)
   -- !benchmark @end precond
 
 
@@ -69,7 +69,16 @@ def mergeIntervals_postcond (intervals : List (Prod Int Int)) (result: List (Pro
     | [] | [_] => true
     | (_, e1) :: (s2, e2) :: rest => e1 < s2 && noOverlap ((s2, e2) :: rest)
 
-  covered ∧ noOverlap result
+  let resultBounded := result.all (fun (rs, re) =>
+    intervals.any (fun (s, _) => s = rs) ∧
+    intervals.any (fun (_, e) => e = re))
+
+  -- Check that no result interval spans a gap between non-overlapping inputs
+  let noSpuriousMerge := result.all (fun (rs, re) =>
+    (intervals.filter (fun (s, e) => rs ≤ s ∧ e ≤ re)).all (fun (s, _) =>
+      s = rs ∨ intervals.any (fun (s2, e2) => rs ≤ s2 ∧ e2 ≤ re ∧ s2 < s ∧ e2 ≥ s)))
+
+  covered ∧ noOverlap result ∧ resultBounded ∧ noSpuriousMerge
   -- !benchmark @end postcond
 
 
@@ -83,5 +92,3 @@ theorem mergeIntervals_spec_satisfied (intervals: List (Prod Int Int)) (h_precon
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

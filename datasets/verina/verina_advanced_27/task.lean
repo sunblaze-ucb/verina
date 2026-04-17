@@ -17,13 +17,13 @@ def longestCommonSubsequence_precond (s1 : String) (s2 : String) : Prop :=
 
 
 -- !benchmark @start code_aux
-partial def toCharList (s : String) : List Char :=
+def toCharList (s : String) : List Char :=
   s.data
 
-partial def fromCharList (cs : List Char) : String :=
+def fromCharList (cs : List Char) : String :=
   cs.foldl (fun acc c => acc.push c) ""
 
-partial def lcsAux (xs : List Char) (ys : List Char) : List Char :=
+def lcsAux (xs : List Char) (ys : List Char) : List Char :=
   match xs, ys with
   | [], _ => []
   | _, [] => []
@@ -34,6 +34,7 @@ partial def lcsAux (xs : List Char) (ys : List Char) : List Char :=
       let left  := lcsAux xs' (y :: ys')
       let right := lcsAux (x :: xs') ys'
       if left.length >= right.length then left else right
+termination_by xs.length + ys.length
 -- !benchmark @end code_aux
 
 

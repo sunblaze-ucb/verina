@@ -32,7 +32,9 @@ def firstDuplicate (lst : List Int) (h_precond : firstDuplicate_precond (lst)) :
 
 
 -- !benchmark @start postcond_aux
-
+def secondOccIdx (lst : List Int) (v : Int) : Nat :=
+  let first := lst.idxOf v
+  first + 1 + (lst.drop (first + 1)).idxOf v
 -- !benchmark @end postcond_aux
 
 
@@ -42,8 +44,8 @@ def firstDuplicate_postcond (lst : List Int) (result: Option Int) (h_precond : f
   match result with
   | none => List.Nodup lst
   | some x =>
-    lst.count x > 1 ∧
-    (lst.filter (fun y => lst.count y > 1)).head? = some x
+      lst.count x > 1 ∧
+      lst.all (fun y => (lst.count y = 1) ∨ (secondOccIdx lst x ≤ secondOccIdx lst y))
   -- !benchmark @end postcond
 
 
@@ -57,5 +59,3 @@ theorem firstDuplicate_spec_satisfied (lst: List Int) (h_precond : firstDuplicat
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

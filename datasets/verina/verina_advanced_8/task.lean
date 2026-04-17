@@ -68,6 +68,8 @@ def canCompleteCircuit_postcond (gas : List Int) (cost : List Int) (result: Int)
       let jdx := (start + j) % gas.length
       t + gas[jdx]! - cost[jdx]!) 0
     acc ≥ 0)
+  -- The result is either -1 or a valid starting index
+  (result ≥ -1) ∧
   -- For result = -1: It's impossible to complete the circuit starting from any index
   -- In other words, there's no starting point from which we can always maintain a non-negative gas tank
   (result = -1 → (List.range gas.length).all (fun start => ¬ valid start)) ∧
@@ -87,5 +89,3 @@ theorem canCompleteCircuit_spec_satisfied (gas: List Int) (cost: List Int) (h_pr
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

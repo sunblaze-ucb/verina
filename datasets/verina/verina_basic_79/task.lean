@@ -51,8 +51,8 @@ def onlineMax_postcond (a : Array Int) (x : Nat) (result: Int × Nat) (h_precond
   (x ≤ p ∧ p < a.size) ∧
   (∀ i, i < x → a[i]! ≤ m) ∧
   (∃ i, i < x ∧ a[i]! = m) ∧
-  ((p < a.size - 1) → (∀ i, i < p → a[i]! < a[p]!)) ∧
-  ((∀ i, x ≤ i → i < a.size → a[i]! ≤ m) → p = a.size - 1)
+  (∀ i, x ≤ i → i < p → a[i]! ≤ m) ∧
+  (a[p]! > m ∨ (p = a.size - 1 ∧ ∀ i, x ≤ i → i < a.size → a[i]! ≤ m))
   -- !benchmark @end postcond
 
 

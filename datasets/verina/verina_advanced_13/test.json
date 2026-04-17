@@ -38,5 +38,15 @@
         "unexpected": [
             true
         ]
+    },
+    {
+        "input": {
+            "N": 2,
+            "chords": "[[3, 1], [4, 2]]"
+        },
+        "expected": true,
+        "unexpected": [
+            false
+        ]
     }
 ]

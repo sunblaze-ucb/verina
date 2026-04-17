@@ -37,12 +37,13 @@ def findEvenNumbers (arr : Array Int) (h_precond : findEvenNumbers_precond (arr)
 @[reducible, simp]
 def findEvenNumbers_postcond (arr : Array Int) (result: Array Int) (h_precond : findEvenNumbers_precond (arr)) :=
   -- !benchmark @start postcond
-  (∀ x, x ∈ result → isEven x ∧ x ∈ arr.toList) ∧
-  (∀ x, x ∈ arr.toList → isEven x → x ∈ result) ∧
-  (∀ x y, x ∈ arr.toList → y ∈ arr.toList →
+  result.all (fun x => isEven x ∧ x ∈ arr.toList ∧ result.toList.count x = arr.toList.count x) ∧
+  arr.all (fun x => isEven x → x ∈ result.toList) ∧
+  arr.all (fun x => arr.all (fun y =>
     isEven x → isEven y →
     arr.toList.idxOf x ≤ arr.toList.idxOf y →
-    result.toList.idxOf x ≤ result.toList.idxOf y)
+    result.toList.idxOf x ≤ result.toList.idxOf y
+  ))
   -- !benchmark @end postcond
 
 

@@ -17,7 +17,18 @@ def longestIncreasingSubsequence_precond (nums : List Int) : Prop :=
 
 
 -- !benchmark @start code_aux
-
+def binarySearchLeft (sub : Array Int) (num : Int) (left right : Nat) : Nat :=
+  if h : left < right then
+    let mid := (left + right) / 2
+    if sub[mid]! == num then
+      binarySearchLeft sub num left mid
+    else if sub[mid]! < num then
+      binarySearchLeft sub num (mid + 1) right
+    else
+      binarySearchLeft sub num left mid
+  else
+    left
+termination_by right - left
 -- !benchmark @end code_aux
 
 
@@ -31,17 +42,7 @@ def longestIncreasingSubsequence (nums : List Int) (h_precond : longestIncreasin
       if num > sub[sub.size - 1]! then
         sub := sub.push num
       else
-       -- << binary search >>
-        let mut left : Nat := 0
-        let mut right : Nat := sub.size - 1
-        while left < right do
-          let mid := (left + right) / 2
-          if sub[mid]! == num then
-            right := mid
-          else if sub[mid]! < num then
-            left := mid + 1
-          else
-            right := mid
+        let left := binarySearchLeft sub num 0 (sub.size - 1)
         sub := sub.set! left num
     return Int.ofNat sub.size
   -- !benchmark @end code

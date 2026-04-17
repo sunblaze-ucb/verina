@@ -35,6 +35,7 @@ def TestArrayElements (a : Array Int) (j : Nat) (h_precond : TestArrayElements_p
 @[reducible, simp]
 def TestArrayElements_postcond (a : Array Int) (j : Nat) (result: Array Int) (h_precond : TestArrayElements_precond (a) (j)) :=
   -- !benchmark @start postcond
+  result.size = a.size ∧
   (result[j]! = 60) ∧ (∀ k, k < a.size → k ≠ j → result[k]! = a[k]!)
   -- !benchmark @end postcond
 
@@ -49,6 +50,8 @@ theorem TestArrayElements_spec_satisfied (a: Array Int) (j: Nat) (h_precond : Te
   -- !benchmark @start proof
   unfold TestArrayElements_postcond TestArrayElements
   unfold TestArrayElements_precond at h_precond
+  apply And.intro
+  . simp [Array.size_setIfInBounds]
   apply And.intro
   . rw [Array.getElem!_eq_getD, Array.getD]
     simp

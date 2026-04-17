@@ -33,24 +33,21 @@ def maxSubarraySumDivisibleByK (arr : Array Int) (k : Int) : Int :=
         prefixSums := prefixSums.set! (i+1) (prefixSums[i]! + arr[i]!)
       prefixSums
 
-    let minElem := Id.run do -- find minimum element
-      let mut minElem := arr[0]!
-      for elem in arr do
-        minElem := min minElem elem
-      minElem
-    let maxSum := Id.run do
-      let mut maxSum := minElem - 1
-      --check all subarrays with length divisible by k
+    let result := Id.run do
+      let mut best : Option Int := none
       for len in List.range (n+1) do
         if len % k = 0 && len > 0 then
           for start in [0:(n - len + 1)] do
             let endIdx := start + len
             let subarraySum := prefixSums[endIdx]! - prefixSums[start]!
-            maxSum := max maxSum subarraySum
-      maxSum
+            best := match best with
+              | none => some subarraySum
+              | some b => some (max b subarraySum)
+      best
 
-    let default : Int := minElem - 1
-    if maxSum = default then 0 else maxSum
+    match result with
+    | none => 0
+    | some s => s
   -- !benchmark @end code
 
 

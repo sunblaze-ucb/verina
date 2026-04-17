@@ -43,6 +43,7 @@ def replace (arr : Array Int) (k : Int) (h_precond : replace_precond (arr) (k)) 
 @[reducible, simp]
 def replace_postcond (arr : Array Int) (k : Int) (result: Array Int) (h_precond : replace_precond (arr) (k)) :=
   -- !benchmark @start postcond
+  result.size = arr.size ∧
   (∀ i : Nat, i < arr.size → (arr[i]! > k → result[i]! = -1)) ∧
   (∀ i : Nat, i < arr.size → (arr[i]! ≤ k → result[i]! = arr[i]!))
   -- !benchmark @end postcond

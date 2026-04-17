@@ -43,7 +43,9 @@ def findFirstOccurrence (arr : Array Int) (target : Int) (h_precond : findFirstO
 @[reducible, simp]
 def findFirstOccurrence_postcond (arr : Array Int) (target : Int) (result: Int) (h_precond : findFirstOccurrence_precond (arr) (target)) :=
   -- !benchmark @start postcond
+  (result = -1 ∨ result ≥ 0) ∧
   (result ≥ 0 →
+    result.toNat < arr.size ∧
     arr[result.toNat]! = target ∧
     (∀ i : Nat, i < result.toNat → arr[i]! ≠ target)) ∧
   (result = -1 →

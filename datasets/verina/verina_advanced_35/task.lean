@@ -1,10 +1,9 @@
 -- !benchmark @start import type=solution
 import Std.Data.HashMap
-open Std
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
-
+open Std
 -- !benchmark @end solution_aux
 
 -- !benchmark @start precond_aux

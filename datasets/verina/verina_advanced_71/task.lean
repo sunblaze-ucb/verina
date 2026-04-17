@@ -65,7 +65,7 @@ def shortestBeautifulSubstring_postcond (s : String) (k : Nat) (result: String) 
   let targets := beautiful.map (·.asString) |>.filter (fun s => s ≠ "")
   (result = "" ∧ targets = []) ∨
   (result ∈ targets ∧
-   ∀ r ∈ targets, r.length ≥ result.length ∨ (r.length = result.length ∧ result ≤ r))
+   ∀ r ∈ targets, r.length > result.length ∨ (r.length = result.length ∧ result ≤ r))
   -- !benchmark @end postcond
 
 

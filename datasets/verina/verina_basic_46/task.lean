@@ -41,7 +41,9 @@ def lastPosition (arr : Array Int) (elem : Int) (h_precond : lastPosition_precon
 @[reducible, simp]
 def lastPosition_postcond (arr : Array Int) (elem : Int) (result: Int) (h_precond : lastPosition_precond (arr) (elem)) :=
   -- !benchmark @start postcond
+  (result = -1 ∨ result ≥ 0) ∧
   (result ≥ 0 →
+    result.toNat < arr.size ∧
     arr[result.toNat]! = elem ∧ (arr.toList.drop (result.toNat + 1)).all (· ≠ elem)) ∧
   (result = -1 → arr.toList.all (· ≠ elem))
   -- !benchmark @end postcond

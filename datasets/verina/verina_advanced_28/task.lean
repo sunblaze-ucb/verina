@@ -1,11 +1,10 @@
 -- !benchmark @start import type=solution
 import Std.Data.HashSet
 import Mathlib
-open Std
 -- !benchmark @end import
 
 -- !benchmark @start solution_aux
-
+open Std
 -- !benchmark @end solution_aux
 
 -- !benchmark @start precond_aux
@@ -26,7 +25,7 @@ def longestConsecutive_precond (nums : List Int) : Prop :=
 def longestConsecutive (nums : List Int) (h_precond : longestConsecutive_precond (nums)) : Nat :=
   -- !benchmark @start code
   Id.run do
-    let mut set := HashSet.empty
+    let mut set := HashSet.emptyWithCapacity
     for x in nums do
       set := set.insert x
 
@@ -36,9 +35,12 @@ def longestConsecutive (nums : List Int) (h_precond : longestConsecutive_precond
       if !set.contains (x - 1) then
         let mut curr := x
         let mut length := 1
-        while set.contains (curr + 1) do
-          curr := curr + 1
-          length := length + 1
+        for _ in List.range nums.length do
+          if set.contains (curr + 1) then
+            curr := curr + 1
+            length := length + 1
+          else
+            break
         maxLen := Nat.max maxLen length
 
     return maxLen
@@ -73,5 +75,3 @@ theorem longestConsecutive_spec_satisfied (nums: List Int) (h_precond : longestC
   -- !benchmark @start proof
   sorry
   -- !benchmark @end proof
-
-

@@ -13,6 +13,7 @@
 def hasChordIntersection_precond (N : Nat) (chords : List (List Nat)) : Prop :=
   -- !benchmark @start precond
   N ≥ 2 ∧
+  chords.length = N ∧
   chords.all (fun chord => chord.length = 2 ∧ chord[0]! ≥ 1 ∧ chord[0]! ≤ 2 * N ∧ chord[1]! ≥ 1 ∧ chord[1]! ≤ 2 * N) ∧
   List.Nodup (chords.flatMap id)
   -- !benchmark @end precond
@@ -90,7 +91,7 @@ def hasChordIntersection_postcond (N : Nat) (chords : List (List Nat)) (result: 
       else checkAllPairs xs
 
   ((List.Pairwise (fun x y => !hasIntersection x y) sortedChords) → ¬ result) ∧
-  ((sortedChords.any (fun x => chords.any (fun y => hasIntersection x y))) → result)
+  ((sortedChords.any (fun x => sortedChords.any (fun y => hasIntersection x y))) → result)
   -- !benchmark @end postcond
 
 

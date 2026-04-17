@@ -709,11 +709,11 @@ async def evaluate_task_from_report(
     template_engine = LeanGenerationTaskTemplate(data.signature)
     scores = task_report.scores
 
-    imports = data.lean_data.solution_imports
+    imports_with_ground_truth = data.lean_data.solution_imports
     if task_report.artifact.imports:
-        imports = merge_imports(
+        imports_with_ground_truth = merge_imports(
             [
-                imports,
+                imports_with_ground_truth,
                 task_report.artifact.imports,
             ]
         )
@@ -722,6 +722,7 @@ async def evaluate_task_from_report(
         # Evaluate code
         code_artifact = task_report.artifact.model_copy()
         # We always use the ground truth precondition to evaluate the generated code
+        code_artifact.imports = imports_with_ground_truth
         code_artifact.precond_aux = (
             data.lean_data.solution_aux + "\n" + data.lean_data.precond_aux
         )

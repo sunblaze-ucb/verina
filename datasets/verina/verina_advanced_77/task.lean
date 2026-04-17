@@ -17,37 +17,27 @@ def trapRainWater_precond (height : List Nat) : Prop :=
 
 
 -- !benchmark @start code_aux
-
+def trapLoop (height : List Nat) (left right leftMax rightMax water : Nat) : Nat :=
+  if h : left < right then
+    let hLeft := height[left]!
+    let hRight := height[right]!
+    if hLeft < hRight then
+      let (leftMax, water) :=
+        if hLeft >= leftMax then (hLeft, water) else (leftMax, water + (leftMax - hLeft))
+      trapLoop height (left + 1) right leftMax rightMax water
+    else
+      let (rightMax, water) :=
+        if hRight >= rightMax then (hRight, water) else (rightMax, water + (rightMax - hRight))
+      trapLoop height left (right - 1) leftMax rightMax water
+  else
+    water
+termination_by right - left
 -- !benchmark @end code_aux
 
 
 def trapRainWater (height : List Nat) (h_precond : trapRainWater_precond (height)) : Nat :=
   -- !benchmark @start code
-  Id.run do
-    let mut left := 0
-    let mut right := height.length - 1
-    let mut leftMax := 0
-    let mut rightMax := 0
-    let mut water := 0
-
-    while left < right do
-      let hLeft := height[left]!
-      let hRight := height[right]!
-
-      if hLeft < hRight then
-        if hLeft >= leftMax then
-          leftMax := hLeft
-        else
-          water := water + (leftMax - hLeft)
-        left := left + 1
-      else
-        if hRight >= rightMax then
-          rightMax := hRight
-        else
-          water := water + (rightMax - hRight)
-        right := right - 1
-
-    return water
+  trapLoop height 0 (height.length - 1) 0 0 0
   -- !benchmark @end code
 
 
