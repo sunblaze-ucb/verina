@@ -1,4 +1,5 @@
 import { SectionLabel } from './SectionLabel'
+import { Leaderboard } from './Leaderboard'
 
 export function Results() {
   return (
@@ -93,13 +94,13 @@ export function Results() {
         </div>
 
         {/* Proof refinement */}
-        <div className="result-panel">
+        <div className="result-panel mb-6">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Iterative Proof Refinement</h3>
           </div>
           <div className="result-panel-body">
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              Using Lean compiler feedback iteratively improves proof success, but rates remain low—highlighting persistent challenges in automated theorem proving.
+              Feeding Lean compiler errors back into the model iteratively improves proof success — o4-mini reaches <strong className="text-gray-700">20.1% pass@64</strong> — but rates remain low, underscoring persistent challenges in automated theorem proving.
             </p>
             <div className="img-container">
               <img src="images/proof_refine_pass_00.png" alt="Proof refinement results" className="max-w-lg w-full" />
@@ -107,6 +108,9 @@ export function Results() {
             <p className="fig-caption">pass@k via iterative refinement (left) and direct generation (right).</p>
           </div>
         </div>
+
+        {/* Full leaderboard */}
+        <Leaderboard />
       </div>
     </section>
   )
