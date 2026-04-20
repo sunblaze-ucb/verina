@@ -26,6 +26,9 @@ export function Hero() {
           <div className="mt-1 text-xs text-blue-300/60">
             <sup>1</sup>UC Berkeley &nbsp;·&nbsp; <sup>2</sup>Meta FAIR
           </div>
+          <div className="mt-1 text-[11px] text-blue-300/50 italic">
+            <sup>*</sup>All data processing and experiments were conducted outside Meta.
+          </div>
         </div>
 
         {/* Buttons */}

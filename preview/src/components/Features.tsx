@@ -14,7 +14,7 @@ export function Features() {
             <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1.5">189 Tasks</div>
             <h3 className="font-display text-sm font-bold mb-1">Comprehensive Coverage</h3>
             <p className="text-xs text-gray-500 leading-relaxed">
-              Manually curated with varying difficulty: VERINA-BASIC (108) and VERINA-ADV (81). Each task includes descriptions, code, specifications, and test suites.
+              Manually curated with varying difficulty: VERINA-A (108, translated from Dafny) and VERINA-B (81, student-written and harder). Each task includes descriptions, code, specifications, and test suites.
             </p>
           </div>
 

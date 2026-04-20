@@ -47,16 +47,16 @@ export function Results() {
           A clear difficulty hierarchy emerges: code generation is most accessible, specification generation moderately challenging, and proof generation extremely difficult for all current models.
         </div>
 
-        {/* BASIC vs ADV */}
+        {/* VERINA-A vs VERINA-B */}
         <div className="result-panel mb-6">
           <div className="result-panel-header">
-            <h3 className="font-display text-sm font-bold">Difficulty Split: BASIC vs ADV</h3>
+            <h3 className="font-display text-sm font-bold">Difficulty Split: VERINA-A vs VERINA-B</h3>
           </div>
           <div className="result-panel-body">
             <div className="img-container">
-              <img src="images/foundation_task_pass1_split_00.png" alt="BASIC vs ADV comparison" className="max-w-xl w-full" />
+              <img src="images/foundation_task_pass1_split_00.png" alt="VERINA-A vs VERINA-B comparison" className="max-w-xl w-full" />
             </div>
-            <p className="fig-caption">Substantial performance drops on VERINA-ADV across all tasks.</p>
+            <p className="fig-caption">Substantial performance drops on VERINA-B (student-written) across all tasks.</p>
           </div>
         </div>
 
