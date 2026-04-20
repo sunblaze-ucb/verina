@@ -148,12 +148,13 @@ body {
   background: #fff;
   border: 1px solid var(--color-border);
   border-radius: 10px;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  border-color: #d0d5dd;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  border-color: #c7d2e0;
+  transform: translateY(-2px);
 }
 
 /* ── Stat boxes ── */
@@ -442,6 +443,12 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 10px;
   overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.result-panel:hover {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  border-color: #c7d2e0;
 }
 
 .result-panel-header {

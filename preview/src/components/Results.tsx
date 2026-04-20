@@ -14,7 +14,7 @@ export function Results() {
         </div>
 
         {/* Best results strip */}
-        <div className="grid grid-cols-3 gap-3 mb-10">
+        <div className="grid grid-cols-3 gap-3 mb-2">
           <div className="stat-card bg-green-50 border border-green-200">
             <div className="stat-value text-green-600">72.6%</div>
             <div className="stat-label text-green-700">Code</div>
@@ -29,7 +29,7 @@ export function Results() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-gray-400 -mt-6 mb-8">Best pass@1 scores (OpenAI o3)</p>
+        <p className="text-center text-xs text-gray-400 mb-8">Best pass@1 scores (OpenAI o3)</p>
 
         {/* Foundational tasks */}
         <div className="result-panel mb-6">
