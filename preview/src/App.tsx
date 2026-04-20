@@ -5,6 +5,7 @@ import { InfoStrip } from '@/components/InfoStrip'
 import { Abstract } from '@/components/Abstract'
 import { Overview } from '@/components/Overview'
 import { Features } from '@/components/Features'
+import { PriorWork } from '@/components/PriorWork'
 import { DataFormat } from '@/components/DataFormat'
 import { SpecEval } from '@/components/SpecEval'
 import { Statistics } from '@/components/Statistics'
@@ -25,6 +26,7 @@ export default function App() {
       <Abstract />
       <Overview />
       <Features />
+      <PriorWork />
       <DataFormat />
       <SpecEval />
       <Statistics />
