@@ -4,15 +4,35 @@ export function Features() {
   return (
     <section className="py-16 md:py-20 px-6 section-alt" id="features">
       <div className="max-w-4xl mx-auto reveal">
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <SectionLabel centered>Benchmark</SectionLabel>
           <h2 className="font-display text-2xl md:text-3xl font-bold mt-1">Why VERINA?</h2>
         </div>
 
-        {/* Why VCG? — plain prose, no card chrome */}
-        <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] text-center max-w-2xl mx-auto mb-10">
-          <strong className="text-gray-800">Verifiable code generation</strong> offers higher levels of correctness assurance and automation in software development, potentially addressing the productivity bottleneck caused by bugs and security vulnerabilities in LLM-generated code.
-        </p>
+        {/* Two rationale cards — card-like structure but larger/wider than
+            the benefit grid below, stacked vertically. Second one is the
+            emphasized thesis. */}
+        <div className="space-y-4 mb-10">
+          <div className="relative card p-6 md:p-7 pl-14 md:pl-16">
+            <span className="absolute left-5 top-6 md:top-7 font-display text-xs font-extrabold text-blue-500/60 tabular-nums tracking-widest">01</span>
+            <div className="text-[11px] font-bold text-blue-600 uppercase tracking-[0.14em] mb-2">
+              Why verifiable code generation?
+            </div>
+            <p className="text-sm md:text-[15px] text-gray-600 leading-[1.8]">
+              <strong className="text-gray-800">Verifiable code generation</strong> offers higher levels of correctness assurance and automation in software development, potentially addressing the productivity bottleneck caused by bugs and security vulnerabilities in LLM-generated code.
+            </p>
+          </div>
+
+          <div className="relative card p-6 md:p-7 pl-14 md:pl-16 bg-gradient-to-br from-blue-50/80 to-white border-blue-200/70 border-l-[3px] border-l-blue-500">
+            <span className="absolute left-5 top-6 md:top-7 font-display text-xs font-extrabold text-blue-600 tabular-nums tracking-widest">02</span>
+            <div className="text-[11px] font-bold text-blue-700 uppercase tracking-[0.14em] mb-2">
+              Why VERINA?
+            </div>
+            <p className="text-sm md:text-[15px] text-gray-700 leading-[1.8]">
+              <strong className="text-gray-900">VERINA establishes a foundation for advancing verifiable code generation research</strong>, providing both rigorous evaluation capabilities and clear directions toward more reliable and formally verified automated programming systems. Our findings underscore the critical need for improving LLM-based theorem proving capabilities in verification domains.
+            </p>
+          </div>
+        </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="card p-5">
@@ -46,13 +66,6 @@ export function Features() {
               A testing-based framework that automatically measures soundness and completeness of generated specifications.
             </p>
           </div>
-        </div>
-
-        {/* Why VERINA? — thesis callout, distinct from the benefit cards */}
-        <div className="insight-box mt-10 max-w-3xl mx-auto text-sm md:text-[15px] text-gray-700 leading-[1.8]">
-          <p>
-            <strong className="text-gray-900">VERINA establishes a foundation for advancing verifiable code generation research</strong>, providing both rigorous evaluation capabilities and clear directions toward more reliable and formally verified automated programming systems. Our findings underscore the critical need for improving LLM-based theorem proving capabilities in verification domains.
-          </p>
         </div>
       </div>
     </section>
