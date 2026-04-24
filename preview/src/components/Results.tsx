@@ -44,21 +44,8 @@ export function Results() {
           </p>
         </div>
 
-        {/* Foundational tasks */}
-        <div className="result-panel mb-4">
-          <div className="result-panel-header">
-            <h3 className="font-display text-sm font-bold">Foundational Task Performance</h3>
-          </div>
-          <div className="result-panel-body">
-            <div className="img-container">
-              <img src="images/foundation_task_pass1_00.png" alt="Foundational task results" className="max-w-xl w-full" />
-            </div>
-            <p className="fig-caption">pass@1 performance of LLMs on VERINA's three foundational tasks.</p>
-          </div>
-        </div>
-
-        {/* Best pass@1 — standalone stat trio */}
-        <div className="mb-2">
+        {/* Best pass@1 — standalone stat trio, above the foundational chart */}
+        <div className="mb-8">
           <div className="grid grid-cols-3 gap-3">
             <div className="stat-card bg-green-50 border border-green-200">
               <div className="stat-value text-green-600">72.6%</div>
@@ -74,6 +61,19 @@ export function Results() {
             </div>
           </div>
           <p className="fig-caption mt-2">Best pass@1 scores &mdash; OpenAI o3</p>
+        </div>
+
+        {/* Foundational tasks */}
+        <div className="result-panel mb-4">
+          <div className="result-panel-header">
+            <h3 className="font-display text-sm font-bold">Foundational Task Performance</h3>
+          </div>
+          <div className="result-panel-body">
+            <div className="img-container">
+              <img src="images/foundation_task_pass1_00.png" alt="Foundational task results" className="max-w-xl w-full" />
+            </div>
+            <p className="fig-caption">pass@1 performance of LLMs on VERINA's three foundational tasks.</p>
+          </div>
         </div>
 
         <Takeaway label="Takeaway" accent="blue">
