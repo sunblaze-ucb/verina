@@ -63,7 +63,7 @@ export function Combinations() {
               <img
                 src="images/combined_task_pass1_00.png"
                 alt="Contextual information impact"
-                className="max-w-xl max-h-[220px] w-full h-auto"
+                className="max-w-xl w-full h-auto"
               />
             </div>
             <p className="fig-caption mb-4">CodeGen and SpecGen pass@1 with/without a reference spec or code.</p>
