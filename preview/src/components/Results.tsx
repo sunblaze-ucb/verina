@@ -70,7 +70,7 @@ export function Results() {
               ProofGen is the bottleneck: o3 achieves 41.2% Code&amp;Spec Score but only 3.2% End-to-End Score.
             </p>
             <div className="img-container">
-              <div className="fig-placeholder max-w-xl mx-auto">Figure 6: End-to-end scores (Code&amp;Spec + End-to-End)</div>
+              <img src="images/e2e_pass1.png" alt="End-to-end pass@1 results" className="max-w-xl w-full" />
             </div>
             <p className="fig-caption">pass@1 on the end-to-end verifiable code generation task.</p>
           </div>
@@ -86,7 +86,7 @@ export function Results() {
               Specialized provers (Goedel Prover V2, DeepSeek Prover V2) and agentic frameworks (Copra) outperform general-purpose models on ProofGen.
             </p>
             <div className="img-container">
-              <div className="fig-placeholder max-w-md mx-auto">Figure 7: ProofGen pass@1 across provers</div>
+              <img src="images/proof_pass1.png" alt="ProofGen pass@1 across provers" className="max-w-md w-full" />
             </div>
             <p className="fig-caption">Comparison of general-purpose models, specialized provers, and agentic approaches.</p>
           </div>
