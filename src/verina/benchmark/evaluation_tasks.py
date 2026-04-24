@@ -74,13 +74,14 @@ def execution_task_cache_key_fn(
 def benchmark_data_to_gen_code_input(
     data: BenchmarkData, with_ref_spec: bool
 ) -> GenCodeInput:
+    # Always show solution aux
+    ref_precond_aux = data.lean_data.solution_aux
     if with_ref_spec:
-        ref_precond_aux = data.lean_data.precond_aux
+        ref_precond_aux += "\n" + data.lean_data.precond_aux
         ref_precond = data.lean_data.precond
         ref_postcond_aux = data.lean_data.postcond_aux
         ref_postcond = data.lean_data.postcond
     else:
-        ref_precond_aux = None
         ref_precond = None
         ref_postcond_aux = None
         ref_postcond = None
@@ -103,7 +104,7 @@ def benchmark_data_to_gen_code_fewshot_example(
         example_input=benchmark_data_to_gen_code_input(data, with_ref_spec=False),
         example_output=GenCodeOutput(
             imports=data.lean_data.solution_imports,
-            code_aux=data.lean_data.solution_aux + "\n" + data.lean_data.code_aux,
+            code_aux=data.lean_data.code_aux,
             code=data.lean_data.code,
         ),
     )
@@ -762,17 +763,20 @@ async def evaluate_task_from_report(
     if task_report.task_flags.proof and ("proof" not in scores or should_reevaluate):
         # Evaluate proof
         proof_artifact = task_report.artifact.model_copy()
-        if not task_report.task_flags.code and not task_report.task_flags.spec:
+        need_gt_code = not task_report.task_flags.code
+        need_gt_spec = not task_report.task_flags.spec
+        if need_gt_code or need_gt_spec:
             # If the task does not generate code or spec, we need to evaluate using the ground truth
             gen_proof_input = benchmark_data_to_gen_proof_input(data)
-            proof_artifact.code_aux = gen_proof_input.code_aux
-            proof_artifact.code = gen_proof_input.code
-            proof_artifact.precond_aux = (
-                data.lean_data.solution_aux + "\n" + gen_proof_input.precond_aux
-            )
-            proof_artifact.precond = gen_proof_input.precond
-            proof_artifact.postcond_aux = gen_proof_input.postcond_aux
-            proof_artifact.postcond = gen_proof_input.postcond
+            if need_gt_code:
+                proof_artifact.code_aux = gen_proof_input.code_aux
+                proof_artifact.code = gen_proof_input.code
+            if need_gt_spec:
+                proof_artifact.precond_aux = gen_proof_input.precond_aux # already contains solution_aux
+                proof_artifact.precond = gen_proof_input.precond
+                proof_artifact.postcond_aux = gen_proof_input.postcond_aux
+                proof_artifact.postcond = gen_proof_input.postcond
+        
 
         scores["proof"] = await metric_generated_proof(
             template_engine, data, proof_artifact
