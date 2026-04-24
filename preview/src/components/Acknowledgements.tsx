@@ -39,16 +39,13 @@ export function Acknowledgements() {
           UC Berkeley for contributing benchmark instances from LeetCode and LiveCodeBench.
         </p>
 
-        {/* Funding + Meta note — small footer */}
-        <div className="text-center text-[11px] text-gray-400 leading-relaxed space-y-1 border-t border-gray-200/60 pt-5">
+        {/* Funding — small footer */}
+        <div className="text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200/60 pt-5">
           <p>
             Based upon work supported by the{' '}
             <strong className="text-gray-500">National Science Foundation</strong> (grant no.{' '}
             <span className="tabular-nums">2229876</span>), with partner support from the NSF,
             the Department of Homeland Security, and IBM.
-          </p>
-          <p className="italic">
-            All data processing and experiments were conducted outside Meta.
           </p>
         </div>
       </div>

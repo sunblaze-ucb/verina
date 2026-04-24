@@ -21,13 +21,10 @@ export function Hero() {
           <a href="#" className="hover:text-white transition-colors">Zhengxu Yan</a><sup>1</sup>,{' '}
           <a href="https://jxhe.info/" target="_blank" className="hover:text-white transition-colors">Jingxuan He</a><sup>1</sup>,{' '}
           <a href="#" className="hover:text-white transition-colors">Timothe Kasriel</a><sup>1</sup>,{' '}
-          <a href="https://yangky11.github.io/" target="_blank" className="hover:text-white transition-colors">Kaiyu Yang</a><sup>2*</sup>,{' '}
+          <a href="https://yangky11.github.io/" target="_blank" className="hover:text-white transition-colors">Kaiyu Yang</a><sup>2</sup>,{' '}
           <a href="https://dawnsong.io/" target="_blank" className="hover:text-white transition-colors">Dawn Song</a><sup>1</sup>
           <div className="mt-1 text-xs text-blue-300/60">
             <sup>1</sup>UC Berkeley &nbsp;·&nbsp; <sup>2</sup>Meta FAIR
-          </div>
-          <div className="mt-1 text-[11px] text-blue-300/50 italic">
-            <sup>*</sup>All data processing and experiments were conducted outside Meta.
           </div>
         </div>
 
@@ -43,9 +40,7 @@ export function Hero() {
             Code
           </a>
           <a href="https://huggingface.co/datasets/sunblaze-ucb/verina/" target="_blank" className="btn btn-outline">
-            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-              <path fillRule="evenodd" clipRule="evenodd" d="M15.02 12.91c.13-.3.14-.64.04-.95.11-.27.12-.57.05-.85a1.5 1.5 0 00-.18-.4c.13-.46 0-.95-.32-1.3a1.4 1.4 0 00-.44-.31c.1-.45.15-.92.15-1.39C14.32 4.19 11.48 1.33 7.96 1.33S1.6 4.19 1.6 7.71c0 .49.06.97.16 1.42a1.4 1.4 0 00-.37.28c-.28.31-.4.7-.34 1.12l.07.18a1.5 1.5 0 00-.18.4c-.07.28-.05.58.05.85a1.1 1.1 0 00.04.95c.24.54.79.88 1.55 1.18.85.34 1.78.58 2.74.58.77 0 1.44-.19 1.93-.62.25.03.51.05.77.05.28 0 .56-.02.83-.05.49.44 1.16.63 1.94.63.96 0 1.89-.24 2.73-.58.76-.3 1.32-.64 1.55-1.18z"/>
-            </svg>
+            <span className="text-base leading-none" role="img" aria-label="Hugging Face">🤗</span>
             Dataset
           </a>
         </div>
