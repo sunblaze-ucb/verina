@@ -1,4 +1,5 @@
 import { SectionLabel } from './SectionLabel'
+import { Takeaway } from './Takeaway'
 
 export function Combinations() {
   return (
@@ -59,9 +60,22 @@ export function Combinations() {
           </div>
           <div className="result-panel-body">
             <div className="img-container">
-              <img src="images/combined_task_pass1_00.png" alt="Contextual information impact" className="max-w-xl w-full" />
+              <img
+                src="images/combined_task_pass1_00.png"
+                alt="Contextual information impact"
+                className="max-w-xl max-h-[220px] w-full h-auto"
+              />
             </div>
-            <p className="fig-caption">Impact of contextual information on combined task performance.</p>
+            <p className="fig-caption mb-4">CodeGen and SpecGen pass@1 with/without a reference spec or code.</p>
+            <Takeaway label="Takeaway" accent="green">
+              <strong className="text-gray-800">Ground-truth specifications consistently improve CodeGen</strong>{' '}
+              across models — gains rely on semantic understanding of the reference spec, not copying.
+              In contrast, <strong className="text-gray-800">providing ground-truth code has minimal or
+              negative effect on SpecGen</strong>: verbose implementations tend to introduce noise or
+              over-constrain the specification. Replacing ground truth with model-generated artifacts
+              degrades performance in both directions, confirming that combined tasks are harder than
+              individual ones.
+            </Takeaway>
           </div>
         </div>
       </div>

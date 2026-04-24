@@ -1,36 +1,5 @@
 import { SectionLabel } from './SectionLabel'
-
-interface TakeawayProps {
-  label: string
-  accent?: 'blue' | 'amber' | 'red' | 'teal' | 'indigo'
-  children: React.ReactNode
-}
-
-const ACCENT_BAR: Record<NonNullable<TakeawayProps['accent']>, string> = {
-  blue:   'border-blue-400',
-  amber:  'border-amber-400',
-  red:    'border-red-400',
-  teal:   'border-teal-400',
-  indigo: 'border-indigo-400',
-}
-const ACCENT_TEXT: Record<NonNullable<TakeawayProps['accent']>, string> = {
-  blue:   'text-blue-600',
-  amber:  'text-amber-700',
-  red:    'text-red-600',
-  teal:   'text-teal-700',
-  indigo: 'text-indigo-600',
-}
-
-function Takeaway({ label, accent = 'blue', children }: TakeawayProps) {
-  return (
-    <div className={`relative my-6 mx-auto max-w-2xl pl-5 border-l-2 ${ACCENT_BAR[accent]}`}>
-      <div className={`text-[10px] font-bold uppercase tracking-[0.14em] mb-1.5 ${ACCENT_TEXT[accent]}`}>
-        {label}
-      </div>
-      <p className="text-sm text-gray-600 leading-[1.8]">{children}</p>
-    </div>
-  )
-}
+import { Takeaway } from './Takeaway'
 
 export function Results() {
   return (
