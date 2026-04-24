@@ -17,12 +17,11 @@ interface Row {
 const BENCHMARKS: Row[] = [
   { name: 'HumanEval',       cite: 'Chen et al., 2021',       code: 'full',    spec: 'none', proof: 'none', style: null,  comp: 'na', language: 'Python' },
   { name: 'MBPP',            cite: 'Austin et al., 2021',     code: 'full',    spec: 'none', proof: 'none', style: null,  comp: 'na', language: 'Python' },
-  { name: 'Dafny-Synthesis', cite: 'Misu et al., 2024',       code: 'partial', spec: 'none', proof: 'full', style: 'ATP', comp: 'no', language: 'Dafny' },
+  { name: 'Dafny-Synthesis', cite: 'Misu et al., 2024',       code: 'full', spec: 'partial', proof: 'full', style: 'ATP', comp: 'no', language: 'Dafny' },
   { name: 'DafnyBench',      cite: 'Loughridge et al., 2025', code: 'none',    spec: 'none', proof: 'full', style: 'ATP', comp: 'na', language: 'Dafny' },
   { name: 'miniCodeProps',   cite: 'Lohn & Welleck, 2024',    code: 'none',    spec: 'none', proof: 'full', style: 'ITP', comp: 'na', language: 'Lean' },
-  { name: 'FV APPS',         cite: 'Dougherty & Mehta, 2025', code: 'full',    spec: 'partial', proof: 'full', style: 'ITP', comp: 'no', language: 'Lean' },
+  { name: 'FV APPS',         cite: 'Dougherty & Mehta, 2025', code: 'full',    spec: 'none', proof: 'full', style: 'ITP', comp: 'no', language: 'Lean' },
   { name: 'Clover',          cite: 'Sun et al., 2024',        code: 'full',    spec: 'full', proof: 'full', style: 'ATP', comp: 'no', language: 'Dafny' },
-  { name: 'CLEVER',          cite: 'Thakur et al., 2025',     code: 'partial', spec: 'full', proof: 'none', style: null,  comp: 'no', language: 'Lean' },
 ]
 
 const VERINA: Row = {
