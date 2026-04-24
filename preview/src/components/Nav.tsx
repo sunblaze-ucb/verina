@@ -10,7 +10,6 @@ export function Nav() {
         <div className="hidden md:flex items-center gap-6">
           <a href="#overview" className="nav-link">Overview</a>
           <a href="#results" className="nav-link">Results</a>
-          <a href="#get-started" className="nav-link">Get Started</a>
           <a href="#citation" className="nav-link">Cite</a>
         </div>
       </div>
