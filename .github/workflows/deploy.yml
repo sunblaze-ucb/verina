@@ -2,7 +2,7 @@ name: Deploy website
 
 on:
   push:
-    branches: [main, zhe/website]
+    branches: [main, zhe/fix-pnpm-setup]
     paths:
       - 'website/**'
       - '.github/workflows/deploy.yml'
