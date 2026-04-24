@@ -13,14 +13,14 @@ const ORGANIZATIONS: Entry[] = [
   { name: 'Logical Intelligence', href: 'https://logicalintelligence.com/' },
 ]
 
-const INDIVIDUALS: Entry[] = [
+const PEOPLE: Entry[] = [
   { name: 'Mantas Baksys', affiliation: 'University of Cambridge' },
   { name: 'Yueyang Feng',  affiliation: 'National University of Singapore' },
   { name: 'Dipesh Kafle',  affiliation: 'National University of Singapore' },
   { name: 'Ilya Sergey',   affiliation: 'National University of Singapore' },
 ]
 
-function Row({ entry, accent }: { entry: Entry; accent: string }) {
+function Entry({ entry }: { entry: Entry }) {
   const name = entry.href ? (
     <a
       href={entry.href}
@@ -31,13 +31,13 @@ function Row({ entry, accent }: { entry: Entry; accent: string }) {
       <span className="text-[10px] text-gray-300 group-hover:text-blue-400 transition-colors">↗</span>
     </a>
   ) : (
-    <span>{entry.name}</span>
+    entry.name
   )
   return (
-    <li className={`flex items-baseline gap-3 py-1.5 pl-3 border-l-2 ${accent}`}>
-      <span className="font-display text-sm font-semibold text-gray-800 shrink-0">{name}</span>
+    <li className="text-center">
+      <div className="font-display text-[15px] font-semibold text-gray-800">{name}</div>
       {entry.affiliation && (
-        <span className="text-[13px] text-gray-500 italic truncate">{entry.affiliation}</span>
+        <div className="text-[12px] text-gray-500 italic mt-0.5">{entry.affiliation}</div>
       )}
     </li>
   )
@@ -46,46 +46,44 @@ function Row({ entry, accent }: { entry: Entry; accent: string }) {
 export function Acknowledgements() {
   return (
     <section className="py-16 md:py-20 px-6 section-alt" id="acknowledgements">
-      <div className="max-w-3xl mx-auto reveal">
-        <div className="text-center mb-8">
-          <SectionLabel centered>Credits</SectionLabel>
-          <h2 className="font-display text-2xl md:text-3xl font-bold mt-1">Acknowledgements</h2>
-        </div>
+      <div className="max-w-3xl mx-auto reveal text-center">
+        <SectionLabel centered>Credits</SectionLabel>
+        <h2 className="font-display text-2xl md:text-3xl font-bold mt-1 mb-6">Acknowledgements</h2>
 
-        <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] text-center max-w-2xl mx-auto mb-10">
-          We are grateful to the following organizations and individuals &mdash; listed in the order
-          of their first contribution &mdash; for improving VERINA's quality through bug reports,
+        <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] max-w-2xl mx-auto mb-12">
+          We are grateful to the following organizations and people &mdash; listed in the order of
+          their first contribution &mdash; for improving VERINA's quality through bug reports,
           specification and proof fixes, and other corrections.
         </p>
 
-        <div className="grid md:grid-cols-[auto_1fr] gap-x-10 gap-y-8 mb-8 max-w-xl mx-auto md:max-w-none">
-          {/* Organizations column */}
-          <div>
-            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.14em] mb-3">
-              Organizations
-            </div>
-            <ul className="list-none space-y-0.5 md:min-w-[220px]">
-              {ORGANIZATIONS.map((o) => (
-                <Row key={o.name} entry={o} accent="border-blue-400/60" />
-              ))}
-            </ul>
+        <div className="mb-10">
+          <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.16em] mb-4">
+            Organizations
           </div>
-
-          {/* Individuals column */}
-          <div>
-            <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-3">
-              Individuals
-            </div>
-            <ul className="list-none space-y-0.5">
-              {INDIVIDUALS.map((p) => (
-                <Row key={p.name} entry={p} accent="border-indigo-400/60" />
-              ))}
-            </ul>
-          </div>
+          <ul className="list-none space-y-3">
+            {ORGANIZATIONS.map((o) => (
+              <Entry key={o.name} entry={o} />
+            ))}
+          </ul>
         </div>
 
-        <p className="text-xs text-gray-500 text-center leading-relaxed">
-          See the full list of code contributors on the{' '}
+        <div className="flex items-center justify-center mb-10">
+          <div className="h-px w-16 bg-gray-200"></div>
+        </div>
+
+        <div className="mb-10">
+          <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.16em] mb-4">
+            People
+          </div>
+          <ul className="list-none space-y-3">
+            {PEOPLE.map((p) => (
+              <Entry key={p.name} entry={p} />
+            ))}
+          </ul>
+        </div>
+
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Also see the list of contributors on the{' '}
           <a
             href="https://github.com/sunblaze-ucb/verina/graphs/contributors"
             target="_blank"
