@@ -14,7 +14,7 @@ const CONTRIBUTORS: Contributor[] = [
   { name: 'Yueyang Feng', affiliation: 'National University of Singapore' },
   { name: 'Dipesh Kafle', affiliation: 'National University of Singapore' },
   { name: 'Ilya Sergey', affiliation: 'National University of Singapore' },
-  { name: 'Logical Intelligence', href: 'https://logicalintelligence.ai/' },
+  { name: 'Logical Intelligence', href: 'https://logicalintelligence.com/' },
 ]
 
 export function Acknowledgements() {
