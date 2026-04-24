@@ -20,12 +20,26 @@ const INDIVIDUALS: Entry[] = [
   { name: 'Ilya Sergey',   affiliation: 'National University of Singapore' },
 ]
 
-function LinkedName({ entry }: { entry: Entry }) {
-  if (!entry.href) return <>{entry.name}</>
-  return (
-    <a href={entry.href} target="_blank" className="hover:text-blue-600 transition-colors">
+function Row({ entry, accent }: { entry: Entry; accent: string }) {
+  const name = entry.href ? (
+    <a
+      href={entry.href}
+      target="_blank"
+      className="hover:text-blue-600 transition-colors inline-flex items-center gap-1 group"
+    >
       {entry.name}
+      <span className="text-[10px] text-gray-300 group-hover:text-blue-400 transition-colors">↗</span>
     </a>
+  ) : (
+    <span>{entry.name}</span>
+  )
+  return (
+    <li className={`flex items-baseline gap-3 py-1.5 pl-3 border-l-2 ${accent}`}>
+      <span className="font-display text-sm font-semibold text-gray-800 shrink-0">{name}</span>
+      {entry.affiliation && (
+        <span className="text-[13px] text-gray-500 italic truncate">{entry.affiliation}</span>
+      )}
+    </li>
   )
 }
 
@@ -38,41 +52,33 @@ export function Acknowledgements() {
           <h2 className="font-display text-2xl md:text-3xl font-bold mt-1">Acknowledgements</h2>
         </div>
 
-        <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] text-center max-w-2xl mx-auto mb-8">
+        <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] text-center max-w-2xl mx-auto mb-10">
           We are grateful to the following organizations and individuals &mdash; listed in the order
           of their first contribution &mdash; for improving VERINA's quality through bug reports,
           specification and proof fixes, and other corrections.
         </p>
 
-        <div className="card p-6 md:p-7 mb-6">
-          <div className="mb-6">
-            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.14em] mb-2">
+        <div className="grid md:grid-cols-[auto_1fr] gap-x-10 gap-y-8 mb-8 max-w-xl mx-auto md:max-w-none">
+          {/* Organizations column */}
+          <div>
+            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.14em] mb-3">
               Organizations
             </div>
-            <p className="text-sm md:text-[15px] text-gray-700 leading-[1.8]">
-              {ORGANIZATIONS.map((o, i) => (
-                <span key={o.name}>
-                  <LinkedName entry={o} />
-                  {i < ORGANIZATIONS.length - 1 && <span className="mx-2 text-gray-300">·</span>}
-                </span>
+            <ul className="list-none space-y-0.5 md:min-w-[220px]">
+              {ORGANIZATIONS.map((o) => (
+                <Row key={o.name} entry={o} accent="border-blue-400/60" />
               ))}
-            </p>
+            </ul>
           </div>
 
+          {/* Individuals column */}
           <div>
-            <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-2">
+            <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-3">
               Individuals
             </div>
-            <ul className="text-sm md:text-[15px] text-gray-700 leading-[1.9] space-y-0.5 list-none">
+            <ul className="list-none space-y-0.5">
               {INDIVIDUALS.map((p) => (
-                <li key={p.name}>
-                  <LinkedName entry={p} />
-                  {p.affiliation && (
-                    <span className="text-gray-500 italic">
-                      {' '}&mdash; {p.affiliation}
-                    </span>
-                  )}
-                </li>
+                <Row key={p.name} entry={p} accent="border-indigo-400/60" />
               ))}
             </ul>
           </div>
