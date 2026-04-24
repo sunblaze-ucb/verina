@@ -51,9 +51,9 @@ export function Acknowledgements() {
         <h2 className="font-display text-2xl md:text-3xl font-bold mt-1 mb-6">Acknowledgements</h2>
 
         <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] max-w-2xl mx-auto mb-12">
-          We are grateful to the following organizations and people &mdash; listed in the order of
-          their first contribution &mdash; for improving VERINA's quality through bug reports,
-          specification and proof fixes, and other corrections.
+          We are grateful to the following organizations and people, listed in the order of
+          their contribution time, for improving VERINA's quality through bug reports,
+          fixes, and other corrections.
         </p>
 
         <div className="grid md:grid-cols-2 gap-10 md:gap-12 mb-10">
