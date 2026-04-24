@@ -33,7 +33,7 @@ export function Results() {
         </div>
 
         {/* Foundational tasks */}
-        <div className="result-panel mb-4">
+        <div className="result-panel">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Foundational Task Performance</h3>
           </div>
@@ -41,18 +41,17 @@ export function Results() {
             <div className="img-container">
               <img src="images/foundation_task_pass1_00.png" alt="Foundational task results" className="max-w-xl w-full" />
             </div>
-            <p className="fig-caption">pass@1 performance of LLMs on VERINA's three foundational tasks.</p>
+            <p className="fig-caption mb-4">pass@1 performance of LLMs on VERINA's three foundational tasks.</p>
+            <Takeaway label="Takeaway" accent="blue">
+              <strong className="text-gray-800">A clear difficulty hierarchy emerges.</strong>{' '}
+              Code generation is most accessible, specification generation is moderately challenging,
+              and proof generation remains extremely difficult for all current models.
+            </Takeaway>
           </div>
         </div>
 
-        <Takeaway label="Takeaway" accent="blue">
-          <strong className="text-gray-800">A clear difficulty hierarchy emerges.</strong>{' '}
-          Code generation is most accessible, specification generation is moderately challenging,
-          and proof generation remains extremely difficult for all current models.
-        </Takeaway>
-
         {/* VERINA-A vs VERINA-B */}
-        <div className="result-panel mb-4 mt-10">
+        <div className="result-panel mt-10">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Difficulty Split: VERINA-A vs VERINA-B</h3>
           </div>
@@ -60,18 +59,17 @@ export function Results() {
             <div className="img-container">
               <img src="images/foundation_task_pass1_split_00.png" alt="VERINA-A vs VERINA-B comparison" className="max-w-xl w-full" />
             </div>
-            <p className="fig-caption">Performance comparison between VERINA-A and VERINA-B.</p>
+            <p className="fig-caption mb-4">Performance comparison between VERINA-A and VERINA-B.</p>
+            <Takeaway label="Takeaway" accent="amber">
+              <strong className="text-gray-800">VERINA-B is substantially harder.</strong>{' '}
+              All tasks show steep performance drops on student-written problems, highlighting the
+              challenges LLMs face as problem complexity increases.
+            </Takeaway>
           </div>
         </div>
 
-        <Takeaway label="Takeaway" accent="amber">
-          <strong className="text-gray-800">VERINA-B is substantially harder.</strong>{' '}
-          All tasks show steep performance drops on student-written problems, highlighting the
-          challenges LLMs face as problem complexity increases.
-        </Takeaway>
-
         {/* End-to-end */}
-        <div className="result-panel mb-4 mt-10">
+        <div className="result-panel mt-10">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">End-to-End Verifiable Code Generation</h3>
           </div>
@@ -79,16 +77,15 @@ export function Results() {
             <div className="img-container">
               <img src="images/e2e_pass1.png" alt="End-to-end pass@1 results" className="max-w-xl w-full" />
             </div>
-            <p className="fig-caption">pass@1 performance on VERINA's end-to-end verifiable code generation task.</p>
+            <p className="fig-caption mb-4">pass@1 performance on VERINA's end-to-end verifiable code generation task.</p>
+            <Takeaway label="Takeaway" accent="red">
+              <strong className="text-gray-800">ProofGen is the end-to-end bottleneck.</strong>{' '}
+              Simultaneously generating correct code and specifications is difficult — the leading model
+              reaches <strong className="text-gray-800">41.2%</strong> Code&amp;Spec, while the End-to-End
+              Score caps at <strong className="text-gray-800">3.2%</strong> across all evaluated models.
+            </Takeaway>
           </div>
         </div>
-
-        <Takeaway label="Takeaway" accent="red">
-          <strong className="text-gray-800">ProofGen is the end-to-end bottleneck.</strong>{' '}
-          Simultaneously generating correct code and specifications is difficult — the leading model
-          reaches <strong className="text-gray-800">41.2%</strong> Code&amp;Spec, while the End-to-End
-          Score caps at <strong className="text-gray-800">3.2%</strong> across all evaluated models.
-        </Takeaway>
 
         {/* Specialized provers */}
         <div className="result-panel mt-10">
