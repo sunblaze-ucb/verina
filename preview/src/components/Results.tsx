@@ -13,7 +13,7 @@ export function Results() {
         </div>
 
         {/* Foundational tasks */}
-        <div className="result-panel mb-6">
+        <div className="result-panel mb-4">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Foundational Task Performance</h3>
           </div>
@@ -25,30 +25,31 @@ export function Results() {
           </div>
         </div>
 
-        {/* Best Results — mirrors docs/ info-light box */}
-        <div className="insight-box mb-8">
-          <h4 className="font-display text-sm font-bold text-blue-700 mb-3">Best Results (OpenAI o4-mini)</h4>
-          <div className="grid grid-cols-3 gap-3 mb-3">
+        {/* Best pass@1 — standalone stat trio, no wrapping banner */}
+        <div className="mb-2">
+          <div className="grid grid-cols-3 gap-3">
             <div className="stat-card bg-green-50 border border-green-200">
-              <div className="stat-value text-green-600">61.4%</div>
+              <div className="stat-value text-green-600">72.6%</div>
               <div className="stat-label text-green-700">Code</div>
             </div>
             <div className="stat-card bg-amber-50 border border-amber-200">
-              <div className="stat-value text-amber-600">51.0%</div>
+              <div className="stat-value text-amber-600">52.3%</div>
               <div className="stat-label text-amber-700">Spec</div>
             </div>
             <div className="stat-card bg-red-50 border border-red-200">
-              <div className="stat-value text-red-600">3.6%</div>
+              <div className="stat-value text-red-600">4.9%</div>
               <div className="stat-label text-red-700">Proof</div>
             </div>
           </div>
-          <p className="text-xs text-gray-600 leading-relaxed">
-            Results show a clear difficulty hierarchy, with proof generation being the most challenging task for current LLMs.
-          </p>
+          <p className="fig-caption mt-2">Best pass@1 scores &mdash; OpenAI o3</p>
         </div>
 
-        {/* VERINA-A vs VERINA-B chart */}
-        <div className="result-panel mb-6">
+        <p className="text-sm text-gray-600 leading-[1.8] text-center max-w-2xl mx-auto mt-8 mb-10">
+          Results show a clear <strong className="text-gray-800">difficulty hierarchy</strong>: code generation is most accessible, specification generation is moderately challenging, and proof generation remains extremely difficult for all current models.
+        </p>
+
+        {/* VERINA-A vs VERINA-B */}
+        <div className="result-panel mb-4">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Difficulty Split: VERINA-A vs VERINA-B</h3>
           </div>
@@ -60,22 +61,16 @@ export function Results() {
           </div>
         </div>
 
-        {/* VERINA-A vs VERINA-B — warning-style box from docs/ */}
-        <div className="mb-8 rounded-[10px] border border-amber-200 bg-amber-50/60 border-l-[3px] border-l-amber-500 p-5">
-          <p className="text-sm text-gray-700 leading-relaxed">
-            <strong className="text-gray-900">VERINA-B vs VERINA-A:</strong> Substantial performance drops across all tasks for more complex problems, highlighting the challenges LLMs face with increased problem complexity.
-          </p>
-        </div>
+        <p className="text-sm text-gray-600 leading-[1.8] text-center max-w-2xl mx-auto mb-10">
+          <strong className="text-gray-800">VERINA-B is substantially harder:</strong> all tasks show steep performance drops on student-written problems, highlighting the challenges LLMs face as problem complexity increases.
+        </p>
 
-        {/* End-to-end Fig 6 — summarized from paper §5 */}
-        <div className="result-panel mb-6">
+        {/* End-to-end */}
+        <div className="result-panel mb-4">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">End-to-End Verifiable Code Generation</h3>
           </div>
           <div className="result-panel-body">
-            <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-              ProofGen is the major bottleneck for end-to-end verifiable code generation. Simultaneously generating correct code and specifications is difficult — the leading model achieves <strong className="text-gray-800">41.2%</strong> on the Code&amp;Spec Score, while the End-to-End Score caps at <strong className="text-gray-800">3.2%</strong> across all evaluated models.
-            </p>
             <div className="img-container">
               <img src="images/e2e_pass1.png" alt="End-to-end pass@1 results" className="max-w-xl w-full" />
             </div>
@@ -83,15 +78,16 @@ export function Results() {
           </div>
         </div>
 
-        {/* Specialized provers Fig 7 — summarized from paper §5 */}
-        <div className="result-panel mb-8">
+        <p className="text-sm text-gray-600 leading-[1.8] text-center max-w-2xl mx-auto mb-10">
+          <strong className="text-gray-800">ProofGen is the end-to-end bottleneck:</strong> simultaneously generating correct code and specifications is difficult &mdash; the leading model reaches <strong className="text-gray-800">41.2%</strong> Code&amp;Spec, while the End-to-End Score caps at <strong className="text-gray-800">3.2%</strong> across all evaluated models.
+        </p>
+
+        {/* Specialized provers */}
+        <div className="result-panel mb-4">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Specialized Provers &amp; Agentic Methods</h3>
           </div>
           <div className="result-panel-body">
-            <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-              Specialized theorem-proving models and agentic approaches outperform general-purpose LLMs on ProofGen. <strong className="text-gray-800">Goedel Prover V2 32B</strong> and <strong className="text-gray-800">DeepSeek Prover V2 7B</strong> achieve higher proof success rates; <strong className="text-gray-800">Copra</strong>, a tree-search agent using o4-mini as its backbone with up to 64 LLM queries per sample, also demonstrates clear improvements over direct single-pass generation.
-            </p>
             <div className="img-container">
               <img src="images/proof_pass1.png" alt="ProofGen pass@1 across provers" className="max-w-md w-full" />
             </div>
@@ -99,21 +95,26 @@ export function Results() {
           </div>
         </div>
 
-        {/* Iterative refinement — docs/ text verbatim */}
-        <div className="result-panel">
+        <p className="text-sm text-gray-600 leading-[1.8] text-center max-w-2xl mx-auto mb-10">
+          <strong className="text-gray-800">Specialized provers and agents outperform general-purpose LLMs on ProofGen.</strong> Goedel Prover V2 32B and DeepSeek Prover V2 7B achieve higher proof success rates than the best general-purpose models; Copra, a tree-search agent using o4-mini as backbone (up to 64 queries per sample), also shows clear improvements over single-pass generation.
+        </p>
+
+        {/* Iterative proof refinement */}
+        <div className="result-panel mb-4">
           <div className="result-panel-header">
-            <h3 className="font-display text-sm font-bold">Iterative Refinement Results</h3>
+            <h3 className="font-display text-sm font-bold">Iterative Proof Refinement</h3>
           </div>
           <div className="result-panel-body">
-            <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-              With 64 iterations of proof refinement using Lean compiler feedback, success rates improved from <strong className="text-gray-800">3.6% to 22.2%</strong> on VERINA-A, but remained low at <strong className="text-gray-800">6.17%</strong> on VERINA-B, highlighting the persistent challenges in automated theorem proving.
-            </p>
             <div className="img-container">
               <img src="images/proof_refine_pass_00.png" alt="Proof refinement results" className="max-w-lg w-full" />
             </div>
-            <p className="fig-caption">Iterative proof refinement results showing improvement with Lean compiler feedback.</p>
+            <p className="fig-caption">pass@k via iterative refinement (left) and direct generation (right).</p>
           </div>
         </div>
+
+        <p className="text-sm text-gray-600 leading-[1.8] text-center max-w-2xl mx-auto">
+          <strong className="text-gray-800">Lean verifier feedback helps.</strong> Iterative proof refinement using Lean compiler errors reliably outperforms direct generation at matched query budgets, reaching <strong className="text-gray-800">20.1% pass@64</strong>. Refinement yields larger gains on VERINA-A (7.41% → 22.22%) than on VERINA-B (1.23% → 6.17%), underscoring the persistent challenge of complex proving tasks.
+        </p>
       </div>
     </section>
   )
