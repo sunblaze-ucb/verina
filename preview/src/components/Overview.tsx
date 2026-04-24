@@ -47,16 +47,6 @@ export function Overview() {
         <p className="fig-caption mt-3">
           VERINA's three foundational tasks. Dashed arrows represent optional inputs.
         </p>
-
-        <p className="text-sm md:text-base text-gray-600 leading-[1.8] text-center max-w-3xl mx-auto mt-10">
-          This approach offers higher levels of correctness assurance and automation in software development, potentially addressing the productivity bottleneck caused by bugs and security vulnerabilities in LLM-generated code.
-        </p>
-
-        <div className="insight-box mt-6 max-w-3xl mx-auto text-sm md:text-base text-gray-600 leading-[1.8]">
-          <p>
-            <strong className="text-gray-800">VERINA establishes a foundation for advancing verifiable code generation research</strong>, providing both rigorous evaluation capabilities and clear directions toward more reliable and formally verified automated programming systems. Our findings underscore the critical need for improving LLM-based theorem proving capabilities in verification domains.
-          </p>
-        </div>
       </div>
     </section>
   )
