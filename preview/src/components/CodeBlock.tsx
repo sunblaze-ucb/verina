@@ -2,10 +2,20 @@ import { useEffect, useRef } from 'react'
 import hljs from 'highlight.js/lib/core'
 import bash from 'highlight.js/lib/languages/bash'
 // @ts-expect-error highlightjs-lean ships no type definitions
-import lean from 'highlightjs-lean'
+import * as leanModule from 'highlightjs-lean'
 
-hljs.registerLanguage('bash', bash)
-hljs.registerLanguage('lean', lean)
+// highlightjs-lean uses `module.exports = function(hljs)`. Vite's CJS→ESM
+// interop sometimes surfaces that as `.default`, sometimes as the namespace
+// itself. Accept either.
+const lean =
+  typeof leanModule === 'function'
+    ? (leanModule as unknown as (hljs: typeof import('highlight.js').default) => unknown)
+    : ((leanModule as { default?: unknown }).default as (
+        hljs: typeof import('highlight.js').default,
+      ) => unknown)
+
+if (!hljs.getLanguage('bash')) hljs.registerLanguage('bash', bash)
+if (!hljs.getLanguage('lean')) hljs.registerLanguage('lean', lean as Parameters<typeof hljs.registerLanguage>[1])
 
 interface CodeBlockProps {
   language: 'lean' | 'bash'
