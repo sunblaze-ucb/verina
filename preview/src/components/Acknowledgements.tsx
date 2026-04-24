@@ -56,30 +56,28 @@ export function Acknowledgements() {
           specification and proof fixes, and other corrections.
         </p>
 
-        <div className="mb-10">
-          <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.16em] mb-4">
-            Organizations
+        <div className="grid md:grid-cols-2 gap-10 md:gap-12 mb-10">
+          <div>
+            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.16em] mb-4">
+              Organizations
+            </div>
+            <ul className="list-none space-y-3">
+              {ORGANIZATIONS.map((o) => (
+                <Entry key={o.name} entry={o} />
+              ))}
+            </ul>
           </div>
-          <ul className="list-none space-y-3">
-            {ORGANIZATIONS.map((o) => (
-              <Entry key={o.name} entry={o} />
-            ))}
-          </ul>
-        </div>
 
-        <div className="flex items-center justify-center mb-10">
-          <div className="h-px w-16 bg-gray-200"></div>
-        </div>
-
-        <div className="mb-10">
-          <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.16em] mb-4">
-            People
+          <div>
+            <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.16em] mb-4">
+              People
+            </div>
+            <ul className="list-none space-y-3">
+              {PEOPLE.map((p) => (
+                <Entry key={p.name} entry={p} />
+              ))}
+            </ul>
           </div>
-          <ul className="list-none space-y-3">
-            {PEOPLE.map((p) => (
-              <Entry key={p.name} entry={p} />
-            ))}
-          </ul>
         </div>
 
         <p className="text-xs text-gray-500 leading-relaxed">
