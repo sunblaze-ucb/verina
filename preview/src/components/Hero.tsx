@@ -6,26 +6,23 @@ export function Hero() {
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <span className="badge bg-white/10 text-blue-200 border border-white/15 mb-5">ICLR 2026</span>
 
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight mt-2">
-          VERINA
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.15] tracking-tight mt-2 whitespace-nowrap">
+          VERINA: Benchmarking Verifiable Code Generation
         </h1>
-        <p className="text-lg md:text-xl text-blue-100/90 mt-2 tracking-tight font-medium">
-          Benchmarking Verifiable Code Generation
-        </p>
 
         <p className="text-sm text-blue-200/70 mt-5 max-w-lg mx-auto leading-relaxed">
           189 manually curated tasks in Lean for evaluating code, specification, and proof generation—and their compositions.
         </p>
 
         {/* Authors */}
-        <div className="mt-6 text-[13px] text-blue-200/80 leading-relaxed">
-          <a href="https://zhe.sh/" target="_blank" className="hover:text-white transition-colors">Zhe Ye</a><sup>1</sup>,{' '}
-          <a href="#" className="hover:text-white transition-colors">Zhengxu Yan</a><sup>1</sup>,{' '}
-          <a href="https://jxhe.info/" target="_blank" className="hover:text-white transition-colors">Jingxuan He</a><sup>1</sup>,{' '}
-          <a href="#" className="hover:text-white transition-colors">Timothe Kasriel</a><sup>1</sup>,{' '}
-          <a href="https://yangky11.github.io/" target="_blank" className="hover:text-white transition-colors">Kaiyu Yang</a><sup>2</sup>,{' '}
-          <a href="https://dawnsong.io/" target="_blank" className="hover:text-white transition-colors">Dawn Song</a><sup>1</sup>
-          <div className="mt-1 text-xs text-blue-300/60">
+        <div className="mt-7 text-[15px] md:text-base text-blue-100/90 leading-relaxed">
+          <a href="https://zhe.sh/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Zhe Ye</a><sup>1</sup>,{' '}
+          <a href="#" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Zhengxu Yan</a><sup>1</sup>,{' '}
+          <a href="https://jxhe.info/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Jingxuan He</a><sup>1</sup>,{' '}
+          <a href="#" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Timothe Kasriel</a><sup>1</sup>,{' '}
+          <a href="https://yangky11.github.io/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Kaiyu Yang</a><sup>2</sup>,{' '}
+          <a href="https://dawnsong.io/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Dawn Song</a><sup>1</sup>
+          <div className="mt-2 text-xs text-blue-300/60">
             <sup>1</sup>UC Berkeley &nbsp;·&nbsp; <sup>2</sup>Meta FAIR
           </div>
         </div>
