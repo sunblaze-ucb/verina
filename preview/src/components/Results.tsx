@@ -100,7 +100,7 @@ export function Results() {
               <img
                 src="images/proof_pass1.png"
                 alt="ProofGen pass@1 across provers"
-                style={{ maxWidth: 180, maxHeight: 120, width: 'auto', height: 'auto' }}
+                style={{ maxWidth: 300, maxHeight: 200, width: 'auto', height: 'auto' }}
               />
             </div>
             <p className="fig-caption mb-4">pass@1 for ProofGen across general-purpose models, specialized provers, and an agentic framework.</p>
@@ -123,7 +123,7 @@ export function Results() {
               <img
                 src="images/proof_refine_pass_00.png"
                 alt="Proof refinement results"
-                style={{ maxWidth: 320, maxHeight: 130, width: 'auto', height: 'auto' }}
+                style={{ maxWidth: 480, maxHeight: 200, width: 'auto', height: 'auto' }}
               />
             </div>
             <p className="fig-caption mb-4">pass@k via iterative refinement (left) and direct generation (right).</p>
