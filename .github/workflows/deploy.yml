@@ -1,10 +1,11 @@
-name: Deploy Preview Site
+name: Deploy website
 
 on:
   push:
     branches: [main]
     paths:
-      - 'preview/**'
+      - 'website/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -28,24 +29,19 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: preview/pnpm-lock.yaml
+          cache-dependency-path: website/pnpm-lock.yaml
 
       - name: Install dependencies
-        working-directory: preview
+        working-directory: website
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        working-directory: preview
+        working-directory: website
         run: pnpm run build
 
-      # Merge existing docs/ site with preview/ build output
-      - name: Prepare Pages artifact
-        run: |
-          mkdir -p _site
-          cp -r docs/* _site/
-          cp -r preview/dist/ _site/preview/
-
       - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/dist
 
   deploy:
     needs: build
