@@ -1,21 +1,33 @@
 import { SectionLabel } from './SectionLabel'
 import { SiGithub } from 'react-icons/si'
 
-interface Contributor {
+interface Entry {
   name: string
   affiliation?: string
   href?: string
 }
 
-// Chronological order of contribution.
-const CONTRIBUTORS: Contributor[] = [
-  { name: 'Harmonic', href: 'https://harmonic.fun/' },
-  { name: 'Mantas Baksys', affiliation: 'University of Cambridge' },
-  { name: 'Yueyang Feng', affiliation: 'National University of Singapore' },
-  { name: 'Dipesh Kafle', affiliation: 'National University of Singapore' },
-  { name: 'Ilya Sergey', affiliation: 'National University of Singapore' },
+// Within each group: order of first contribution.
+const ORGANIZATIONS: Entry[] = [
+  { name: 'Harmonic',             href: 'https://harmonic.fun/' },
   { name: 'Logical Intelligence', href: 'https://logicalintelligence.com/' },
 ]
+
+const INDIVIDUALS: Entry[] = [
+  { name: 'Mantas Baksys', affiliation: 'University of Cambridge' },
+  { name: 'Yueyang Feng',  affiliation: 'National University of Singapore' },
+  { name: 'Dipesh Kafle',  affiliation: 'National University of Singapore' },
+  { name: 'Ilya Sergey',   affiliation: 'National University of Singapore' },
+]
+
+function LinkedName({ entry }: { entry: Entry }) {
+  if (!entry.href) return <>{entry.name}</>
+  return (
+    <a href={entry.href} target="_blank" className="hover:text-blue-600 transition-colors">
+      {entry.name}
+    </a>
+  )
+}
 
 export function Acknowledgements() {
   return (
@@ -27,44 +39,44 @@ export function Acknowledgements() {
         </div>
 
         <p className="text-sm md:text-[15px] text-gray-600 leading-[1.85] text-center max-w-2xl mx-auto mb-8">
-          We thank the following people and teams, listed in order of their contribution, for
-          reporting bugs, fixing errors in specifications and proofs, and otherwise improving
-          VERINA's quality.
+          We are grateful to the following organizations and individuals &mdash; listed in the order
+          of their first contribution &mdash; for improving VERINA's quality through bug reports,
+          specification and proof fixes, and other corrections.
         </p>
 
-        {/* Contributors grid — compact, card-style with optional affiliation */}
-        <ol className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6 list-none">
-          {CONTRIBUTORS.map((c, i) => (
-            <li
-              key={c.name}
-              className="card p-4 flex gap-3 items-start"
-            >
-              <span className="font-display text-[11px] font-extrabold text-blue-500/70 tabular-nums tracking-widest mt-0.5 shrink-0">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div className="min-w-0">
-                <div className="font-display text-sm font-bold leading-tight">
-                  {c.href ? (
-                    <a
-                      href={c.href}
-                      target="_blank"
-                      className="hover:text-blue-600 transition-colors"
-                    >
-                      {c.name}
-                    </a>
-                  ) : (
-                    c.name
+        <div className="card p-6 md:p-7 mb-6">
+          <div className="mb-6">
+            <div className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.14em] mb-2">
+              Organizations
+            </div>
+            <p className="text-sm md:text-[15px] text-gray-700 leading-[1.8]">
+              {ORGANIZATIONS.map((o, i) => (
+                <span key={o.name}>
+                  <LinkedName entry={o} />
+                  {i < ORGANIZATIONS.length - 1 && <span className="mx-2 text-gray-300">·</span>}
+                </span>
+              ))}
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.14em] mb-2">
+              Individuals
+            </div>
+            <ul className="text-sm md:text-[15px] text-gray-700 leading-[1.9] space-y-0.5 list-none">
+              {INDIVIDUALS.map((p) => (
+                <li key={p.name}>
+                  <LinkedName entry={p} />
+                  {p.affiliation && (
+                    <span className="text-gray-500 italic">
+                      {' '}&mdash; {p.affiliation}
+                    </span>
                   )}
-                </div>
-                {c.affiliation && (
-                  <div className="text-[11px] text-gray-500 italic mt-0.5 leading-snug">
-                    {c.affiliation}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <p className="text-xs text-gray-500 text-center leading-relaxed">
           See the full list of code contributors on the{' '}
