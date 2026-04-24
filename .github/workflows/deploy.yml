@@ -23,7 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm/action-setup looks for "packageManager" in the root package.json
+      # by default; ours lives at website/package.json, so we pin the version
+      # explicitly here.
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
 
       - uses: actions/setup-node@v4
         with:
