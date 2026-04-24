@@ -6,43 +6,49 @@ export function Combinations() {
       <div className="max-w-4xl mx-auto reveal">
         <div className="text-center mb-10">
           <SectionLabel centered>Compositionality</SectionLabel>
-          <h2 className="font-display text-2xl md:text-3xl font-bold mt-1">Task Combinations</h2>
-          <p className="text-sm text-gray-500 max-w-lg mx-auto mt-3 leading-relaxed">
-            VERINA's modular design supports diverse real-world workflows by composing foundational tasks.
+          <h2 className="font-display text-2xl md:text-3xl font-bold mt-1">Supported Task Combinations</h2>
+          <p className="text-sm text-gray-500 max-w-xl mx-auto mt-3 leading-relaxed">
+            VERINA's modular design enables evaluation of various real-world scenarios in verifiable code generation.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
-          <div className="card p-5 text-center">
-            <div className="img-container h-24 mb-3">
-              <img src="images/verina_cropped_03.png" alt="Spec-guided code gen" className="max-h-full w-auto max-w-[160px]" />
+        {/* First two combinations — 2-col */}
+        <div className="grid md:grid-cols-2 gap-4 mb-4">
+          <div className="card p-6 text-center">
+            <div className="img-container h-28 mb-4">
+              <img src="images/verina_cropped_03.png" alt="Spec-guided code generation" className="max-h-full w-auto max-w-[300px]" />
             </div>
-            <h3 className="font-display text-xs font-bold mb-1">Spec-Guided CodeGen</h3>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
-              Generate code from a description + specification, then prove correctness.
+            <h3 className="font-display text-sm font-bold mb-1.5">Specification-Guided Code Generation</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Given a natural language description and formal specification, generate code and prove its correctness. This scenario reflects development workflows where specifications are available upfront.
             </p>
           </div>
 
-          <div className="card p-5 text-center">
-            <div className="img-container h-24 mb-3">
-              <img src="images/verina_cropped_04.png" alt="Spec inference from code" className="max-h-full w-auto max-w-[160px]" />
+          <div className="card p-6 text-center">
+            <div className="img-container h-28 mb-4">
+              <img src="images/verina_cropped_04.png" alt="Specification inference from code" className="max-h-full w-auto max-w-[300px]" />
             </div>
-            <h3 className="font-display text-xs font-bold mb-1">Spec Inference</h3>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
-              Annotate existing code with formal specifications and prove alignment.
-            </p>
-          </div>
-
-          <div className="card p-5 text-center">
-            <div className="img-container h-24 mb-3">
-              <img src="images/verina_cropped_05.png" alt="End-to-end generation" className="max-h-full w-auto max-w-[160px]" />
-            </div>
-            <h3 className="font-display text-xs font-bold mb-1">End-to-End</h3>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
-              From description alone, independently generate code, specs, and proofs.
+            <h3 className="font-display text-sm font-bold mb-1.5">Specification Inference from Code</h3>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Given existing code implementation, automatically generate formal specifications and proofs. This addresses legacy code annotation and documentation scenarios.
             </p>
           </div>
         </div>
+
+        {/* End-to-End — full-width row so the diagram has room to breathe */}
+        <div className="card p-6 md:p-8 text-center mb-4">
+          <div className="img-container h-40 md:h-44 mb-4">
+            <img src="images/verina_cropped_05.png" alt="End-to-end verifiable code generation" className="max-h-full w-auto max-w-[520px]" />
+          </div>
+          <h3 className="font-display text-sm font-bold mb-1.5">End-to-End Verifiable Code Generation</h3>
+          <p className="text-xs text-gray-500 leading-relaxed max-w-xl mx-auto">
+            Starting from only a natural language problem description, independently generate code, specifications, and proofs. This represents the highest level of automation in verified software development.
+          </p>
+        </div>
+
+        <p className="fig-caption mb-10">
+          Combinations of VERINA's foundational tasks showing real-world usage scenarios. Natural language descriptions and function signatures are omitted for brevity.
+        </p>
 
         {/* Contextual impact chart */}
         <div className="result-panel">
@@ -53,7 +59,7 @@ export function Combinations() {
             <div className="img-container">
               <img src="images/combined_task_pass1_00.png" alt="Contextual information impact" className="max-w-xl w-full" />
             </div>
-            <p className="fig-caption">Providing ground truth specification consistently improves CodeGen; code context has minimal impact on SpecGen.</p>
+            <p className="fig-caption">Impact of contextual information on combined task performance.</p>
           </div>
         </div>
       </div>
