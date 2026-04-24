@@ -10,12 +10,8 @@ export function Hero() {
           VERINA: Benchmarking Verifiable Code Generation
         </h1>
 
-        <p className="text-sm text-blue-200/70 mt-5 max-w-lg mx-auto leading-relaxed">
-          189 manually curated tasks in Lean for evaluating code, specification, and proof generation—and their compositions.
-        </p>
-
         {/* Authors */}
-        <div className="mt-7 text-[15px] md:text-base text-blue-100/90 leading-relaxed">
+        <div className="mt-7 text-[15px] md:text-base font-semibold text-blue-100/90 leading-relaxed">
           <a href="https://zhe.sh/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Zhe Ye</a><sup>1</sup>,{' '}
           <a href="#" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Zhengxu Yan</a><sup>1</sup>,{' '}
           <a href="https://jxhe.info/" target="_blank" className="underline underline-offset-4 decoration-blue-300/40 hover:text-white hover:decoration-white transition-colors">Jingxuan He</a><sup>1</sup>,{' '}
