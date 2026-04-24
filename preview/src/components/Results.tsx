@@ -1,5 +1,4 @@
 import { SectionLabel } from './SectionLabel'
-import { Leaderboard } from './Leaderboard'
 
 export function Results() {
   return (
@@ -94,7 +93,7 @@ export function Results() {
         </div>
 
         {/* Proof refinement */}
-        <div className="result-panel mb-6">
+        <div className="result-panel">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Iterative Proof Refinement</h3>
           </div>
@@ -108,9 +107,6 @@ export function Results() {
             <p className="fig-caption">pass@k via iterative refinement (left) and direct generation (right).</p>
           </div>
         </div>
-
-        {/* Full leaderboard */}
-        <Leaderboard />
       </div>
     </section>
   )
