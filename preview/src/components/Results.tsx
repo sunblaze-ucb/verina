@@ -122,45 +122,51 @@ export function Results() {
         </Takeaway>
 
         {/* Specialized provers */}
-        <div className="result-panel mb-4 mt-10">
+        <div className="result-panel mt-10">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Specialized Provers &amp; Agentic Methods</h3>
           </div>
           <div className="result-panel-body">
             <div className="img-container">
-              <img src="images/proof_pass1.png" alt="ProofGen pass@1 across provers" className="max-w-md w-full" />
+              <img
+                src="images/proof_pass1.png"
+                alt="ProofGen pass@1 across provers"
+                className="max-w-[320px] max-h-[220px] w-full h-auto"
+              />
             </div>
-            <p className="fig-caption">pass@1 for ProofGen across general-purpose models, specialized provers, and an agentic framework.</p>
+            <p className="fig-caption mb-4">pass@1 for ProofGen across general-purpose models, specialized provers, and an agentic framework.</p>
+            <Takeaway label="Takeaway" accent="teal">
+              <strong className="text-gray-800">Specialized provers and agents outperform general-purpose LLMs on ProofGen.</strong>{' '}
+              Goedel Prover V2 32B and DeepSeek Prover V2 7B achieve higher proof success rates than the
+              best general-purpose models; Copra, a tree-search agent using o4-mini as backbone (up to
+              64 queries per sample), also shows clear improvements over single-pass generation.
+            </Takeaway>
           </div>
         </div>
 
-        <Takeaway label="Takeaway" accent="teal">
-          <strong className="text-gray-800">Specialized provers and agents outperform general-purpose LLMs on ProofGen.</strong>{' '}
-          Goedel Prover V2 32B and DeepSeek Prover V2 7B achieve higher proof success rates than the
-          best general-purpose models; Copra, a tree-search agent using o4-mini as backbone (up to
-          64 queries per sample), also shows clear improvements over single-pass generation.
-        </Takeaway>
-
         {/* Iterative proof refinement */}
-        <div className="result-panel mb-4 mt-10">
+        <div className="result-panel mt-10">
           <div className="result-panel-header">
             <h3 className="font-display text-sm font-bold">Iterative Proof Refinement</h3>
           </div>
           <div className="result-panel-body">
             <div className="img-container">
-              <img src="images/proof_refine_pass_00.png" alt="Proof refinement results" className="max-w-lg w-full" />
+              <img
+                src="images/proof_refine_pass_00.png"
+                alt="Proof refinement results"
+                className="max-w-md max-h-[200px] w-full h-auto"
+              />
             </div>
-            <p className="fig-caption">pass@k via iterative refinement (left) and direct generation (right).</p>
+            <p className="fig-caption mb-4">pass@k via iterative refinement (left) and direct generation (right).</p>
+            <Takeaway label="Takeaway" accent="indigo">
+              <strong className="text-gray-800">Lean verifier feedback helps.</strong>{' '}
+              Iterative proof refinement using Lean compiler errors reliably outperforms direct
+              generation at matched query budgets, reaching <strong className="text-gray-800">20.1%
+              pass@64</strong>. Refinement yields larger gains on VERINA-A (7.41% → 22.22%) than on
+              VERINA-B (1.23% → 6.17%), underscoring the persistent challenge of complex proving tasks.
+            </Takeaway>
           </div>
         </div>
-
-        <Takeaway label="Takeaway" accent="indigo">
-          <strong className="text-gray-800">Lean verifier feedback helps.</strong>{' '}
-          Iterative proof refinement using Lean compiler errors reliably outperforms direct
-          generation at matched query budgets, reaching <strong className="text-gray-800">20.1%
-          pass@64</strong>. Refinement yields larger gains on VERINA-A (7.41% → 22.22%) than on
-          VERINA-B (1.23% → 6.17%), underscoring the persistent challenge of complex proving tasks.
-        </Takeaway>
       </div>
     </section>
   )
