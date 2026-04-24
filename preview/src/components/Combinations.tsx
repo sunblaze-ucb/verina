@@ -37,8 +37,10 @@ export function Combinations() {
 
         {/* End-to-End — full-width row so the diagram has room to breathe */}
         <div className="card p-6 md:p-8 text-center mb-4">
-          <div className="img-container h-40 md:h-44 mb-4">
-            <img src="images/verina_cropped_05.png" alt="End-to-end verifiable code generation" className="max-h-full w-auto max-w-[520px]" />
+          <div className="img-container mb-4">
+            <div className="w-full max-w-[420px] mx-auto">
+              <img src="images/verina_cropped_05.png" alt="End-to-end verifiable code generation" className="w-full h-auto" />
+            </div>
           </div>
           <h3 className="font-display text-sm font-bold mb-1.5">End-to-End Verifiable Code Generation</h3>
           <p className="text-xs text-gray-500 leading-relaxed max-w-xl mx-auto">
