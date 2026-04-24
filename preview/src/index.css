@@ -379,7 +379,10 @@ body {
 
 .img-container img {
   max-width: 100%;
+  max-height: 400px;
   height: auto;
+  width: auto;
+  object-fit: contain;
 }
 
 /* ── Divider ── */
