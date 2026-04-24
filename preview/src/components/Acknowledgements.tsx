@@ -32,22 +32,6 @@ export function Acknowledgements() {
             for the full list.
           </p>
         </div>
-
-        {/* UC Berkeley course — secondary */}
-        <p className="text-xs text-gray-500 leading-relaxed text-center mb-8">
-          We also thank the students of the theorem-proving and program-verification course at
-          UC Berkeley for contributing benchmark instances from LeetCode and LiveCodeBench.
-        </p>
-
-        {/* Funding — small footer */}
-        <div className="text-center text-[11px] text-gray-400 leading-relaxed border-t border-gray-200/60 pt-5">
-          <p>
-            Based upon work supported by the{' '}
-            <strong className="text-gray-500">National Science Foundation</strong> (grant no.{' '}
-            <span className="tabular-nums">2229876</span>), with partner support from the NSF,
-            the Department of Homeland Security, and IBM.
-          </p>
-        </div>
       </div>
     </section>
   )
