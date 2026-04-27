@@ -6,7 +6,7 @@ export function Hero() {
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <span className="badge bg-white/10 text-blue-200 border border-white/15 mb-5">ICLR 2026</span>
 
-        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-[1.15] tracking-tight mt-2 whitespace-nowrap">
+        <h1 className="font-display text-[1.625rem] sm:text-3xl md:text-4xl font-extrabold leading-[1.15] tracking-tight mt-2 text-balance break-words">
           VERINA: Benchmarking Verifiable Code Generation
         </h1>
 
