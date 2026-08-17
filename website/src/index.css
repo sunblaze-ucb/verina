@@ -117,6 +117,193 @@ body {
   pointer-events: none;
 }
 
+/* ── Vero callout ── */
+.vero-banner-wrap {
+  position: relative;
+  z-index: 20;
+  margin-top: -2rem;
+  padding: 0 1.5rem;
+}
+
+.vero-banner {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 1.125rem;
+  max-width: 56rem;
+  min-height: 8rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  overflow: hidden;
+  color: var(--color-text);
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #dfe8e5;
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vero-banner::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 4% 50%, rgba(14, 115, 85, 0.1), transparent 24%),
+    linear-gradient(110deg, transparent 62%, rgba(14, 115, 85, 0.045));
+  pointer-events: none;
+}
+
+.vero-banner:hover {
+  transform: translateY(-2px);
+  border-color: #b9d6cd;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.15);
+}
+
+.vero-banner:focus-visible {
+  outline: 3px solid rgba(14, 115, 85, 0.3);
+  outline-offset: 3px;
+}
+
+.vero-mark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  color: #0e7355;
+  background: #edf8f4;
+  border: 1px solid #d2ebe3;
+  border-radius: 13px;
+}
+
+.vero-mark svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.vero-mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vero-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.vero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  color: #638078;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.vero-kicker > span {
+  padding: 0.13rem 0.42rem;
+  color: #0e7355;
+  background: #e4f5ef;
+  border-radius: 9999px;
+}
+
+.vero-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  color: #17211e;
+  font-size: 1.08rem;
+  font-weight: 750;
+  letter-spacing: -0.018em;
+  line-height: 1.35;
+}
+
+.vero-description {
+  max-width: 39rem;
+  margin-top: 0.2rem;
+  color: #66736f;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.vero-cta {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.8rem;
+  color: #0e7355;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #edf8f4;
+  border: 1px solid #d2ebe3;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.vero-cta svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.15s ease;
+}
+
+.vero-banner:hover .vero-cta {
+  color: #fff;
+  background: #0e7355;
+  border-color: #0e7355;
+}
+
+.vero-banner:hover .vero-cta svg {
+  transform: translate(1px, -1px);
+}
+
+@media (max-width: 640px) {
+  .vero-banner-wrap {
+    margin-top: -1.5rem;
+    padding: 0 1rem;
+  }
+
+  .vero-banner {
+    align-items: flex-start;
+    gap: 0.875rem;
+    min-height: 0;
+    padding: 1.125rem;
+  }
+
+  .vero-mark {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 11px;
+  }
+
+  .vero-mark svg {
+    width: 1.55rem;
+    height: 1.55rem;
+  }
+
+  .vero-title {
+    font-size: 0.97rem;
+  }
+
+  .vero-description {
+    font-size: 0.77rem;
+  }
+
+  .vero-cta {
+    display: none;
+  }
+}
+
 /* ── Section styling ── */
 .section-alt {
   background: var(--color-surface);

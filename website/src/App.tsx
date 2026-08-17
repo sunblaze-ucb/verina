@@ -1,6 +1,7 @@
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { Nav } from '@/components/Nav'
 import { Hero } from '@/components/Hero'
+import { VeroBanner } from '@/components/VeroBanner'
 import { Abstract } from '@/components/Abstract'
 import { Overview } from '@/components/Overview'
 import { Features } from '@/components/Features'
@@ -21,6 +22,7 @@ export default function App() {
     <>
       <Nav />
       <Hero />
+      <VeroBanner />
       <Abstract />
       <Overview />
       <Features />
