@@ -16,11 +16,11 @@ authors:
     family-names: Yang
   - given-names: Dawn
     family-names: Song
-date-released: 2015-05-16
+date-released: 2025-05-16
 url: "https://github.com/sunblaze-ucb/verina"
 preferred-citation:
-  type: article
-  title: "VERINA: Benchmarking Verifiable Code Generation"
+  type: conference-paper
+  title: "Verina: Benchmarking verifiable code generation"
   authors:
     - given-names: Zhe
       family-names: Ye
@@ -34,6 +34,7 @@ preferred-citation:
       family-names: Yang
     - given-names: Dawn
       family-names: Song
-  url: "https://arxiv.org/abs/2505.23135"
-  journal: "arXiv preprint arXiv:2505.23135"
-  year: 2025
+  collection-title: "International Conference on Learning Representations"
+  volume: "2026"
+  pages: "38933--38972"
+  year: 2026

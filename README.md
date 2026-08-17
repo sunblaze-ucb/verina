@@ -1,8 +1,10 @@
-# Verina: Benchmarking Verifiable Code Generation
+# VERINA: Benchmarking Verifiable Code Generation
+
+**Accepted at the International Conference on Learning Representations (ICLR) 2026.**
 
 ## Overview
 
-Verina (Verifiable Code Generation Arena) is a high-quality benchmark enabling a comprehensive and modular evaluation of code, specification, and proof generation as well as their compositions.
+VERINA (Verifiable Code Generation Arena) is a high-quality benchmark enabling a comprehensive and modular evaluation of code, specification, and proof generation as well as their compositions.
 Read more about the project in our [website](https://verina.io) and [paper](https://arxiv.org/pdf/2505.23135).
 
 ## Dataset
@@ -183,10 +185,12 @@ ruff format
 ## Citation
 
 ```bibtex
-@article{ye2025verina,
-  title={VERINA: Benchmarking Verifiable Code Generation},
+@inproceedings{ye2026verina,
+  title={Verina: Benchmarking verifiable code generation},
   author={Ye, Zhe and Yan, Zhengxu and He, Jingxuan and Kasriel, Timothe and Yang, Kaiyu and Song, Dawn},
-  journal={arXiv preprint arXiv:2505.23135},
-  year={2025}
+  booktitle={International Conference on Learning Representations},
+  volume={2026},
+  pages={38933--38972},
+  year={2026}
 }
 ```
